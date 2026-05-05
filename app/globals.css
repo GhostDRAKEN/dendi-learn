@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+:root {
+  --bg: #0A0A0A;
+  --text: #F5F0EB;
+  --text-muted: #A89A8A;
+  --accent: #E07B39;
+  --border: #2A2A2A;
+  --card-bg: #161616;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,7 +16,7 @@
 }
 
 body {
-  background-color: #0A0A0A;
-  color: #F5F0EB;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Georgia', serif;
 }

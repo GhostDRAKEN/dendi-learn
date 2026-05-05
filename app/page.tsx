@@ -7,23 +7,42 @@ export default async function Home() {
     .select('*')
 
   if (error) {
-    return <p>Erreur : {error.message}</p>
+    return <p style={{ color: 'red', padding: '32px' }}>Erreur : {error.message}</p>
   }
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <header className="px-8 py-10 border-b" style={{ borderColor: 'var(--border)' }}>
-        <p className="text-sm tracking-widest uppercase mb-1" style={{ color: 'var(--accent)' }}>
+    <main style={{ minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
+      <header style={{
+        padding: '40px 32px',
+        borderBottom: '1px solid #2A2A2A',
+      }}>
+        <p style={{
+          color: '#E07B39',
+          fontSize: '13px',
+          letterSpacing: '4px',
+          textTransform: 'uppercase',
+          marginBottom: '4px',
+        }}>
           Langue Dendi · Bénin
         </p>
-        <h1 className="text-4xl font-bold" style={{ color: 'var(--text)' }}>
+        <h1 style={{
+          color: '#F5F0EB',
+          fontSize: '52px',
+          fontWeight: '700',
+          fontFamily: 'Georgia, serif',
+        }}>
           Dendi Learn
         </h1>
-        <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+        <p style={{
+          color: '#A89A8A',
+          fontSize: '16px',
+          marginTop: '8px',
+        }}>
           Apprenez le Dendi, langue du nord Bénin
         </p>
       </header>
-      <section className="px-8 py-8">
+
+      <section style={{ padding: '32px' }}>
         <Filtre mots={mots ?? []} />
       </section>
     </main>

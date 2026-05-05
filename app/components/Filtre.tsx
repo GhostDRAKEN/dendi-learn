@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import MotCard from './MotCard'
 
@@ -11,47 +10,72 @@ type Mot = {
   categorie: string
 }
 
-function formatCategorie(cat: string): string {
-  const labels: Record<string, string> = {
-    'Tous': 'Tous',
-    'Salutations': 'Salutations',
-    'temps__journee': 'Temps - Journée',
-    'temps__repere': 'Temps - Repères',
-    'temps__semaine': 'Temps - Semaine',
-    'temps__mois': 'Temps - Mois',
-    'corps': 'Corps humain',
-    'verbes': 'Verbes',
-  }
-  return labels[cat] || cat
+const CATEGORIES_ORDER = [
+  'Tous',
+  'Salutations',
+  'temps__journee',
+  'temps__repere',
+  'temps__semaine',
+  'temps__mois',
+  'corps',
+  'verbes',
+  'prepositions',
+]
+
+const CATEGORIES_LABELS: Record<string, string> = {
+  'Tous': 'Tous',
+  'Salutations': 'Salutations',
+  'temps__journee': 'Temps - Journée',
+  'temps__repere': 'Temps - Repères',
+  'temps__semaine': 'Temps - Semaine',
+  'temps__mois': 'Temps - Mois',
+  'corps': 'Corps humain',
+  'verbes': 'Verbes',
+  'prepositions': 'Prépositions',
 }
 
 export default function Filtre({ mots }: { mots: Mot[] }) {
-  const categories = ['Tous', ...Array.from(new Set(mots.map((m) => m.categorie)))]
+  const categoriesDisponibles = new Set(mots.map((m) => m.categorie))
+  const categories = CATEGORIES_ORDER.filter(
+    (cat) => cat === 'Tous' || categoriesDisponibles.has(cat)
+  )
   const [active, setActive] = useState('Tous')
-
   const motsFiltres = active === 'Tous' ? mots : mots.filter((m) => m.categorie === active)
 
   return (
     <div>
-      <div className="flex gap-2 flex-wrap mb-6">
+      {/* Barre de filtres */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActive(cat)}
-            className="px-4 py-2 rounded-full text-sm font-medium transition-all"
-            style={
-              active === cat
-                ? { backgroundColor: 'var(--accent)', border: '1px solid var(--accent)', color: 'white' }
-                : { backgroundColor: 'transparent', border: '1px solid var(--border)', color: '#A89A8A' }
-            }
+            style={{
+              padding: '8px 16px',
+              borderRadius: '9999px',
+              fontSize: '13px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              fontFamily: 'Georgia, serif',
+              backgroundColor: active === cat ? '#E07B39' : 'transparent',
+              border: active === cat ? '1px solid #E07B39' : '1px solid #3A3A3A',
+              color: active === cat ? '#FFFFFF' : '#A89A8A',
+            }}
           >
-            {formatCategorie(cat)}
+            {CATEGORIES_LABELS[cat] ?? cat}
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+      {/* Grille de cartes */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '16px',
+      }}>
         {motsFiltres.map((mot) => (
-        <MotCard key={`${active}-${mot.id}`} mot={mot} />
+          <MotCard key={`${active}-${mot.id}`} mot={mot} />
         ))}
       </div>
     </div>
