@@ -13,36 +13,32 @@ export default async function Home() {
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
       <header style={{
-        padding: '40px 32px',
+        padding: '20px 24px 16px',
         borderBottom: '1px solid #2A2A2A',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: '16px',
+        flexWrap: 'wrap',
       }}>
-        <p style={{
-          color: '#E07B39',
-          fontSize: '13px',
-          letterSpacing: '4px',
-          textTransform: 'uppercase',
-          marginBottom: '4px',
-        }}>
-          Langue Dendi · Bénin
-        </p>
         <h1 style={{
           color: '#F5F0EB',
-          fontSize: '52px',
+          fontSize: 'clamp(28px, 5vw, 40px)',
           fontWeight: '700',
           fontFamily: 'Georgia, serif',
         }}>
           Dendi Learn
         </h1>
         <p style={{
-          color: '#A89A8A',
-          fontSize: '16px',
-          marginTop: '8px',
+          color: '#E07B39',
+          fontSize: '12px',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
         }}>
-          Apprenez le Dendi, langue du nord Bénin
+          Langue du nord Bénin
         </p>
       </header>
 
-      <section style={{ padding: '32px' }}>
+     <section style={{ padding: '20px clamp(16px, 4vw, 32px)' }}>
         <Filtre mots={mots ?? []} />
       </section>
     </main>
