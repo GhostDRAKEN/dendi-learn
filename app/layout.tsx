@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: "Dendi Learn",
   description: "Apprenez le Dendi, langue du nord Bénin",
   icons: {
-    icon: "/favicon.ico",
-  },
+  icon: "/favicon.svg",
+},
 };
 export default function RootLayout({
   children,
