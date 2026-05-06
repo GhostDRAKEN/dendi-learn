@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 
 type Mot = {
@@ -10,7 +9,7 @@ type Mot = {
   categorie: string
 }
 
-export default function MotCard({ mot }: { mot: Mot }) {
+export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void }) {
   const [retournee, setRetournee] = useState(false)
   const [monte, setMonte] = useState(false)
   const [modePhon, setModePhon] = useState(false)
@@ -18,6 +17,13 @@ export default function MotCard({ mot }: { mot: Mot }) {
   useEffect(() => {
     setMonte(true)
   }, [])
+
+  const handleRetourner = () => {
+    if (!retournee) {
+      setRetournee(true)
+      onVue() // ✅ on signale que le mot a été vu
+    }
+  }
 
   if (!monte) {
     return (
@@ -40,7 +46,7 @@ export default function MotCard({ mot }: { mot: Mot }) {
 
   return (
     <div
-      onClick={() => !retournee && setRetournee(true)}
+      onClick={handleRetourner}
       style={{
         backgroundColor: retournee ? '#1A0F00' : '#161616',
         border: retournee ? '1px solid #E07B39' : '1px solid #2A2A2A',
@@ -66,12 +72,9 @@ export default function MotCard({ mot }: { mot: Mot }) {
         </>
       ) : (
         <>
-          {/* Mot principal */}
           <p style={{ fontSize: '22px', fontWeight: '700', color: '#E07B39', marginTop: '8px' }}>
             {modePhon ? mot.phonetique : mot.dendi}
           </p>
-
-          {/* Bouton toggle intuitif */}
           <button
             onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
             style={{
@@ -89,27 +92,24 @@ export default function MotCard({ mot }: { mot: Mot }) {
           >
             {modePhon ? 'Voir l\'écriture officielle' : 'Voir la prononciation'}
           </button>
-
           <div style={{ width: '30px', height: '1px', backgroundColor: '#333', margin: '12px auto' }} />
           <p style={{ fontSize: '13px', color: '#777' }}>{mot.fr}</p>
-
-          {/* Bouton refermer */}
           <button
-  onClick={(e) => { e.stopPropagation(); setRetournee(false); setModePhon(false) }}
-  style={{
-    marginTop: '12px',
-    background: 'none',
-    border: 'none',
-    color: '#555',
-    fontSize: '11px',
-    cursor: 'pointer',
-    fontFamily: 'Georgia, serif',
-    letterSpacing: '1px',
-    textTransform: 'uppercase',
-  }}
->
-  Cacher
-</button>
+            onClick={(e) => { e.stopPropagation(); setRetournee(false); setModePhon(false) }}
+            style={{
+              marginTop: '12px',
+              background: 'none',
+              border: 'none',
+              color: '#555',
+              fontSize: '11px',
+              cursor: 'pointer',
+              fontFamily: 'Georgia, serif',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+            }}
+          >
+            Cacher
+          </button>
         </>
       )}
     </div>
