@@ -13,7 +13,7 @@ type Mot = {
 const TEMPS_SOUS_CATEGORIES = ['temps__journee', 'temps__repere', 'temps__semaine', 'temps__mois']
 
 const CATEGORIES_ORDER = [
-  'Tous', 'Salutations', 'temps', 'corps', 'verbes', 'prepositions', 'noms',
+  'Tous', 'Salutations', 'temps', 'corps', 'verbes', 'prepositions', 'noms','couleurs',
 ]
 
 const CATEGORIES_LABELS: Record<string, string> = {
@@ -28,6 +28,7 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'verbes': 'Verbes',
   'prepositions': 'Prépositions',
   'noms': 'Noms & Adjectifs',
+  'couleurs': 'Couleurs',
 }
 
 export default function Filtre({ mots }: { mots: Mot[] }) {
