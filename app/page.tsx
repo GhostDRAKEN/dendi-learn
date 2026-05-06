@@ -11,15 +11,8 @@ export default async function Home() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
-      <header style={{
-        padding: '20px 24px 16px',
-        borderBottom: '1px solid #2A2A2A',
-        display: 'flex',
-        alignItems: 'baseline',
-        gap: '16px',
-        flexWrap: 'wrap',
-      }}>
+    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+  <header style={{ padding: '24px 5vw 20px', borderBottom: '1px solid #2A2A2A' }}>
         <h1 style={{
           color: '#F5F0EB',
           fontSize: 'clamp(28px, 5vw, 40px)',
