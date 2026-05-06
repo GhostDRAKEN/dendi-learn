@@ -20,6 +20,7 @@ const CATEGORIES_ORDER = [
   'corps',
   'verbes',
   'prepositions',
+  'noms',
 ]
 
 const CATEGORIES_LABELS: Record<string, string> = {
@@ -32,6 +33,7 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'corps': 'Corps humain',
   'verbes': 'Verbes',
   'prepositions': 'Prépositions',
+  'noms': 'Noms & Adjectifs',
 }
 
 export default function Filtre({ mots }: { mots: Mot[] }) {
