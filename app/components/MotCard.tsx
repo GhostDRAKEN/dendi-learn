@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 
 type Mot = {
@@ -9,22 +10,14 @@ type Mot = {
   categorie: string
 }
 
-export default function MotCard({ mot, onVue }: { mot: Mot; onVue?: () => void }) {
+export default function MotCard({ mot }: { mot: Mot }) {
   const [retournee, setRetournee] = useState(false)
   const [monte, setMonte] = useState(false)
+  const [modePhon, setModePhon] = useState(false)
 
   useEffect(() => {
     setMonte(true)
   }, [])
-
-  const handleClick = () => {
-    if (!retournee) {
-      setRetournee(true)
-      onVue?.()
-    } else {
-      setRetournee(false)
-    }
-  }
 
   if (!monte) {
     return (
@@ -47,7 +40,7 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue?: () => void }
 
   return (
     <div
-      onClick={handleClick}
+      onClick={() => !retournee && setRetournee(true)}
       style={{
         backgroundColor: retournee ? '#1A0F00' : '#161616',
         border: retournee ? '1px solid #E07B39' : '1px solid #2A2A2A',
@@ -59,8 +52,9 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue?: () => void }
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        cursor: 'pointer',
+        cursor: retournee ? 'default' : 'pointer',
         transition: 'all 0.3s ease',
+        position: 'relative',
       }}
     >
       {!retournee ? (
@@ -72,10 +66,50 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue?: () => void }
         </>
       ) : (
         <>
-          <p style={{ fontSize: '22px', fontWeight: '700', color: '#E07B39' }}>{mot.dendi}</p>
-          <p style={{ fontSize: '14px', marginTop: '8px', fontStyle: 'italic', color: '#A89A8A' }}>{mot.phonetique}</p>
+          {/* Mot principal */}
+          <p style={{ fontSize: '22px', fontWeight: '700', color: '#E07B39', marginTop: '8px' }}>
+            {modePhon ? mot.phonetique : mot.dendi}
+          </p>
+
+          {/* Bouton toggle intuitif */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
+            style={{
+              marginTop: '10px',
+              background: 'none',
+              border: 'none',
+              color: '#666',
+              fontSize: '12px',
+              cursor: 'pointer',
+              fontFamily: 'Georgia, serif',
+              textDecoration: 'underline',
+              textUnderlineOffset: '3px',
+              padding: '0',
+            }}
+          >
+            {modePhon ? 'Voir l\'écriture officielle' : 'Voir la prononciation'}
+          </button>
+
           <div style={{ width: '30px', height: '1px', backgroundColor: '#333', margin: '12px auto' }} />
           <p style={{ fontSize: '13px', color: '#777' }}>{mot.fr}</p>
+
+          {/* Bouton refermer */}
+          <button
+  onClick={(e) => { e.stopPropagation(); setRetournee(false); setModePhon(false) }}
+  style={{
+    marginTop: '12px',
+    background: 'none',
+    border: 'none',
+    color: '#555',
+    fontSize: '11px',
+    cursor: 'pointer',
+    fontFamily: 'Georgia, serif',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  }}
+>
+  Cacher
+</button>
         </>
       )}
     </div>
