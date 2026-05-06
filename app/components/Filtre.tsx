@@ -35,6 +35,7 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showTempsMenu, setShowTempsMenu] = useState(false)
+  const [vusIds, setVusIds] = useState<Set<number>>(new Set())
 
   const isTempsActive = TEMPS_SOUS_CATEGORIES.includes(active)
 
@@ -62,6 +63,20 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
     if (cat === 'temps') return mots.filter(m => TEMPS_SOUS_CATEGORIES.includes(m.categorie)).length
     return mots.filter(m => m.categorie === cat).length
   }
+
+  const handleCategorieChange = (cat: string) => {
+    setActive(cat)
+    setShowTempsMenu(false)
+    setVusIds(new Set())
+  }
+
+  const handleVue = (id: number) => {
+    setVusIds(prev => new Set(prev).add(id))
+  }
+
+  const vusCount = motsFiltres.filter(m => vusIds.has(m.id)).length
+  const total = motsFiltres.length
+  const progression = total > 0 ? Math.round((vusCount / total) * 100) : 0
 
   return (
     <div>
@@ -147,7 +162,7 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                     {TEMPS_SOUS_CATEGORIES.map((sub) => (
                       <div
                         key={sub}
-                        onClick={() => { setActive(sub); setShowTempsMenu(false) }}
+                        onClick={() => handleCategorieChange(sub)}
                         style={{
                           padding: '12px 20px', cursor: 'pointer',
                           color: active === sub ? '#E07B39' : '#D0C4B8',
@@ -173,7 +188,7 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
           return (
             <button
               key={cat}
-              onClick={() => { setActive(cat); setShowTempsMenu(false) }}
+              onClick={() => handleCategorieChange(cat)}
               style={{
                 padding: '8px 16px', borderRadius: '9999px',
                 fontSize: '13px', fontWeight: '500', cursor: 'pointer',
@@ -198,10 +213,48 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
         })}
       </div>
 
+      {/* Barre de progression */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '8px',
+        }}>
+          <span style={{ color: '#555', fontSize: '12px', letterSpacing: '1px' }}>
+            {progression === 100 ? '✓ Série complète' : 'Progression'}
+          </span>
+          <span style={{
+            color: progression === 100 ? '#E07B39' : '#A89A8A',
+            fontSize: '12px',
+            fontWeight: '600',
+            letterSpacing: '1px',
+            transition: 'color 0.3s ease',
+          }}>
+            {vusCount} / {total} vus
+          </span>
+        </div>
+        <div style={{
+          width: '100%',
+          height: '25px',
+          backgroundColor: '#2A2A2A',
+          borderRadius: '9999px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${progression}%`,
+            backgroundColor: progression === 100 ? '#E07B39' : '#4A4A4A',
+            borderRadius: '9999px',
+            transition: 'width 0.4s ease, background-color 0.4s ease',
+          }} />
+        </div>
+      </div>
+
       {/* Résultats */}
       {motsFiltres.length === 0 ? (
         <p style={{ color: '#555', textAlign: 'center', marginTop: '40px' }}>
-          Aucun mot trouvé pour "{recherche}"
+          Aucun mot trouvé pour &quot;{recherche}&quot;
         </p>
       ) : (
         <div style={{
@@ -210,7 +263,11 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
           gap: '16px',
         }}>
           {motsFiltres.map((mot) => (
-            <MotCard key={`${active}-${mot.id}`} mot={mot} />
+            <MotCard
+              key={`${active}-${mot.id}`}
+              mot={mot}
+              onVue={() => handleVue(mot.id)}
+            />
           ))}
         </div>
       )}

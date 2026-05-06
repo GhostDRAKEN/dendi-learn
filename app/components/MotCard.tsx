@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 
 type Mot = {
@@ -10,13 +9,22 @@ type Mot = {
   categorie: string
 }
 
-export default function MotCard({ mot }: { mot: Mot }) {
+export default function MotCard({ mot, onVue }: { mot: Mot; onVue?: () => void }) {
   const [retournee, setRetournee] = useState(false)
   const [monte, setMonte] = useState(false)
 
   useEffect(() => {
     setMonte(true)
   }, [])
+
+  const handleClick = () => {
+    if (!retournee) {
+      setRetournee(true)
+      onVue?.()
+    } else {
+      setRetournee(false)
+    }
+  }
 
   if (!monte) {
     return (
@@ -39,7 +47,7 @@ export default function MotCard({ mot }: { mot: Mot }) {
 
   return (
     <div
-      onClick={() => setRetournee(!retournee)}
+      onClick={handleClick}
       style={{
         backgroundColor: retournee ? '#1A0F00' : '#161616',
         border: retournee ? '1px solid #E07B39' : '1px solid #2A2A2A',
