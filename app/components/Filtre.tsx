@@ -260,8 +260,8 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '16px',
+gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+gap: '12px',
         }}>
           {motsFiltres.map((mot) => (
             <MotCard
