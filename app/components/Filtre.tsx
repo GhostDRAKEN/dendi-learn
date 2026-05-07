@@ -259,10 +259,10 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
         </p>
       ) : (
         <div style={{
-          display: 'grid',
-gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-gap: '12px',
-        }}>
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: '12px',
+}}>
           {motsFiltres.map((mot) => (
             <MotCard
               key={`${active}-${mot.id}`}
