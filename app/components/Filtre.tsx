@@ -31,8 +31,8 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'couleurs': 'Couleurs',
 }
 
-export default function Filtre({ mots }: { mots: Mot[] }) {
-  const [active, setActive] = useState('Tous')
+export default function Filtre({ mots, categorieInitiale }: { mots: Mot[], categorieInitiale?: string }) {
+  const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showTempsMenu, setShowTempsMenu] = useState(false)

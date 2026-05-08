@@ -4,14 +4,17 @@ import QuizWrapper from '../components/QuizWrapper'
 import ThemeToggle from '../components/ThemeToggle'
 import Link from 'next/link'
 
-export default async function ApprendrePage() {
+export default async function ApprendrePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categorie?: string }>
+}) {
+  const params = await searchParams
   const { data: mots, error } = await supabase
     .from('mots')
     .select('*')
 
-  if (error) {
-    return <p>Erreur : {error.message}</p>
-  }
+  if (error) return <p>Erreur : {error.message}</p>
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
@@ -32,7 +35,7 @@ export default async function ApprendrePage() {
         </div>
       </header>
       <section style={{ padding: '24px 5vw' }}>
-        <Filtre mots={mots ?? []} />
+        <Filtre mots={mots ?? []} categorieInitiale={params.categorie} />
       </section>
     </main>
   )

@@ -67,7 +67,7 @@ export default function HomePage() {
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
-              href={`/apprendre`}
+              href={`/apprendre?categorie=${cat.slug}`}
               style={{ textDecoration: 'none' }}
             >
               <div style={{
@@ -76,10 +76,7 @@ export default function HomePage() {
                 borderRadius: '16px',
                 padding: '20px 16px',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s',
-              }}
-              
-              >
+              }}>
                 <p style={{ fontSize: '28px', marginBottom: '8px' }}>{cat.emoji}</p>
                 <p style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '4px' }}>{cat.label}</p>
                 <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{cat.desc}</p>
