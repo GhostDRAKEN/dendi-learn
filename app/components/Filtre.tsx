@@ -13,7 +13,7 @@ type Mot = {
 const TEMPS_SOUS_CATEGORIES = ['temps__journee', 'temps__repere', 'temps__semaine', 'temps__mois']
 
 const CATEGORIES_ORDER = [
-  'Tous', 'Salutations', 'temps', 'corps', 'verbes', 'prepositions', 'noms','couleurs',
+  'Tous', 'Salutations', 'temps', 'corps', 'verbes', 'prepositions', 'noms', 'couleurs',
 ]
 
 const CATEGORIES_LABELS: Record<string, string> = {
@@ -87,7 +87,7 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
           position: 'absolute', left: '14px', top: '50%',
           transform: 'translateY(-50%)', pointerEvents: 'none',
         }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
@@ -101,15 +101,15 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
           onFocus={() => setShowSuggestions(true)}
           style={{
             width: '100%', padding: '12px 16px 12px 40px',
-            borderRadius: '12px', border: '1px solid #3A3A3A',
-            backgroundColor: '#161616', color: '#F5F0EB',
+            borderRadius: '12px', border: '1px solid var(--border)',
+            backgroundColor: 'var(--input-bg)', color: 'var(--text)',
             fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none',
           }}
         />
         {showSuggestions && suggestions.length > 0 && (
           <div style={{
             position: 'absolute', top: '100%', left: 0, right: 0,
-            backgroundColor: '#1A1A1A', border: '1px solid #3A3A3A',
+            backgroundColor: 'var(--dropdown-bg)', border: '1px solid var(--border)',
             borderRadius: '12px', marginTop: '4px', zIndex: 10, overflow: 'hidden',
           }}>
             {suggestions.map((mot) => (
@@ -119,12 +119,12 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                 style={{
                   padding: '10px 16px', cursor: 'pointer',
                   display: 'flex', justifyContent: 'space-between',
-                  borderBottom: '1px solid #2A2A2A',
+                  borderBottom: '1px solid var(--border)',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#252525')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <span style={{ color: '#F5F0EB', fontSize: '14px' }}>{mot.fr}</span>
+                <span style={{ color: 'var(--text)', fontSize: '14px' }}>{mot.fr}</span>
                 <span style={{ color: '#E07B39', fontSize: '13px' }}>{mot.dendi}</span>
               </div>
             ))}
@@ -145,8 +145,8 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                     fontSize: '13px', fontWeight: '500', cursor: 'pointer',
                     fontFamily: 'Georgia, serif',
                     backgroundColor: isTempsActive ? '#E07B39' : 'transparent',
-                    border: isTempsActive ? '1px solid #E07B39' : '1px solid #3A3A3A',
-                    color: isTempsActive ? '#FFFFFF' : '#A89A8A',
+                    border: isTempsActive ? '1px solid #E07B39' : '1px solid var(--border)',
+                    color: isTempsActive ? '#FFFFFF' : 'var(--text-muted)',
                   }}
                 >
                   Temps ▾ <span style={{ fontSize: '11px', opacity: 0.6 }}>({countForCat('temps')})</span>
@@ -154,11 +154,11 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                 {showTempsMenu && (
                   <div style={{
                     position: 'absolute', top: '115%', left: 0,
-                    backgroundColor: '#1E1E1E',
+                    backgroundColor: 'var(--dropdown-bg)',
                     border: '1px solid #E07B39',
                     borderRadius: '12px', zIndex: 20, overflow: 'hidden',
                     minWidth: '160px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
                   }}>
                     {TEMPS_SOUS_CATEGORIES.map((sub) => (
                       <div
@@ -166,12 +166,12 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                         onClick={() => handleCategorieChange(sub)}
                         style={{
                           padding: '12px 20px', cursor: 'pointer',
-                          color: active === sub ? '#E07B39' : '#D0C4B8',
-                          fontSize: '13px', borderBottom: '1px solid #2A2A2A',
+                          color: active === sub ? '#E07B39' : 'var(--text)',
+                          fontSize: '13px', borderBottom: '1px solid var(--border)',
                           fontFamily: 'Georgia, serif',
                           backgroundColor: active === sub ? '#2A1500' : 'transparent',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : '#252525')}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : 'var(--border)')}
                         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : 'transparent')}
                       >
                         {CATEGORIES_LABELS[sub]}
@@ -195,8 +195,8 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
                 fontSize: '13px', fontWeight: '500', cursor: 'pointer',
                 fontFamily: 'Georgia, serif',
                 backgroundColor: active === cat ? '#E07B39' : 'transparent',
-                border: active === cat ? '1px solid #E07B39' : '1px solid #3A3A3A',
-                color: active === cat ? '#FFFFFF' : '#A89A8A',
+                border: active === cat ? '1px solid #E07B39' : '1px solid var(--border)',
+                color: active === cat ? '#FFFFFF' : 'var(--text-muted)',
               }}
             >
               {cat === 'Tous' ? (
@@ -217,35 +217,28 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
       {/* Barre de progression */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '8px',
+          display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', marginBottom: '8px',
         }}>
-          <span style={{ color: '#555', fontSize: '12px', letterSpacing: '1px' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '12px', letterSpacing: '1px' }}>
             {progression === 100 ? '✓ Série complète' : 'Progression'}
           </span>
           <span style={{
-            color: progression === 100 ? '#E07B39' : '#A89A8A',
-            fontSize: '12px',
-            fontWeight: '600',
-            letterSpacing: '1px',
+            color: progression === 100 ? '#E07B39' : 'var(--text-muted)',
+            fontSize: '12px', fontWeight: '600', letterSpacing: '1px',
             transition: 'color 0.3s ease',
           }}>
             {vusCount} / {total} vus
           </span>
         </div>
         <div style={{
-          width: '100%',
-          height: '25px',
-          backgroundColor: '#2A2A2A',
-          borderRadius: '9999px',
-          overflow: 'hidden',
+          width: '100%', height: '25px',
+          backgroundColor: 'var(--border)',
+          borderRadius: '9999px', overflow: 'hidden',
         }}>
           <div style={{
-            height: '100%',
-            width: `${progression}%`,
-            backgroundColor: progression === 100 ? '#E07B39' : '#4A4A4A',
+            height: '100%', width: `${progression}%`,
+            backgroundColor: progression === 100 ? '#E07B39' : 'var(--text-muted)',
             borderRadius: '9999px',
             transition: 'width 0.4s ease, background-color 0.4s ease',
           }} />
@@ -254,15 +247,15 @@ export default function Filtre({ mots }: { mots: Mot[] }) {
 
       {/* Résultats */}
       {motsFiltres.length === 0 ? (
-        <p style={{ color: '#555', textAlign: 'center', marginTop: '40px' }}>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>
           Aucun mot trouvé pour &quot;{recherche}&quot;
         </p>
       ) : (
         <div style={{
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '12px',
-}}>
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px',
+        }}>
           {motsFiltres.map((mot) => (
             <MotCard
               key={`${active}-${mot.id}`}

@@ -1,22 +1,44 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #0A0A0A;
-  --text: #F5F0EB;
-  --text-muted: #A89A8A;
-  --accent: #E07B39;
-  --border: #2A2A2A;
-  --card-bg: #161616;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+body.dark {
+  background-color: #0A0A0A;
+  color: #F5F0EB;
+  --bg: #0A0A0A;
+  --card: #161616;
+  --border: #2A2A2A;
+  --text: #F5F0EB;
+  --text-muted: #A89A8A;
+  --input-bg: #161616;
+  --dropdown-bg: #1A1A1A;
+}
+
+body.light {
+  background-color: #F5F0EB;
+  color: #1A1A1A;
+  --bg: #F5F0EB;
+  --card: #FFFFFF;
+  --border: #D0C4B8;
+  --text: #1A1A1A;
+  --text-muted: #6B5E52;
+  --input-bg: #FFFFFF;
+  --dropdown-bg: #FFFFFF;
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Georgia', serif;
+  background-color: #0A0A0A;
+  color: #F5F0EB;
+  --bg: #0A0A0A;
+  --card: #161616;
+  --border: #2A2A2A;
+  --text: #F5F0EB;
+  --text-muted: #A89A8A;
+  --input-bg: #161616;
+  --dropdown-bg: #1A1A1A;
 }

@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 
 type Mot = {
@@ -9,7 +10,7 @@ type Mot = {
   categorie: string
 }
 
-export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void }) {
+export default function MotCard({ mot, onVue }: { mot: Mot, onVue?: () => void }) {
   const [retournee, setRetournee] = useState(false)
   const [monte, setMonte] = useState(false)
   const [modePhon, setModePhon] = useState(false)
@@ -18,18 +19,11 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void })
     setMonte(true)
   }, [])
 
-  const handleRetourner = () => {
-    if (!retournee) {
-      setRetournee(true)
-      onVue() // ✅ on signale que le mot a été vu
-    }
-  }
-
   if (!monte) {
     return (
       <div style={{
-        backgroundColor: '#161616',
-        border: '1px solid #2A2A2A',
+        backgroundColor: 'var(--card)',
+        border: '1px solid var(--border)',
         borderRadius: '16px',
         padding: '24px 16px',
         minHeight: '130px',
@@ -39,20 +33,25 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void })
         alignItems: 'center',
         textAlign: 'center',
       }}>
-        <p style={{ fontSize: '18px', fontWeight: '600', color: '#F5F0EB' }}>{mot.fr}</p>
+        <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)' }}>{mot.fr}</p>
       </div>
     )
   }
 
   return (
     <div
-      onClick={handleRetourner}
+      onClick={() => {
+        if (!retournee) {
+          setRetournee(true)
+          onVue?.()
+        }
+      }}
       style={{
-        backgroundColor: retournee ? '#1A0F00' : '#161616',
-        border: retournee ? '1px solid #E07B39' : '1px solid #2A2A2A',
+        backgroundColor: retournee ? '#1A0F00' : 'var(--card)',
+        border: retournee ? '1px solid #E07B39' : '1px solid var(--border)',
         borderRadius: '16px',
-        padding: '32px 24px',
-        minHeight: '160px',
+        padding: '24px 16px',
+        minHeight: '130px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -65,24 +64,25 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void })
     >
       {!retournee ? (
         <>
-          <p style={{ fontSize: '18px', fontWeight: '600', color: '#F5F0EB' }}>{mot.fr}</p>
-          <p style={{ fontSize: '11px', marginTop: '12px', letterSpacing: '2px', color: '#555', textTransform: 'uppercase' }}>
+          <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)' }}>{mot.fr}</p>
+          <p style={{ fontSize: '11px', marginTop: '12px', letterSpacing: '2px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
             Toucher pour révéler
           </p>
         </>
       ) : (
         <>
-          <p style={{ fontSize: '22px', fontWeight: '700', color: '#E07B39', marginTop: '8px' }}>
+          <p style={{ fontSize: '20px', fontWeight: '700', color: '#E07B39', marginTop: '8px' }}>
             {modePhon ? mot.phonetique : mot.dendi}
           </p>
+
           <button
             onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
             style={{
-              marginTop: '10px',
+              marginTop: '8px',
               background: 'none',
               border: 'none',
               color: '#666',
-              fontSize: '12px',
+              fontSize: '11px',
               cursor: 'pointer',
               fontFamily: 'Georgia, serif',
               textDecoration: 'underline',
@@ -92,16 +92,18 @@ export default function MotCard({ mot, onVue }: { mot: Mot; onVue: () => void })
           >
             {modePhon ? 'Voir l\'écriture officielle' : 'Voir la prononciation'}
           </button>
-          <div style={{ width: '30px', height: '1px', backgroundColor: '#333', margin: '12px auto' }} />
-          <p style={{ fontSize: '13px', color: '#777' }}>{mot.fr}</p>
+
+          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '10px auto' }} />
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{mot.fr}</p>
+
           <button
             onClick={(e) => { e.stopPropagation(); setRetournee(false); setModePhon(false) }}
             style={{
-              marginTop: '12px',
+              marginTop: '10px',
               background: 'none',
               border: 'none',
-              color: '#555',
-              fontSize: '11px',
+              color: 'var(--text-muted)',
+              fontSize: '10px',
               cursor: 'pointer',
               fontFamily: 'Georgia, serif',
               letterSpacing: '1px',
