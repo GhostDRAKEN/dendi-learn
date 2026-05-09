@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MotCard from './MotCard'
 
 type Mot = {
@@ -31,12 +31,20 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'couleurs': 'Couleurs',
 }
 
-export default function Filtre({ mots, categorieInitiale }: { mots: Mot[], categorieInitiale?: string }) {
+export default function Filtre({ mots, categorieInitiale, onVusCountChange }: {
+  mots: Mot[]
+  categorieInitiale?: string
+  onVusCountChange?: (count: number) => void
+}) {
   const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showTempsMenu, setShowTempsMenu] = useState(false)
   const [vusIds, setVusIds] = useState<Set<number>>(new Set())
+
+  useEffect(() => {
+    onVusCountChange?.(vusIds.size)
+  }, [vusIds])
 
   const isTempsActive = TEMPS_SOUS_CATEGORIES.includes(active)
 
