@@ -11,6 +11,30 @@ const CATEGORIES = [
   { label: 'Temps', slug: 'temps', emoji: '🕐', desc: 'Jours, mois, matin, soir...' },
 ]
 
+const NIVEAUX = [
+  {
+    label: 'Débutant',
+    slug: 'debutant',
+    emoji: '🌱',
+    desc: 'Salutations, couleurs, moments de la journée',
+    couleur: '#4CAF50',
+  },
+  {
+    label: 'Intermédiaire',
+    slug: 'intermediaire',
+    emoji: '🔥',
+    desc: 'Verbes, prépositions, jours et mois',
+    couleur: '#E07B39',
+  },
+  {
+    label: 'Avancé',
+    slug: 'avance',
+    emoji: '⭐',
+    desc: 'Corps humain, noms et adjectifs complexes',
+    couleur: '#9C27B0',
+  },
+]
+
 export default function HomePage() {
   return (
     <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
@@ -38,18 +62,48 @@ export default function HomePage() {
           La langue du nord Bénin, désormais accessible à tous. Cartes interactives, quiz, et recherche de mots.
         </p>
         <Link href="/apprendre" style={{
-          display: 'inline-block',
-          padding: '14px 32px',
-          backgroundColor: '#E07B39',
-          color: 'white',
-          borderRadius: '9999px',
-          textDecoration: 'none',
-          fontSize: '15px',
-          fontWeight: '600',
-          fontFamily: 'Georgia, serif',
+          display: 'inline-block', padding: '14px 32px',
+          backgroundColor: '#E07B39', color: 'white',
+          borderRadius: '9999px', textDecoration: 'none',
+          fontSize: '15px', fontWeight: '600', fontFamily: 'Georgia, serif',
         }}>
           Commencer →
         </Link>
+      </section>
+
+      {/* Niveaux */}
+      <section style={{ padding: '20px 5vw 40px' }}>
+        <p style={{ fontSize: '12px', color: 'var(--text-muted)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center' }}>
+          Choisir un niveau
+        </p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: '12px',
+          maxWidth: '800px',
+          margin: '0 auto',
+        }}>
+          {NIVEAUX.map((niveau) => (
+            <Link
+              key={niveau.slug}
+              href={`/apprendre?niveau=${niveau.slug}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <div style={{
+                backgroundColor: 'var(--card)',
+                border: `1px solid var(--border)`,
+                borderTop: `3px solid ${niveau.couleur}`,
+                borderRadius: '16px',
+                padding: '20px 16px',
+                cursor: 'pointer',
+              }}>
+                <p style={{ fontSize: '28px', marginBottom: '8px' }}>{niveau.emoji}</p>
+                <p style={{ fontSize: '15px', fontWeight: '600', color: niveau.couleur, marginBottom: '4px' }}>{niveau.label}</p>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{niveau.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Catégories */}
