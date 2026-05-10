@@ -1,43 +1,15 @@
 import Link from 'next/link'
 import ThemeToggle from './components/ThemeToggle'
 
-const CATEGORIES = [
-  { label: 'Salutations', slug: 'Salutations', emoji: '👋', desc: 'Bonjour, merci, au revoir...' },
-  { label: 'Corps humain', slug: 'corps', emoji: '🫀', desc: 'Tête, main, pied...' },
-  { label: 'Verbes', slug: 'verbes', emoji: '⚡', desc: 'Manger, dormir, parler...' },
-  { label: 'Prépositions', slug: 'prepositions', emoji: '📍', desc: 'Dedans, devant, à côté...' },
-  { label: 'Noms & Adjectifs', slug: 'noms', emoji: '🏠', desc: 'Maison, sage, courageux...' },
-  { label: 'Couleurs', slug: 'couleurs', emoji: '🎨', desc: 'Rouge, bleu, vert...' },
-  { label: 'Temps', slug: 'temps', emoji: '🕐', desc: 'Jours, mois, matin, soir...' },
-]
-
-const NIVEAUX = [
-  {
-    label: 'Débutant',
-    slug: 'debutant',
-    emoji: '🌱',
-    desc: 'Salutations, couleurs, moments de la journée',
-    couleur: '#4CAF50',
-  },
-  {
-    label: 'Intermédiaire',
-    slug: 'intermediaire',
-    emoji: '🔥',
-    desc: 'Verbes, prépositions, jours et mois',
-    couleur: '#E07B39',
-  },
-  {
-    label: 'Avancé',
-    slug: 'avance',
-    emoji: '⭐',
-    desc: 'Corps humain, noms et adjectifs complexes',
-    couleur: '#9C27B0',
-  },
-]
+const MOT_DU_JOUR = {
+  fr: 'Bonjour',
+  dendi: 'Fɔɔ nna suba !',
+  phonetique: 'Fo nna souba !',
+}
 
 export default function HomePage() {
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
+    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       <header style={{ padding: '16px 5vw', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', margin: 0 }}>
@@ -51,94 +23,66 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section style={{ padding: '60px 5vw 40px', textAlign: 'center' }}>
+      <section style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 5vw', textAlign: 'center' }}>
+
         <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
           Première plateforme numérique
         </p>
-        <h2 style={{ fontSize: '40px', fontWeight: '700', color: 'var(--text)', marginBottom: '16px', lineHeight: 1.2 }}>
-          Apprenez le Dendi
+
+        <h2 style={{ fontSize: '48px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px', lineHeight: 1.1 }}>
+          Fɔɔ nna suba !
         </h2>
-        <p style={{ fontSize: '16px', color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 40px', lineHeight: 1.7 }}>
-          La langue du nord Bénin, désormais accessible à tous. Cartes interactives, quiz, et recherche de mots.
+        <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginBottom: '48px' }}>
+          Bienvenue — Apprenez le Dendi, langue du nord Bénin
         </p>
-        <Link href="/apprendre" style={{
-          display: 'inline-block', padding: '14px 32px',
+
+        {/* Mot du jour */}
+        <div style={{
+          backgroundColor: 'var(--card)',
+          border: '1px solid #E07B39',
+          borderRadius: '20px',
+          padding: '28px 48px',
+          marginBottom: '48px',
+          minWidth: '280px',
+        }}>
+          <p style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+            Mot du jour
+          </p>
+          <p style={{ fontSize: '32px', fontWeight: '700', color: '#E07B39', marginBottom: '6px' }}>
+            {MOT_DU_JOUR.dendi}
+          </p>
+          <p style={{ fontSize: '14px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '12px' }}>
+            {MOT_DU_JOUR.phonetique}
+          </p>
+          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '0 auto 12px' }} />
+          <p style={{ fontSize: '18px', color: 'var(--text)', fontWeight: '600' }}>
+            {MOT_DU_JOUR.fr}
+          </p>
+        </div>
+
+        {/* CTA unique */}
+        <Link href="/apprendre?niveau=debutant" style={{
+          display: 'block', width: '100%', maxWidth: '320px', padding: '16px 32px',
           backgroundColor: '#E07B39', color: 'white',
           borderRadius: '9999px', textDecoration: 'none',
           fontSize: '15px', fontWeight: '600', fontFamily: 'Georgia, serif',
+          textAlign: 'center',
         }}>
-          Commencer →
+          🌱 Commencer par le début
         </Link>
+
       </section>
 
-      {/* Niveaux */}
-      <section style={{ padding: '20px 5vw 40px' }}>
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center' }}>
-          Choisir un niveau
+      {/* Footer discret */}
+      <footer style={{ padding: '20px 5vw', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
+        <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          <Link href="/apprendre" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Explorer librement</Link>
+          {' · '}
+          <Link href="/connexion" style={{ color: '#E07B39', textDecoration: 'none' }}>Connexion</Link>
+          {' · '}
+          <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>Créer un compte</Link>
         </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '12px',
-          maxWidth: '800px',
-          margin: '0 auto',
-        }}>
-          {NIVEAUX.map((niveau) => (
-            <Link
-              key={niveau.slug}
-              href={`/apprendre?niveau=${niveau.slug}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                backgroundColor: 'var(--card)',
-                border: `1px solid var(--border)`,
-                borderTop: `3px solid ${niveau.couleur}`,
-                borderRadius: '16px',
-                padding: '20px 16px',
-                cursor: 'pointer',
-              }}>
-                <p style={{ fontSize: '28px', marginBottom: '8px' }}>{niveau.emoji}</p>
-                <p style={{ fontSize: '15px', fontWeight: '600', color: niveau.couleur, marginBottom: '4px' }}>{niveau.label}</p>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{niveau.desc}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Catégories */}
-      <section style={{ padding: '20px 5vw 60px' }}>
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center' }}>
-          Choisir une catégorie
-        </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '12px',
-          maxWidth: '800px',
-          margin: '0 auto',
-        }}>
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/apprendre?categorie=${cat.slug}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                backgroundColor: 'var(--card)',
-                border: '1px solid var(--border)',
-                borderRadius: '16px',
-                padding: '20px 16px',
-                cursor: 'pointer',
-              }}>
-                <p style={{ fontSize: '28px', marginBottom: '8px' }}>{cat.emoji}</p>
-                <p style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text)', marginBottom: '4px' }}>{cat.label}</p>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{cat.desc}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      </footer>
     </main>
   )
 }
