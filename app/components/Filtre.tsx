@@ -31,17 +31,24 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'couleurs': 'Couleurs',
 }
 
-export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMotVu }: {
+export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMotVu, motsDejaVus }: {
   mots: Mot[]
   categorieInitiale?: string
   onVusCountChange?: (count: number) => void
   onMotVu?: (motId: number) => void
+  motsDejaVus?: Set<number>
 }) {
   const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showTempsMenu, setShowTempsMenu] = useState(false)
-  const [vusIds, setVusIds] = useState<Set<number>>(new Set())
+  const [vusIds, setVusIds] = useState<Set<number>>(motsDejaVus ?? new Set())
+
+  useEffect(() => {
+    if (motsDejaVus && motsDejaVus.size > 0) {
+      setVusIds(motsDejaVus)
+    }
+  }, [motsDejaVus])
 
   useEffect(() => {
     onVusCountChange?.(vusIds.size)
@@ -77,7 +84,6 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const handleCategorieChange = (cat: string) => {
     setActive(cat)
     setShowTempsMenu(false)
-    setVusIds(new Set())
   }
 
   const handleVue = (id: number) => {
@@ -179,7 +185,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
           {motsFiltres.map((mot) => (
-            <MotCard key={`${active}-${mot.id}`} mot={mot} onVue={() => handleVue(mot.id)} />
+            <MotCard key={`${active}-${mot.id}`} mot={mot} onVue={() => handleVue(mot.id)} dejaVu={vusIds.has(mot.id)} />
           ))}
         </div>
       )}

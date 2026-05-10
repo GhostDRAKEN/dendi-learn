@@ -16,16 +16,27 @@ type Mot = {
 export default function ApprendreClient({ mots, categorieInitiale }: { mots: Mot[], categorieInitiale?: string }) {
   const [vusCount, setVusCount] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
+  const [motsDejaVus, setMotsDejaVus] = useState<Set<number>>(new Set())
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null)
+    supabase.auth.getUser().then(async ({ data }) => {
+      const user = data.user
+      if (!user) return
+      setUserId(user.id)
+
+      const { data: progression } = await supabase
+        .from('progression')
+        .select('mot_id')
+        .eq('user_id', user.id)
+        .eq('vu', true)
+
+      if (progression) {
+        const ids = new Set(progression.map(p => p.mot_id as number))
+        setMotsDejaVus(ids)
+        setVusCount(ids.size)
+      }
     })
   }, [])
-
-  const handleVusCountChange = async (count: number) => {
-    setVusCount(count)
-  }
 
   const handleMotVu = async (motId: number) => {
     if (!userId) return
@@ -41,8 +52,9 @@ export default function ApprendreClient({ mots, categorieInitiale }: { mots: Mot
       <Filtre
         mots={mots}
         categorieInitiale={categorieInitiale}
-        onVusCountChange={handleVusCountChange}
+        onVusCountChange={setVusCount}
         onMotVu={handleMotVu}
+        motsDejaVus={motsDejaVus}
       />
       <BanniereInscription vusCount={vusCount} />
     </>
