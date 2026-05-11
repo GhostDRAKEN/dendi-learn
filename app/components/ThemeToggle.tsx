@@ -36,10 +36,17 @@ export default function ThemeToggle() {
       </button>
 
       {user ? (
-        <button onClick={handleDeconnexion}
-          style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
-          Déconnexion
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <Link href="/profil">
+            <button style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+              Mon profil
+            </button>
+          </Link>
+          <button onClick={handleDeconnexion}
+            style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+            Déconnexion
+          </button>
+        </div>
       ) : (
         <Link href="/connexion">
           <button style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid #E07B39', backgroundColor: 'transparent', color: '#E07B39', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
