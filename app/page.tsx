@@ -1,13 +1,26 @@
 import Link from 'next/link'
 import ThemeToggle from './components/ThemeToggle'
+import { supabase } from '@/lib/supabase'
 
-const MOT_DU_JOUR = {
-  fr: 'Bonjour',
-  dendi: 'Fɔɔ nna suba !',
-  phonetique: 'Fo nna souba !',
+async function getMotDuJour() {
+  const { data: mots } = await supabase
+    .from('mots')
+    .select('fr, dendi, phonetique')
+    .not('dendi', 'eq', 'N/A')
+    .not('phonetique', 'eq', 'N/A')
+
+  if (!mots || mots.length === 0) return null
+
+  const today = new Date()
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+  const index = seed % mots.length
+
+  return mots[index]
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const motDuJour = await getMotDuJour()
+
   return (
     <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
       <header style={{ padding: '16px 5vw', borderBottom: '1px solid var(--border)' }}>
@@ -22,7 +35,6 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero */}
       <section style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 5vw', textAlign: 'center' }}>
 
         <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
@@ -36,31 +48,32 @@ export default function HomePage() {
           Bienvenue — Apprenez le Dendi, langue du nord Bénin
         </p>
 
-        {/* Mot du jour */}
-        <div style={{
-          backgroundColor: 'var(--card)',
-          border: '1px solid #E07B39',
-          borderRadius: '20px',
-          padding: '28px 48px',
-          marginBottom: '48px',
-          minWidth: '280px',
-        }}>
-          <p style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-            Mot du jour
-          </p>
-          <p style={{ fontSize: '32px', fontWeight: '700', color: '#E07B39', marginBottom: '6px' }}>
-            {MOT_DU_JOUR.dendi}
-          </p>
-          <p style={{ fontSize: '14px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '12px' }}>
-            {MOT_DU_JOUR.phonetique}
-          </p>
-          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '0 auto 12px' }} />
-          <p style={{ fontSize: '18px', color: 'var(--text)', fontWeight: '600' }}>
-            {MOT_DU_JOUR.fr}
-          </p>
-        </div>
+        {/* Mot du jour dynamique */}
+        {motDuJour && (
+          <div style={{
+            backgroundColor: 'var(--card)',
+            border: '1px solid #E07B39',
+            borderRadius: '20px',
+            padding: '28px 48px',
+            marginBottom: '48px',
+            minWidth: '280px',
+          }}>
+            <p style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
+              Mot du jour
+            </p>
+            <p style={{ fontSize: '32px', fontWeight: '700', color: '#E07B39', marginBottom: '6px' }}>
+              {motDuJour.dendi}
+            </p>
+            <p style={{ fontSize: '14px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '12px' }}>
+              {motDuJour.phonetique}
+            </p>
+            <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '0 auto 12px' }} />
+            <p style={{ fontSize: '18px', color: 'var(--text)', fontWeight: '600' }}>
+              {motDuJour.fr}
+            </p>
+          </div>
+        )}
 
-        {/* CTA unique */}
         <Link href="/apprendre?niveau=debutant" style={{
           display: 'block', width: '100%', maxWidth: '320px', padding: '16px 32px',
           backgroundColor: '#E07B39', color: 'white',
@@ -73,7 +86,6 @@ export default function HomePage() {
 
       </section>
 
-      {/* Footer discret */}
       <footer style={{ padding: '20px 5vw', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
         <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
           <Link href="/apprendre" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Explorer librement</Link>
