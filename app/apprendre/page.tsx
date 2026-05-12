@@ -53,7 +53,7 @@ export default async function ApprendrePage({
       )}
 
       <section style={{ padding: '24px 5vw' }}>
-        <ApprendreClient mots={mots ?? []} categorieInitiale={params.categorie} />
+        <ApprendreClient mots={mots ?? []} categorieInitiale={params.categorie} niveau={params.niveau} />
       </section>
     </main>
   )

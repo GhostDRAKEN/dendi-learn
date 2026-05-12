@@ -31,12 +31,13 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'couleurs': 'Couleurs',
 }
 
-export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMotVu, motsDejaVus }: {
+export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMotVu, motsDejaVus, niveauActif }: {
   mots: Mot[]
   categorieInitiale?: string
   onVusCountChange?: (count: number) => void
   onMotVu?: (motId: number) => void
   motsDejaVus?: Set<number>
+  niveauActif?: string
 }) {
   const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
@@ -45,9 +46,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const [vusIds, setVusIds] = useState<Set<number>>(motsDejaVus ?? new Set())
 
   useEffect(() => {
-    if (motsDejaVus && motsDejaVus.size > 0) {
-      setVusIds(motsDejaVus)
-    }
+    if (motsDejaVus && motsDejaVus.size > 0) setVusIds(motsDejaVus)
   }, [motsDejaVus])
 
   useEffect(() => {
@@ -95,8 +94,12 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const total = motsFiltres.length
   const progression = total > 0 ? Math.round((vusCount / total) * 100) : 0
 
+  // Catégories disponibles dans les mots actuels
+  const categoriesDisponibles = new Set(mots.map(m => m.categorie))
+
   return (
     <div>
+      {/* Barre de recherche */}
       <div style={{ position: 'relative', marginBottom: '20px' }}>
         <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,8 +131,21 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
         )}
       </div>
 
+      {/* Filtres */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px', alignItems: 'center' }}>
         {CATEGORIES_ORDER.map((cat) => {
+          // Cacher ⊞ si niveau actif
+          if (cat === 'Tous' && niveauActif) return null
+
+          // Cacher les catégories non disponibles dans les mots filtrés
+          if (cat !== 'Tous' && cat !== 'temps') {
+            if (!categoriesDisponibles.has(cat)) return null
+          }
+          if (cat === 'temps') {
+            const tempsDisponible = TEMPS_SOUS_CATEGORIES.some(s => categoriesDisponibles.has(s))
+            if (!tempsDisponible) return null
+          }
+
           if (cat === 'temps') {
             return (
               <div key="temps" style={{ position: 'relative' }}>
@@ -139,7 +155,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
                 </button>
                 {showTempsMenu && (
                   <div style={{ position: 'absolute', top: '115%', left: 0, backgroundColor: 'var(--dropdown-bg)', border: '1px solid #E07B39', borderRadius: '12px', zIndex: 20, overflow: 'hidden', minWidth: '160px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
-                    {TEMPS_SOUS_CATEGORIES.map((sub) => (
+                    {TEMPS_SOUS_CATEGORIES.filter(s => categoriesDisponibles.has(s)).map((sub) => (
                       <div key={sub} onClick={() => handleCategorieChange(sub)}
                         style={{ padding: '12px 20px', cursor: 'pointer', color: active === sub ? '#E07B39' : 'var(--text)', fontSize: '13px', borderBottom: '1px solid var(--border)', fontFamily: 'Georgia, serif', backgroundColor: active === sub ? '#2A1500' : 'transparent' }}
                         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : 'var(--border)')}
@@ -153,6 +169,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
               </div>
             )
           }
+
           return (
             <button key={cat} onClick={() => handleCategorieChange(cat)}
               style={{ padding: '8px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'Georgia, serif', backgroundColor: active === cat ? '#E07B39' : 'transparent', border: active === cat ? '1px solid #E07B39' : '1px solid var(--border)', color: active === cat ? '#FFFFFF' : 'var(--text-muted)' }}>
@@ -166,6 +183,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
         })}
       </div>
 
+      {/* Barre de progression */}
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <span style={{ color: 'var(--text-muted)', fontSize: '12px', letterSpacing: '1px' }}>
@@ -180,6 +198,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
         </div>
       </div>
 
+      {/* Résultats */}
       {motsFiltres.length === 0 ? (
         <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>Aucun mot trouvé pour &quot;{recherche}&quot;</p>
       ) : (

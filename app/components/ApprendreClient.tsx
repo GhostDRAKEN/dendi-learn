@@ -13,7 +13,11 @@ type Mot = {
   categorie: string
 }
 
-export default function ApprendreClient({ mots, categorieInitiale }: { mots: Mot[], categorieInitiale?: string }) {
+export default function ApprendreClient({ mots, categorieInitiale, niveau }: { 
+  mots: Mot[]
+  categorieInitiale?: string
+  niveau?: string
+}) {
   const [vusCount, setVusCount] = useState(0)
   const [userId, setUserId] = useState<string | null>(null)
   const [motsDejaVus, setMotsDejaVus] = useState<Set<number>>(new Set())
@@ -55,6 +59,7 @@ export default function ApprendreClient({ mots, categorieInitiale }: { mots: Mot
         onVusCountChange={setVusCount}
         onMotVu={handleMotVu}
         motsDejaVus={motsDejaVus}
+        niveauActif={niveau}
       />
       <BanniereInscription vusCount={vusCount} />
     </>

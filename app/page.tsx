@@ -48,7 +48,6 @@ export default async function HomePage() {
           Bienvenue — Apprenez le Dendi, langue du nord Bénin
         </p>
 
-        {/* Mot du jour dynamique */}
         {motDuJour && (
           <div style={{
             backgroundColor: 'var(--card)',
@@ -74,22 +73,29 @@ export default async function HomePage() {
           </div>
         )}
 
-        <Link href="/apprendre?niveau=debutant" style={{
-          display: 'block', width: '100%', maxWidth: '320px', padding: '16px 32px',
-          backgroundColor: '#E07B39', color: 'white',
-          borderRadius: '9999px', textDecoration: 'none',
-          fontSize: '15px', fontWeight: '600', fontFamily: 'Georgia, serif',
-          textAlign: 'center',
-        }}>
-          🌱 Commencer par le début
-        </Link>
+        {/* CTA principal + lien discret */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <Link href="/apprendre?niveau=debutant" style={{
+            display: 'block', width: '100%', maxWidth: '320px', padding: '16px 32px',
+            backgroundColor: '#E07B39', color: 'white',
+            borderRadius: '9999px', textDecoration: 'none',
+            fontSize: '15px', fontWeight: '600', fontFamily: 'Georgia, serif',
+            textAlign: 'center',
+          }}>
+            🌱 Commencer par le début
+          </Link>
+          <Link href="/apprendre" style={{
+            fontSize: '13px', color: 'var(--text-muted)',
+            textDecoration: 'none',
+          }}>
+            ou explorer librement →
+          </Link>
+        </div>
 
       </section>
 
       <footer style={{ padding: '20px 5vw', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
         <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-          <Link href="/apprendre" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Explorer librement</Link>
-          {' · '}
           <Link href="/connexion" style={{ color: '#E07B39', textDecoration: 'none' }}>Connexion</Link>
           {' · '}
           <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>Créer un compte</Link>
