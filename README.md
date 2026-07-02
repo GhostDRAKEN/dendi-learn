@@ -47,3 +47,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 ---
 
 > Ce projet est une contribution culturelle libre. Toute amélioration ou contribution est la bienvenue.
+## 📄 Licence
+
+Ce projet est sous licence **GPL v3**.  
+Vous pouvez utiliser, étudier et contribuer à ce projet.  
+Toute redistribution doit créditer l'auteur original et rester open source.  
+Usage commercial interdit sans autorisation explicite.
+
+Auteur original : TOURE Yazid (GhostDraken)
