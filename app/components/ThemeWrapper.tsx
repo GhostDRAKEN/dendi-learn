@@ -54,7 +54,7 @@ export default function ThemeWrapper({ mots }: { mots: Mot[] }) {
         </div>
       </header>
       <section style={{ padding: '24px 5vw' }}>
-        <Filtre mots={mots} dark={dark} />
+        <Filtre mots={mots} />
       </section>
     </div>
   )
