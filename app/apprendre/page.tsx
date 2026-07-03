@@ -47,7 +47,7 @@ export default async function ApprendrePage({
               {params.niveau === 'debutant' ? '🌱 Débutant' : params.niveau === 'intermediaire' ? '🔥 Intermédiaire' : '⭐ Avancé'}
             </span>
             {' · '}
-            <Link href="/" style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Changer</Link>
+            <Link href="/niveaux" style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Changer</Link>
           </p>
         </div>
       )}
