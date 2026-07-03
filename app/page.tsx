@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import ThemeToggle from './components/ThemeToggle'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 async function getMotDuJour() {
+  const supabase = await createClient()
   const { data: mots } = await supabase
     .from('mots')
     .select('fr, dendi, phonetique')

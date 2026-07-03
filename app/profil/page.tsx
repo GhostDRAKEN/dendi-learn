@@ -1,9 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import ThemeToggle from '../components/ThemeToggle'
 import Link from 'next/link'
 import ProfilClient from '../components/ProfilClient'
 
 export default async function ProfilPage() {
+  const supabase = await createClient()
   const { data: mots } = await supabase.from('mots').select('id, fr, categorie, niveau')
 
   return (

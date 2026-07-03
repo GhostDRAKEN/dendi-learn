@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import QuizWrapper from '../components/QuizWrapper'
 import ThemeToggle from '../components/ThemeToggle'
 import ApprendreClient from '../components/ApprendreClient'
@@ -10,7 +10,7 @@ export default async function ApprendrePage({
   searchParams: Promise<{ categorie?: string, niveau?: string }>
 }) {
   const params = await searchParams
-
+  const supabase = await createClient()
   let query = supabase.from('mots').select('*')
   if (params.niveau) {
     query = query.eq('niveau', params.niveau)
