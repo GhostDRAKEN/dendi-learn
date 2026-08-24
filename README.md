@@ -6,8 +6,6 @@
 
 Le Dendi est une langue parlée dans le nord du Bénin, mais elle n'existait sur aucune plateforme d'apprentissage en ligne. Dendi-Learn est né d'une volonté de préservation culturelle et linguistique — pas d'une logique commerciale.
 
-Ce projet est entièrement gratuit et open source.
-
 ## ✨ Fonctionnalités
 
 - 📚 Flashcards interactives par catégorie
@@ -37,20 +35,21 @@ npm run dev
 Créer un fichier `.env.local` :
 NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
-## 📄 Licence
+## Droits d’auteur
 
-Ce projet est sous licence **GPL v3**.
-Vous pouvez utiliser, étudier et contribuer à ce projet.
-Toute redistribution doit créditer l'auteur original et rester open source.
-Usage commercial interdit sans autorisation explicite.
+Dendi-Learn est un projet personnel à vocation éducative et culturelle.
+
+Copyright © 2026 NOUHOUN TOURE Yazid. Tous droits réservés.
+
+Le code source est publiquement consultable à des fins de présentation et d’évaluation. Aucune licence générale n’est accordée pour sa réutilisation, sa modification, sa redistribution ou son exploitation commerciale, sauf autorisation préalable du titulaire des droits ou droits applicables indépendamment en vertu de la loi ou des conditions de GitHub.
 
 ## 👤 Auteur
 
-**TOURE Yazid (GhostDraken)**
+**NOUHOUN TOURE Yazid (GhostDraken)**
 Étudiant développeur — IUT de Parakou, Bénin
 
 [GitHub](https://github.com/GhostDRAKEN) • [LinkedIn](https://linkedin.com/in/yazid-touré-8ba34a317)
 
 ---
 
-> Ce projet est une contribution culturelle libre. Toute amélioration ou contribution est la bienvenue.
+> Ce projet est une contribution culturelle et éducative.

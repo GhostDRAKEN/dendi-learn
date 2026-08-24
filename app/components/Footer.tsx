@@ -5,7 +5,7 @@ export default function Footer() {
         <div>
           <p className="site-footer-brand">Dendi Learn</p>
           <p className="site-footer-description">
-            Projet open source dédié à l’apprentissage du Dendi.
+            Projet éducatif et culturel dédié à l’apprentissage du Dendi.
           </p>
         </div>
         <a
