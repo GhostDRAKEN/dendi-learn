@@ -61,14 +61,6 @@ export default async function HomePage() {
           </article>
         )}
       </section>
-
-      <footer className="home-footer">
-        <p>
-          <Link href="/connexion">Connexion</Link>
-          {' · '}
-          <Link href="/inscription">Créer un compte</Link>
-        </p>
-      </footer>
     </main>
   )
 }
