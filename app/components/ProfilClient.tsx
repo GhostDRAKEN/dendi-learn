@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import type { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -19,29 +18,29 @@ type Progression = {
   maitrise: boolean
 }
 
-export default function ProfilClient({ mots }: { mots: Mot[] }) {
-  const [user, setUser] = useState<User | null>(null)
+type ProfilUser = {
+  id: string
+  email: string
+}
+
+export default function ProfilClient({ mots, user }: { mots: Mot[], user: ProfilUser }) {
   const [progression, setProgression] = useState<Progression[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) {
-        router.push('/connexion')
-        return
-      }
-      setUser(data.user)
-
+    const chargerProgression = async () => {
       const { data: prog } = await supabase
         .from('progression')
         .select('mot_id, vu, maitrise')
-        .eq('user_id', data.user.id)
+        .eq('user_id', user.id)
 
       setProgression(prog ?? [])
       setLoading(false)
-    })
-  }, [router])
+    }
+
+    chargerProgression()
+  }, [user.id])
 
   if (loading) {
     return <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>Chargement...</p>
@@ -79,10 +78,10 @@ export default function ProfilClient({ mots }: { mots: Mot[] }) {
           margin: '0 auto 16px',
           fontSize: '24px', fontWeight: '700', color: 'white',
         }}>
-          {user?.email?.[0]?.toUpperCase()}
+          {user.email[0]?.toUpperCase()}
         </div>
         <p style={{ color: 'var(--text)', fontWeight: '600', fontSize: '16px', marginBottom: '4px' }}>
-          {user?.email}
+          {user.email}
         </p>
         <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
           Membre Dendi Learn

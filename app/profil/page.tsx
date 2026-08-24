@@ -2,9 +2,16 @@ import { createClient } from '@/lib/supabase/server'
 import ThemeToggle from '../components/ThemeToggle'
 import Link from 'next/link'
 import ProfilClient from '../components/ProfilClient'
+import { redirect } from 'next/navigation'
 
 export default async function ProfilPage() {
   const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    redirect('/connexion')
+  }
+
   const { data: mots } = await supabase.from('mots').select('id, fr, categorie, niveau')
 
   return (
@@ -23,7 +30,10 @@ export default async function ProfilPage() {
         </div>
       </header>
       <section style={{ padding: '40px 5vw' }}>
-        <ProfilClient mots={mots ?? []} />
+        <ProfilClient
+          mots={mots ?? []}
+          user={{ id: user.id, email: user.email ?? '' }}
+        />
       </section>
     </main>
   )
