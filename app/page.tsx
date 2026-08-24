@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ThemeToggle from './components/ThemeToggle'
+import AppHeader from './components/AppHeader'
 import { createClient } from '@/lib/supabase/server'
 
 async function getMotDuJour() {
@@ -24,19 +24,7 @@ export default async function HomePage() {
 
   return (
     <main className="home-page">
-      <header className="home-header">
-        <div className="home-header-inner">
-          <h1 className="home-brand">
-            <span>Dendi Learn</span>
-            <span className="home-brand-tagline">
-              Langue du nord Bénin
-            </span>
-          </h1>
-          <div className="home-header-actions">
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <AppHeader />
 
       <section className={`home-hero${motDuJour ? '' : ' home-hero-single'}`}>
         <div className="home-hero-copy">

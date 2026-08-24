@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import QuizWrapper from '../components/QuizWrapper'
-import ThemeToggle from '../components/ThemeToggle'
+import AppHeader from '../components/AppHeader'
 import ApprendreClient from '../components/ApprendreClient'
 import Link from 'next/link'
 
@@ -22,22 +22,7 @@ export default async function ApprendrePage({
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <header style={{ padding: '16px 5vw', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', margin: 0 }}>
-              Dendi Learn{' '}
-              <span style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                Langue du nord Bénin
-              </span>
-            </h1>
-          </Link>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <ThemeToggle />
-            <QuizWrapper mots={mots ?? []} />
-          </div>
-        </div>
-      </header>
+      <AppHeader actions={<QuizWrapper mots={mots ?? []} />} />
 
       {params.niveau && (
         <div style={{ padding: '12px 5vw', backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }}>

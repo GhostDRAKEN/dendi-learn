@@ -9,17 +9,22 @@ import { useRouter } from 'next/navigation'
 export default function ThemeToggle() {
   const [dark, setDark] = useState(true)
   const [user, setUser] = useState<User | null>(null)
+  const [authLoaded, setAuthLoaded] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    document.body.className = dark ? 'dark' : 'light'
+    document.body.classList.toggle('dark', dark)
+    document.body.classList.toggle('light', !dark)
   }, [dark])
 
   useEffect(() => {
-    document.body.classList.add('dark')
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+      setAuthLoaded(true)
+    })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      setAuthLoaded(true)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -30,31 +35,38 @@ export default function ThemeToggle() {
   }
 
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-      <button onClick={() => setDark(!dark)}
-        style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
-        {dark ? '☀️ Clair' : '🌙 Sombre'}
+    <nav className="site-account-nav" aria-label="Compte et apparence" aria-busy={!authLoaded}>
+      <button
+        type="button"
+        className="site-nav-action site-theme-toggle"
+        onClick={() => setDark(!dark)}
+        aria-label={dark ? 'Passer au thème clair' : 'Passer au thème sombre'}
+      >
+        <span aria-hidden="true">{dark ? '☀️' : '🌙'}</span>
+        {dark ? 'Clair' : 'Sombre'}
       </button>
 
-      {user ? (
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <Link href="/profil">
-            <button style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
-              Mon profil
-            </button>
+      {!authLoaded ? (
+        <span className="site-auth-placeholder" aria-hidden="true" />
+      ) : user ? (
+        <div className="site-user-actions">
+          <Link href="/profil" className="site-nav-action site-profile-link">
+            Profil
           </Link>
-          <button onClick={handleDeconnexion}
-            style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid var(--border)', backgroundColor: 'transparent', color: 'var(--text-muted)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+          <button type="button" onClick={handleDeconnexion} className="site-nav-action site-logout-button">
             Déconnexion
           </button>
         </div>
       ) : (
-        <Link href="/connexion">
-          <button style={{ padding: '8px 14px', borderRadius: '9999px', border: '1px solid #E07B39', backgroundColor: 'transparent', color: '#E07B39', fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+        <div className="site-user-actions">
+          <Link href="/connexion" className="site-nav-action site-login-link">
             Connexion
-          </button>
-        </Link>
+          </Link>
+          <Link href="/inscription" className="site-nav-action site-signup-link">
+            Inscription
+          </Link>
+        </div>
       )}
-    </div>
+    </nav>
   )
 }
