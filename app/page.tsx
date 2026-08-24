@@ -23,83 +23,62 @@ export default async function HomePage() {
   const motDuJour = await getMotDuJour()
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ padding: '16px 5vw', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', margin: 0 }}>
-            Dendi Learn{' '}
-            <span style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase' }}>
+    <main className="home-page">
+      <header className="home-header">
+        <div className="home-header-inner">
+          <h1 className="home-brand">
+            <span>Dendi Learn</span>
+            <span className="home-brand-tagline">
               Langue du nord Bénin
             </span>
           </h1>
-          <ThemeToggle />
+          <div className="home-header-actions">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
-      <section style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 5vw', textAlign: 'center' }}>
+      <section className={`home-hero${motDuJour ? '' : ' home-hero-single'}`}>
+        <div className="home-hero-copy">
+          <p className="home-eyebrow">Première plateforme numérique</p>
+          <h2 className="home-title">Fɔɔ nna suba !</h2>
+          <p className="home-subtitle">
+            Bienvenue — Apprenez le Dendi, langue du nord Bénin, à votre rythme.
+          </p>
 
-        <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
-          Première plateforme numérique
-        </p>
-
-        <h2 style={{ fontSize: '48px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px', lineHeight: 1.1 }}>
-          Fɔɔ nna suba !
-        </h2>
-        <p style={{ fontSize: '15px', color: 'var(--text-muted)', marginBottom: '48px' }}>
-          Bienvenue — Apprenez le Dendi, langue du nord Bénin
-        </p>
-
-        {motDuJour && (
-          <div style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid #E07B39',
-            borderRadius: '20px',
-            padding: '28px 48px',
-            marginBottom: '48px',
-            minWidth: '280px',
-          }}>
-            <p style={{ fontSize: '11px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              Mot du jour
-            </p>
-            <p style={{ fontSize: '32px', fontWeight: '700', color: '#E07B39', marginBottom: '6px' }}>
-              {motDuJour.dendi}
-            </p>
-            <p style={{ fontSize: '14px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '12px' }}>
-              {motDuJour.phonetique}
-            </p>
-            <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '0 auto 12px' }} />
-            <p style={{ fontSize: '18px', color: 'var(--text)', fontWeight: '600' }}>
-              {motDuJour.fr}
-            </p>
+          <div className="home-cta-group">
+            <Link href="/apprendre?niveau=debutant" className="home-cta-primary">
+              <span aria-hidden="true">🌱</span>
+              Commencer par le début
+            </Link>
+            <Link href="/apprendre" className="home-cta-secondary">
+              Explorer librement <span aria-hidden="true">→</span>
+            </Link>
           </div>
-        )}
-
-        {/* CTA principal + lien discret */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-          <Link href="/apprendre?niveau=debutant" style={{
-            display: 'block', width: '100%', maxWidth: '320px', padding: '16px 32px',
-            backgroundColor: '#E07B39', color: 'white',
-            borderRadius: '9999px', textDecoration: 'none',
-            fontSize: '15px', fontWeight: '600', fontFamily: 'Georgia, serif',
-            textAlign: 'center',
-          }}>
-            🌱 Commencer par le début
-          </Link>
-          <Link href="/apprendre" style={{
-            fontSize: '13px', color: 'var(--text-muted)',
-            textDecoration: 'none',
-          }}>
-            ou explorer librement →
-          </Link>
         </div>
 
+        {motDuJour && (
+          <article className="home-word-card" aria-labelledby="mot-du-jour-title">
+            <div className="home-word-card-glow" aria-hidden="true" />
+            <p id="mot-du-jour-title" className="home-word-label">
+              Mot du jour
+            </p>
+            <p className="home-word-dendi">{motDuJour.dendi}</p>
+            <p className="home-word-phonetic">{motDuJour.phonetique}</p>
+            <div className="home-word-divider" aria-hidden="true" />
+            <p className="home-word-translation">{motDuJour.fr}</p>
+            <Link href="/apprendre" className="home-word-link">
+              Apprendre davantage <span aria-hidden="true">→</span>
+            </Link>
+          </article>
+        )}
       </section>
 
-      <footer style={{ padding: '20px 5vw', textAlign: 'center', borderTop: '1px solid var(--border)' }}>
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-          <Link href="/connexion" style={{ color: '#E07B39', textDecoration: 'none' }}>Connexion</Link>
+      <footer className="home-footer">
+        <p>
+          <Link href="/connexion">Connexion</Link>
           {' · '}
-          <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>Créer un compte</Link>
+          <Link href="/inscription">Créer un compte</Link>
         </p>
       </footer>
     </main>
