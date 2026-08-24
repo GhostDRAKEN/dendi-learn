@@ -11,15 +11,16 @@ export default async function ProfilPage() {
     redirect('/connexion')
   }
 
-  const { data: mots } = await supabase.from('mots').select('id, fr, categorie, niveau')
+  const { data: mots, error: motsError } = await supabase.from('mots').select('id, fr, categorie, niveau')
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
+    <main className="profile-page">
       <AppHeader />
-      <section style={{ padding: '40px 5vw' }}>
+      <section className="profile-content" aria-labelledby="profile-title">
         <ProfilClient
           mots={mots ?? []}
           user={{ id: user.id, email: user.email ?? '' }}
+          motsError={Boolean(motsError)}
         />
       </section>
     </main>

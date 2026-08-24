@@ -23,28 +23,39 @@ type ProfilUser = {
   email: string
 }
 
-export default function ProfilClient({ mots, user }: { mots: Mot[], user: ProfilUser }) {
+export default function ProfilClient({ mots, user, motsError = false }: { mots: Mot[], user: ProfilUser, motsError?: boolean }) {
   const [progression, setProgression] = useState<Progression[]>([])
   const [loading, setLoading] = useState(true)
+  const [progressionError, setProgressionError] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    let actif = true
+
     const chargerProgression = async () => {
-      const { data: prog } = await supabase
+      const { data: prog, error } = await supabase
         .from('progression')
         .select('mot_id, vu, maitrise')
         .eq('user_id', user.id)
+
+      if (!actif) return
+
+      if (error) {
+        setProgressionError(true)
+        setLoading(false)
+        return
+      }
 
       setProgression(prog ?? [])
       setLoading(false)
     }
 
     chargerProgression()
-  }, [user.id])
 
-  if (loading) {
-    return <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>Chargement...</p>
-  }
+    return () => {
+      actif = false
+    }
+  }, [user.id])
 
   const vusIds = new Set(progression.filter(p => p.vu).map(p => p.mot_id))
   const maitriseIds = new Set(progression.filter(p => p.maitrise).map(p => p.mot_id))
@@ -52,7 +63,7 @@ export default function ProfilClient({ mots, user }: { mots: Mot[], user: Profil
   const totalMots = mots.length
   const totalVus = vusIds.size
   const totalMaitrises = maitriseIds.size
-  const progressionGlobale = Math.round((totalVus / totalMots) * 100)
+  const progressionGlobale = totalMots > 0 ? Math.round((totalVus / totalMots) * 100) : 0
 
   const parNiveau = ['debutant', 'intermediaire', 'avance'].map(niveau => {
     const motsDuNiveau = mots.filter(m => m.niveau === niveau)
@@ -60,110 +71,154 @@ export default function ProfilClient({ mots, user }: { mots: Mot[], user: Profil
     return { niveau, total: motsDuNiveau.length, vus }
   })
 
-  const niveauLabels: Record<string, { label: string, emoji: string, couleur: string }> = {
-    debutant: { label: 'Débutant', emoji: '🌱', couleur: '#4CAF50' },
-    intermediaire: { label: 'Intermédiaire', emoji: '🔥', couleur: '#E07B39' },
-    avance: { label: 'Avancé', emoji: '⭐', couleur: '#9C27B0' },
+  const niveauLabels: Record<string, { label: string, emoji: string }> = {
+    debutant: { label: 'Débutant', emoji: '🌱' },
+    intermediaire: { label: 'Intermédiaire', emoji: '🔥' },
+    avance: { label: 'Avancé', emoji: '⭐' },
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      {/* En-tête profil */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <div style={{
-          width: '64px', height: '64px',
-          backgroundColor: '#E07B39',
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 16px',
-          fontSize: '24px', fontWeight: '700', color: 'white',
-        }}>
-          {user.email[0]?.toUpperCase()}
+    <div className="profile-shell">
+      <header className="profile-intro">
+        <div className="profile-avatar" aria-hidden="true">
+          {user.email[0]?.toUpperCase() || 'D'}
         </div>
-        <p style={{ color: 'var(--text)', fontWeight: '600', fontSize: '16px', marginBottom: '4px' }}>
-          {user.email}
-        </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-          Membre Dendi Learn
-        </p>
-      </div>
+        <div>
+          <p className="profile-eyebrow">Espace personnel</p>
+          <h2 id="profile-title" className="profile-title">Ma progression</h2>
+          <p className="profile-description">
+            Retrouvez les mots que vous avez explorés et maîtrisés dans Dendi Learn.
+          </p>
+          <p className="profile-email">{user.email}</p>
+        </div>
+      </header>
 
-      {/* Stats globales */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '12px', marginBottom: '32px',
-      }}>
-        {[
-          { label: 'Mots vus', value: totalVus, total: totalMots },
-          { label: 'Maîtrisés', value: totalMaitrises, total: totalMots },
-          { label: 'Progression', value: `${progressionGlobale}%`, total: null },
-        ].map((stat) => (
-          <div key={stat.label} style={{
-            backgroundColor: 'var(--card)', border: '1px solid var(--border)',
-            borderRadius: '16px', padding: '20px 12px', textAlign: 'center',
-          }}>
-            <p style={{ fontSize: '28px', fontWeight: '700', color: '#E07B39', marginBottom: '4px' }}>
-              {stat.value}
-            </p>
-            {stat.total && (
-              <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                sur {stat.total}
+      {loading ? (
+        <div className="profile-loading" role="status" aria-live="polite">
+          <p className="profile-loading-label">Chargement de votre progression…</p>
+          <div className="profile-skeleton-grid" aria-hidden="true">
+            {[0, 1, 2, 3].map(item => <div key={item} className="profile-skeleton-card" />)}
+          </div>
+          <div className="profile-skeleton-panel" aria-hidden="true" />
+        </div>
+      ) : progressionError || motsError ? (
+        <section className="profile-message profile-error" role="alert">
+          <span className="profile-message-icon" aria-hidden="true">!</span>
+          <div>
+            <h3>Progression indisponible</h3>
+            <p>Impossible de charger votre progression pour le moment. Votre profil reste accessible.</p>
+          </div>
+        </section>
+      ) : (
+        <>
+          <dl className="profile-stats" aria-label="Statistiques globales">
+            <div className="profile-stat-card">
+              <dt>Mots vus</dt>
+              <dd>{totalVus}</dd>
+            </div>
+            <div className="profile-stat-card">
+              <dt>Mots maîtrisés</dt>
+              <dd>{totalMaitrises}</dd>
+            </div>
+            <div className="profile-stat-card">
+              <dt>Mots disponibles</dt>
+              <dd>{totalMots}</dd>
+            </div>
+            <div className="profile-stat-card profile-stat-highlight">
+              <dt>Progression globale</dt>
+              <dd>{totalMots > 0 ? `${progressionGlobale}%` : '—'}</dd>
+            </div>
+          </dl>
+
+          <section className="profile-section" aria-labelledby="global-progress-title">
+            <div className="profile-section-heading">
+              <div>
+                <p className="profile-section-eyebrow">Vue d’ensemble</p>
+                <h3 id="global-progress-title">Progression globale</h3>
+              </div>
+              {totalMots > 0 && <strong>{progressionGlobale}%</strong>}
+            </div>
+
+            {totalMots > 0 ? (
+              <>
+                <div
+                  className="profile-progress-track"
+                  role="progressbar"
+                  aria-label={`${totalVus} mots vus sur ${totalMots}`}
+                  aria-valuemin={0}
+                  aria-valuemax={totalMots}
+                  aria-valuenow={totalVus}
+                >
+                  <div className="profile-progress-value" style={{ width: `${progressionGlobale}%` }} />
+                </div>
+                <p className="profile-progress-caption">{totalVus} mots vus sur {totalMots}</p>
+              </>
+            ) : (
+              <p className="profile-neutral-state">
+                Aucun mot n’est disponible pour calculer votre progression.
               </p>
             )}
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{stat.label}</p>
-          </div>
-        ))}
-      </div>
+          </section>
 
-      {/* Progression par niveau */}
-      <div style={{ marginBottom: '32px' }}>
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>
-          Progression par niveau
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {parNiveau.map(({ niveau, total, vus }) => {
-            const info = niveauLabels[niveau]
-            const pct = total > 0 ? Math.round((vus / total) * 100) : 0
-            return (
-              <div key={niveau} style={{
-                backgroundColor: 'var(--card)', border: '1px solid var(--border)',
-                borderRadius: '16px', padding: '16px 20px',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <span style={{ color: info.couleur, fontSize: '14px', fontWeight: '600' }}>
-                    {info.emoji} {info.label}
-                  </span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                    {vus} / {total}
-                  </span>
-                </div>
-                <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--border)', borderRadius: '9999px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${pct}%`, backgroundColor: info.couleur, borderRadius: '9999px', transition: 'width 0.4s ease' }} />
+          {totalMots > 0 && (
+            <section className="profile-section" aria-labelledby="level-progress-title">
+              <div className="profile-section-heading">
+                <div>
+                  <p className="profile-section-eyebrow">Votre parcours</p>
+                  <h3 id="level-progress-title">Progression par niveau</h3>
                 </div>
               </div>
-            )
-          })}
-        </div>
-      </div>
+              <div className="profile-levels">
+                {parNiveau.map(({ niveau, total, vus }) => {
+                  const info = niveauLabels[niveau]
+                  const pct = total > 0 ? Math.round((vus / total) * 100) : 0
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-        <Link href="/apprendre" style={{
-          padding: '12px 24px', borderRadius: '9999px',
-          backgroundColor: '#E07B39', color: 'white',
-          textDecoration: 'none', fontSize: '14px',
-          fontFamily: 'Georgia, serif', fontWeight: '600',
-        }}>
+                  return (
+                    <article key={niveau} className={`profile-level profile-level-${niveau}`}>
+                      <div className="profile-level-heading">
+                        <h4>{info.emoji} {info.label}</h4>
+                        <span>{total > 0 ? `${vus} / ${total}` : 'Aucun mot'}</span>
+                      </div>
+                      {total > 0 && (
+                        <div
+                          className="profile-level-track"
+                          role="progressbar"
+                          aria-label={`Niveau ${info.label} : ${vus} mots vus sur ${total}`}
+                          aria-valuemin={0}
+                          aria-valuemax={total}
+                          aria-valuenow={vus}
+                        >
+                          <div className="profile-level-value" style={{ width: `${pct}%` }} />
+                        </div>
+                      )}
+                    </article>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {totalMots > 0 && totalVus === 0 && (
+            <section className="profile-message profile-empty">
+              <span className="profile-message-icon" aria-hidden="true">→</span>
+              <div>
+                <h3>Votre apprentissage commence ici</h3>
+                <p>Choisissez un niveau pour découvrir vos premiers mots en Dendi.</p>
+                <Link href="/niveaux" className="profile-inline-link">Choisir un niveau</Link>
+              </div>
+            </section>
+          )}
+        </>
+      )}
+
+      <div className="profile-actions">
+        <Link href="/apprendre" className="profile-primary-action">
           Continuer à apprendre
         </Link>
         <button
+          type="button"
           onClick={async () => { await supabase.auth.signOut(); router.push('/') }}
-          style={{
-            padding: '12px 24px', borderRadius: '9999px',
-            backgroundColor: 'transparent', border: '1px solid var(--border)',
-            color: 'var(--text-muted)', fontSize: '14px',
-            cursor: 'pointer', fontFamily: 'Georgia, serif',
-          }}
+          className="profile-secondary-action"
         >
           Déconnexion
         </button>
