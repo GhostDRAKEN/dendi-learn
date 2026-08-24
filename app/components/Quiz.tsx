@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 
 type Mot = {
@@ -16,6 +16,8 @@ type Question = {
   propositions: string[]
   bonneReponse: string
 }
+
+type StatutSauvegarde = 'idle' | 'saving' | 'saved' | 'error' | 'anonymous'
 
 const CATEGORIES_LABELS: Record<string, string> = {
   'Tous': 'Tous les mots',
@@ -59,11 +61,15 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
   const [phase, setPhase] = useState<'choix' | 'quiz'>('choix')
   const [userId, setUserId] = useState<string | null>(null)
   const [motsVus, setMotsVus] = useState<Set<number>>(new Set())
+  const [statutSauvegarde, setStatutSauvegarde] = useState<StatutSauvegarde>('idle')
+  const [sauvegardesReussies, setSauvegardesReussies] = useState(0)
+  const [sauvegardesEchouees, setSauvegardesEchouees] = useState(0)
+  const authRequestRef = useRef<Promise<string | null> | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
+    authRequestRef.current = supabase.auth.getUser().then(async ({ data }) => {
       const user = data.user
-      if (!user) return
+      if (!user) return null
       setUserId(user.id)
       const { data: progression } = await supabase
         .from('progression')
@@ -71,7 +77,9 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
         .eq('user_id', user.id)
         .eq('vu', true)
       if (progression) setMotsVus(new Set(progression.map(p => p.mot_id as number)))
-    })
+
+      return user.id
+    }).catch(() => null)
   }, [])
 
   useEffect(() => {
@@ -91,22 +99,44 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
     setSelected(null)
     setScore(0)
     setTermine(false)
+    setStatutSauvegarde('idle')
+    setSauvegardesReussies(0)
+    setSauvegardesEchouees(0)
     setPhase('quiz')
   }
 
   const handleReponse = async (reponse: string) => {
     if (selected) return
     setSelected(reponse)
+    setStatutSauvegarde('idle')
     const correct = reponse === questions[index].bonneReponse
     if (correct) {
       setScore(s => s + 1)
-      if (userId) {
-        await supabase.from('progression').upsert({
-          user_id: userId,
-          mot_id: questions[index].mot.id,
-          vu: true,
-          maitrise: true,
-        }, { onConflict: 'user_id,mot_id' })
+
+      const utilisateurId = userId ?? await authRequestRef.current
+      if (utilisateurId) {
+        setStatutSauvegarde('saving')
+        try {
+          const { error } = await supabase.from('progression').upsert({
+            user_id: utilisateurId,
+            mot_id: questions[index].mot.id,
+            vu: true,
+            maitrise: true,
+          }, { onConflict: 'user_id,mot_id' })
+
+          if (error) {
+            setStatutSauvegarde('error')
+            setSauvegardesEchouees(nombre => nombre + 1)
+          } else {
+            setStatutSauvegarde('saved')
+            setSauvegardesReussies(nombre => nombre + 1)
+          }
+        } catch {
+          setStatutSauvegarde('error')
+          setSauvegardesEchouees(nombre => nombre + 1)
+        }
+      } else {
+        setStatutSauvegarde('anonymous')
       }
     }
     setTimeout(() => {
@@ -115,6 +145,7 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
       } else {
         setIndex(i => i + 1)
         setSelected(null)
+        setStatutSauvegarde('idle')
       }
     }, 1000)
   }
@@ -195,9 +226,23 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
           <strong>{score} / {questions.length}</strong>
           <span>{pourcentageFinal}% de bonnes réponses</span>
         </div>
-        <p className="quiz-saved-message">
-          {score} mot{score > 1 ? 's' : ''} maîtrisé{score > 1 ? 's' : ''} sauvegardé{score > 1 ? 's' : ''}
-        </p>
+        <div className="quiz-session-save-status">
+          {!userId && score > 0 && (
+            <p className="is-anonymous">Connectez-vous pour enregistrer votre progression.</p>
+          )}
+          {userId && sauvegardesReussies > 0 && (
+            <p className="is-saved">
+              {sauvegardesReussies} maîtrise{sauvegardesReussies > 1 ? 's' : ''} enregistrée{sauvegardesReussies > 1 ? 's' : ''}.
+            </p>
+          )}
+          {userId && sauvegardesEchouees > 0 && (
+            <p className="is-error">
+              {sauvegardesEchouees === 1
+                ? 'Une progression n’a pas pu être enregistrée.'
+                : `${sauvegardesEchouees} progressions n’ont pas pu être enregistrées.`}
+            </p>
+          )}
+        </div>
         <div className="quiz-actions quiz-result-actions">
           <button type="button" onClick={demarrerQuiz} className="quiz-button quiz-button-primary">
             Rejouer
@@ -267,6 +312,14 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
           selected === question.bonneReponse
             ? <p className="is-correct"><span aria-hidden="true">✓</span> Bonne réponse.</p>
             : <p className="is-incorrect"><span aria-hidden="true">✕</span> Pas tout à fait. La bonne réponse est <strong>{question.bonneReponse}</strong>.</p>
+        )}
+        {selected && selected === question.bonneReponse && statutSauvegarde !== 'idle' && (
+          <div className={`quiz-save-feedback is-${statutSauvegarde}`}>
+            {statutSauvegarde === 'saving' && 'Enregistrement de la progression…'}
+            {statutSauvegarde === 'saved' && 'Progression enregistrée.'}
+            {statutSauvegarde === 'error' && 'La progression n’a pas pu être enregistrée.'}
+            {statutSauvegarde === 'anonymous' && 'Connectez-vous pour enregistrer votre progression.'}
+          </div>
         )}
       </div>
     </section>
