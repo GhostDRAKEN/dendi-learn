@@ -14,57 +14,45 @@ export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () =
   const [modePhon, setModePhon] = useState(false)
 
   return (
-    <div
-      onClick={() => {
-        if (!retournee) {
-          setRetournee(true)
-          onVue?.()
-        }
-      }}
-      style={{
-        backgroundColor: retournee ? '#1A0F00' : 'var(--card)',
-        border: retournee ? '1px solid #E07B39' : dejaVu ? '1px solid rgba(224, 123, 57, 0.35)' : '1px solid var(--border)',
-        borderRadius: '16px',
-        padding: '24px 16px',
-        minHeight: '130px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        cursor: retournee ? 'default' : 'pointer',
-        transition: 'all 0.3s ease',
-        position: 'relative',
-      }}
-    >
+    <article className={`mot-card${retournee ? ' mot-card-revealed' : ''}${dejaVu ? ' mot-card-seen' : ''}`}>
       {!retournee ? (
-        <>
-          <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)' }}>{mot.fr}</p>
-          <p style={{ fontSize: '11px', marginTop: '12px', letterSpacing: '2px', color: dejaVu ? '#E07B39' : 'var(--text-muted)', textTransform: 'uppercase' }}>
+        <button
+          type="button"
+          className="mot-card-face mot-card-front"
+          onClick={() => {
+            setRetournee(true)
+            onVue?.()
+          }}
+          aria-label={`Révéler la traduction Dendi de ${mot.fr}`}
+        >
+          <span className="mot-card-french">{mot.fr}</span>
+          <span className="mot-card-hint">
             {dejaVu ? '✓ Déjà vu' : 'Toucher pour révéler'}
-          </p>
-        </>
+          </span>
+        </button>
       ) : (
-        <>
-          <p style={{ fontSize: '20px', fontWeight: '700', color: '#E07B39', marginTop: '8px' }}>
+        <div className="mot-card-face mot-card-back" aria-live="polite">
+          <p className="mot-card-dendi">
             {modePhon ? mot.phonetique : mot.dendi}
           </p>
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
-            style={{ marginTop: '8px', background: 'none', border: 'none', color: '#666', fontSize: '11px', cursor: 'pointer', fontFamily: 'Georgia, serif', textDecoration: 'underline', textUnderlineOffset: '3px', padding: '0' }}
+            className="mot-card-text-action"
           >
             {modePhon ? 'Voir l\'écriture officielle' : 'Voir la prononciation'}
           </button>
-          <div style={{ width: '30px', height: '1px', backgroundColor: 'var(--border)', margin: '10px auto' }} />
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{mot.fr}</p>
+          <div className="mot-card-divider" aria-hidden="true" />
+          <p className="mot-card-reminder">{mot.fr}</p>
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); setRetournee(false); setModePhon(false) }}
-            style={{ marginTop: '10px', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '10px', cursor: 'pointer', fontFamily: 'Georgia, serif', letterSpacing: '1px', textTransform: 'uppercase' }}
+            className="mot-card-hide"
           >
             Cacher
           </button>
-        </>
+        </div>
       )}
-    </div>
+    </article>
   )
 }

@@ -98,10 +98,9 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const categoriesDisponibles = new Set(mots.map(m => m.categorie))
 
   return (
-    <div>
-      {/* Barre de recherche */}
-      <div style={{ position: 'relative', marginBottom: '20px' }}>
-        <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+    <div className="learn-tools">
+      <div className="learn-search">
+        <div className="learn-search-icon" aria-hidden="true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -114,25 +113,32 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
           onChange={(e) => { setRecherche(e.target.value); setShowSuggestions(true) }}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
           onFocus={() => setShowSuggestions(true)}
-          style={{ width: '100%', padding: '12px 16px 12px 40px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none' }}
+          className="learn-search-input"
+          role="combobox"
+          aria-label="Rechercher un mot en français, en Dendi ou par sa phonétique"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions && suggestions.length > 0}
+          aria-controls="learn-search-suggestions"
         />
         {showSuggestions && suggestions.length > 0 && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'var(--dropdown-bg)', border: '1px solid var(--border)', borderRadius: '12px', marginTop: '4px', zIndex: 10, overflow: 'hidden' }}>
+          <ul id="learn-search-suggestions" className="learn-search-suggestions">
             {suggestions.map((mot) => (
-              <div key={mot.id} onClick={() => { setRecherche(mot.fr); setShowSuggestions(false) }}
-                style={{ padding: '10px 16px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--border)')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}>
-                <span style={{ color: 'var(--text)', fontSize: '14px' }}>{mot.fr}</span>
-                <span style={{ color: '#E07B39', fontSize: '13px' }}>{mot.dendi}</span>
-              </div>
+              <li key={mot.id}>
+                <button
+                  type="button"
+                  className="learn-search-suggestion"
+                  onClick={() => { setRecherche(mot.fr); setShowSuggestions(false) }}
+                >
+                  <span>{mot.fr}</span>
+                  <span className="learn-search-suggestion-dendi">{mot.dendi}</span>
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
 
-      {/* Filtres */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px', alignItems: 'center' }}>
+      <div className="learn-categories" role="group" aria-label="Filtrer les mots par catégorie">
         {CATEGORIES_ORDER.map((cat) => {
           // Cacher ⊞ si niveau actif
           if (cat === 'Tous' && niveauActif) return null
@@ -148,21 +154,29 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
 
           if (cat === 'temps') {
             return (
-              <div key="temps" style={{ position: 'relative' }}>
-                <button onClick={() => setShowTempsMenu(!showTempsMenu)}
-                  style={{ padding: '8px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'Georgia, serif', backgroundColor: isTempsActive ? '#E07B39' : 'transparent', border: isTempsActive ? '1px solid #E07B39' : '1px solid var(--border)', color: isTempsActive ? '#FFFFFF' : 'var(--text-muted)' }}>
-                  Temps ▾ <span style={{ fontSize: '11px', opacity: 0.6 }}>({countForCat('temps')})</span>
+              <div key="temps" className="learn-category-menu">
+                <button
+                  type="button"
+                  onClick={() => setShowTempsMenu(!showTempsMenu)}
+                  className={`learn-category-chip${isTempsActive ? ' is-active' : ''}`}
+                  aria-expanded={showTempsMenu}
+                  aria-controls="learn-time-categories"
+                >
+                  Temps <span aria-hidden="true">▾</span> <span className="learn-category-count">({countForCat('temps')})</span>
                 </button>
                 {showTempsMenu && (
-                  <div style={{ position: 'absolute', top: '115%', left: 0, backgroundColor: 'var(--dropdown-bg)', border: '1px solid #E07B39', borderRadius: '12px', zIndex: 20, overflow: 'hidden', minWidth: '160px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}>
+                  <div id="learn-time-categories" className="learn-category-dropdown">
                     {TEMPS_SOUS_CATEGORIES.filter(s => categoriesDisponibles.has(s)).map((sub) => (
-                      <div key={sub} onClick={() => handleCategorieChange(sub)}
-                        style={{ padding: '12px 20px', cursor: 'pointer', color: active === sub ? '#E07B39' : 'var(--text)', fontSize: '13px', borderBottom: '1px solid var(--border)', fontFamily: 'Georgia, serif', backgroundColor: active === sub ? '#2A1500' : 'transparent' }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : 'var(--border)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = active === sub ? '#2A1500' : 'transparent')}>
+                      <button
+                        key={sub}
+                        type="button"
+                        onClick={() => handleCategorieChange(sub)}
+                        className={`learn-category-option${active === sub ? ' is-active' : ''}`}
+                        aria-pressed={active === sub}
+                      >
                         {CATEGORIES_LABELS[sub]}
-                        <span style={{ marginLeft: '6px', fontSize: '11px', opacity: 0.6 }}>({mots.filter(m => m.categorie === sub).length})</span>
-                      </div>
+                        <span className="learn-category-count">({mots.filter(m => m.categorie === sub).length})</span>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -171,38 +185,53 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
           }
 
           return (
-            <button key={cat} onClick={() => handleCategorieChange(cat)}
-              style={{ padding: '8px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'Georgia, serif', backgroundColor: active === cat ? '#E07B39' : 'transparent', border: active === cat ? '1px solid #E07B39' : '1px solid var(--border)', color: active === cat ? '#FFFFFF' : 'var(--text-muted)' }}>
-              {cat === 'Tous' ? (
-                <span style={{ fontSize: '15px', lineHeight: 1 }}>⊞</span>
-              ) : (
-                <>{CATEGORIES_LABELS[cat] ?? cat}<span style={{ marginLeft: '6px', fontSize: '11px', opacity: 0.6 }}>({countForCat(cat)})</span></>
-              )}
+            <button
+              key={cat}
+              type="button"
+              onClick={() => handleCategorieChange(cat)}
+              className={`learn-category-chip${active === cat ? ' is-active' : ''}`}
+              aria-pressed={active === cat}
+            >
+              {CATEGORIES_LABELS[cat] ?? cat}
+              {cat !== 'Tous' && <span className="learn-category-count">({countForCat(cat)})</span>}
             </button>
           )
         })}
       </div>
 
-      {/* Barre de progression */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '12px', letterSpacing: '1px' }}>
+      <section className="learn-progress" aria-label="Progression des mots affichés">
+        <div className="learn-progress-header">
+          <span className="learn-progress-label">
             {progression === 100 ? '✓ Série complète' : 'Progression'}
           </span>
-          <span style={{ color: progression === 100 ? '#E07B39' : 'var(--text-muted)', fontSize: '12px', fontWeight: '600', letterSpacing: '1px', transition: 'color 0.3s ease' }}>
+          <span className={`learn-progress-count${progression === 100 ? ' is-complete' : ''}`}>
             {vusCount} / {total} vus
           </span>
         </div>
-        <div style={{ width: '100%', height: '25px', backgroundColor: 'var(--border)', borderRadius: '9999px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${progression}%`, backgroundColor: progression === 100 ? '#E07B39' : 'var(--text-muted)', borderRadius: '9999px', transition: 'width 0.4s ease, background-color 0.4s ease' }} />
+        <div
+          className="learn-progress-track"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={vusCount}
+          aria-label={`${vusCount} mots vus sur ${total}`}
+        >
+          <div className={`learn-progress-value${progression === 100 ? ' is-complete' : ''}`} style={{ width: `${progression}%` }} />
         </div>
-      </div>
+      </section>
 
-      {/* Résultats */}
       {motsFiltres.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>Aucun mot trouvé pour &quot;{recherche}&quot;</p>
+        <div className="learn-empty-state" role="status">
+          <span className="learn-empty-icon" aria-hidden="true">⌕</span>
+          <h3>Aucun mot trouvé</h3>
+          <p>
+            {recherche
+              ? <>Aucun résultat ne correspond à &quot;{recherche}&quot;. Essayez un autre mot ou une autre catégorie.</>
+              : 'Aucun mot n’est disponible dans cette catégorie.'}
+          </p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        <div className="mot-grid">
           {motsFiltres.map((mot) => (
             <MotCard key={`${active}-${mot.id}`} mot={mot} onVue={() => handleVue(mot.id)} dejaVu={vusIds.has(mot.id)} />
           ))}

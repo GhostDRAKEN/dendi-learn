@@ -21,23 +21,36 @@ export default async function ApprendrePage({
   if (error) return <p>Erreur : {error.message}</p>
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="learn-page">
       <AppHeader actions={<QuizWrapper mots={mots ?? []} />} />
 
-      {params.niveau && (
-        <div style={{ padding: '12px 5vw', backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>
-            Niveau :{' '}
-            <span style={{ color: params.niveau === 'debutant' ? '#4CAF50' : params.niveau === 'intermediaire' ? '#E07B39' : '#9C27B0', fontWeight: '600' }}>
-              {params.niveau === 'debutant' ? '🌱 Débutant' : params.niveau === 'intermediaire' ? '🔥 Intermédiaire' : '⭐ Avancé'}
-            </span>
-            {' · '}
-            <Link href="/niveaux" style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Changer</Link>
-          </p>
-        </div>
-      )}
+      <section className="learn-content" aria-labelledby="learn-title">
+        <div className="learn-intro">
+          <div>
+            <p className="learn-eyebrow">Bibliothèque Dendi</p>
+            <h2 id="learn-title" className="learn-title">Apprendre à votre rythme</h2>
+            <p className="learn-subtitle">
+              Recherchez un mot, choisissez une catégorie ou explorez librement les cartes.
+            </p>
+          </div>
 
-      <section style={{ padding: '24px 5vw' }}>
+          <div className="learn-level-summary">
+            <span className="learn-level-label">Niveau actuel</span>
+            <span className={`learn-level-value learn-level-${params.niveau ?? 'tous'}`}>
+              {params.niveau === 'debutant'
+                ? '🌱 Débutant'
+                : params.niveau === 'intermediaire'
+                  ? '🔥 Intermédiaire'
+                  : params.niveau === 'avance'
+                    ? '⭐ Avancé'
+                    : 'Tous les niveaux'}
+            </span>
+            <Link href="/niveaux" className="learn-level-link">
+              {params.niveau ? 'Changer' : 'Choisir un niveau'}
+            </Link>
+          </div>
+        </div>
+
         <ApprendreClient mots={mots ?? []} categorieInitiale={params.categorie} niveau={params.niveau} />
       </section>
     </main>

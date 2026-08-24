@@ -41,13 +41,9 @@ export default function QuizWrapper({ mots }: { mots: Mot[] }) {
 
   return (
     <button
+      type="button"
       onClick={() => setModeQuiz(true)}
-      style={{
-        padding: '10px 20px', borderRadius: '9999px',
-        backgroundColor: '#E07B39', border: 'none',
-        color: 'white', fontSize: '13px', cursor: 'pointer',
-        fontFamily: 'Georgia, serif', fontWeight: '600',
-      }}
+      className="quiz-launch-button"
     >
       Mode Quiz
     </button>
