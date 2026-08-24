@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -19,7 +20,7 @@ type Progression = {
 }
 
 export default function ProfilClient({ mots }: { mots: Mot[] }) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [progression, setProgression] = useState<Progression[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -40,7 +41,7 @@ export default function ProfilClient({ mots }: { mots: Mot[] }) {
       setProgression(prog ?? [])
       setLoading(false)
     })
-  }, [])
+  }, [router])
 
   if (loading) {
     return <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px' }}>Chargement...</p>

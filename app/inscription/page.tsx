@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function InscriptionPage() {
@@ -11,8 +10,6 @@ export default function InscriptionPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const router = useRouter()
-
   const handleInscription = async () => {
     if (!email || !password) {
       setError('Remplis tous les champs.')
@@ -65,7 +62,7 @@ export default function InscriptionPage() {
             <p style={{ fontSize: '32px', marginBottom: '16px' }}>📧</p>
             <p style={{ color: 'var(--text)', fontWeight: '600', marginBottom: '8px' }}>Vérifie ta boîte mail</p>
             <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-              Un lien de confirmation t'a été envoyé à {email}.
+              Un lien de confirmation t&apos;a été envoyé à {email}.
             </p>
           </div>
         ) : (

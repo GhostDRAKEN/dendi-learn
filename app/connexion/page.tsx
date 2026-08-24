@@ -27,7 +27,7 @@ export default function ConnexionPage() {
           <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>← Dendi Learn</p>
         </Link>
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>Se connecter</h1>
-        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouve ta progression et continue d'apprendre.</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouve ta progression et continue d&apos;apprendre.</p>
 
         <div style={{ marginBottom: '16px' }}>
           <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Email</label>
@@ -50,7 +50,7 @@ export default function ConnexionPage() {
 
         <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'var(--text-muted)' }}>
           Pas encore de compte ?{' '}
-          <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>S'inscrire</Link>
+          <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>S&apos;inscrire</Link>
         </p>
       </div>
     </main>

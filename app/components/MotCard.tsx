@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 type Mot = {
   id: number
@@ -11,31 +11,7 @@ type Mot = {
 
 export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () => void, dejaVu?: boolean }) {
   const [retournee, setRetournee] = useState(false)
-  const [monte, setMonte] = useState(false)
   const [modePhon, setModePhon] = useState(false)
-
-  useEffect(() => {
-    setMonte(true)
-  }, [])
-
-  if (!monte) {
-    return (
-      <div style={{
-        backgroundColor: 'var(--card)',
-        border: '1px solid var(--border)',
-        borderRadius: '16px',
-        padding: '24px 16px',
-        minHeight: '130px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}>
-        <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)' }}>{mot.fr}</p>
-      </div>
-    )
-  }
 
   return (
     <div

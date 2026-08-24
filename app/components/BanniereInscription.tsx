@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import Link from 'next/link'
 
 export default function BanniereInscription({ vusCount }: { vusCount: number }) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [dismissed, setDismissed] = useState(false)
   const [loaded, setLoaded] = useState(false)
 
@@ -50,7 +51,7 @@ export default function BanniereInscription({ vusCount }: { vusCount: number }) 
         </button>
         <Link href="/inscription">
           <button style={{ padding: '8px 16px', borderRadius: '9999px', border: 'none', backgroundColor: '#E07B39', color: 'white', fontSize: '12px', cursor: 'pointer', fontWeight: '600', fontFamily: 'Georgia, serif' }}>
-            S'inscrire
+            S&apos;inscrire
           </button>
         </Link>
       </div>

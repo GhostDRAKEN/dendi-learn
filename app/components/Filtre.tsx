@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import MotCard from './MotCard'
 
 type Mot = {
@@ -43,15 +43,15 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showTempsMenu, setShowTempsMenu] = useState(false)
-  const [vusIds, setVusIds] = useState<Set<number>>(motsDejaVus ?? new Set())
-
-  useEffect(() => {
-    if (motsDejaVus && motsDejaVus.size > 0) setVusIds(motsDejaVus)
-  }, [motsDejaVus])
+  const [vusIdsLocaux, setVusIdsLocaux] = useState<Set<number>>(new Set())
+  const vusIds = useMemo(
+    () => new Set([...(motsDejaVus ?? []), ...vusIdsLocaux]),
+    [motsDejaVus, vusIdsLocaux]
+  )
 
   useEffect(() => {
     onVusCountChange?.(vusIds.size)
-  }, [vusIds])
+  }, [vusIds, onVusCountChange])
 
   const isTempsActive = TEMPS_SOUS_CATEGORIES.includes(active)
 
@@ -86,7 +86,7 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   }
 
   const handleVue = (id: number) => {
-    setVusIds(prev => new Set(prev).add(id))
+    setVusIdsLocaux(prev => new Set(prev).add(id))
     onMotVu?.(id)
   }
 
