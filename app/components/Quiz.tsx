@@ -74,6 +74,10 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
     })
   }, [])
 
+  useEffect(() => {
+    document.querySelector<HTMLElement>('.quiz-overlay')?.scrollTo({ top: 0 })
+  }, [phase, index, termine])
+
   const categories = ['Tous', ...Array.from(new Set(mots.map(m => m.categorie)))]
 
   const motsFiltres = categorieActive === 'Tous'
@@ -118,123 +122,153 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
   // Phase choix de catégorie
   if (phase === 'choix') {
     return (
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-        <h2 style={{ color: 'var(--text)', fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>
-          Mode Quiz
-        </h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '32px' }}>
-          Choisir une catégorie pour commencer.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '32px' }}>
-          {categories.map(cat => (
-            <button key={cat} onClick={() => setCategorieActive(cat)}
-              style={{
-                padding: '12px 16px', borderRadius: '12px', textAlign: 'left',
-                backgroundColor: categorieActive === cat ? '#1A0F00' : 'var(--card)',
-                border: categorieActive === cat ? '1px solid #E07B39' : '1px solid var(--border)',
-                color: categorieActive === cat ? '#E07B39' : 'var(--text)',
-                fontSize: '13px', cursor: 'pointer', fontFamily: 'Georgia, serif',
-              }}>
-              {CATEGORIES_LABELS[cat] ?? cat}
-              <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                {(cat === 'Tous' ? mots : mots.filter(m => m.categorie === cat)).length} mots
-              </span>
-            </button>
-          ))}
+      <section className="quiz-panel quiz-category-panel" aria-labelledby="quiz-category-title">
+        <header className="quiz-section-header">
+          <p className="quiz-eyebrow">Session d’apprentissage</p>
+          <h2 id="quiz-category-title" className="quiz-title">Choisissez votre catégorie</h2>
+          <p className="quiz-description">
+            Sélectionnez le vocabulaire à réviser. Chaque session contient jusqu’à 10 questions.
+          </p>
+        </header>
+
+        <div className="quiz-category-grid" role="group" aria-label="Catégorie du quiz">
+          {categories.map(cat => {
+            const nombreMots = (cat === 'Tous' ? mots : mots.filter(m => m.categorie === cat)).length
+
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategorieActive(cat)}
+                className={`quiz-category-button${categorieActive === cat ? ' is-active' : ''}`}
+                aria-pressed={categorieActive === cat}
+              >
+                <span className="quiz-category-name">{CATEGORIES_LABELS[cat] ?? cat}</span>
+                <span className="quiz-category-size">{nombreMots} mots</span>
+                {categorieActive === cat && <span className="quiz-category-check" aria-hidden="true">✓</span>}
+              </button>
+            )
+          })}
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={demarrerQuiz} disabled={motsFiltres.length < 4}
-            style={{
-              padding: '12px 32px', borderRadius: '9999px',
-              backgroundColor: motsFiltres.length < 4 ? '#333' : '#E07B39',
-              border: 'none', color: 'white', fontSize: '14px',
-              cursor: motsFiltres.length < 4 ? 'not-allowed' : 'pointer',
-              fontFamily: 'Georgia, serif', fontWeight: '600',
-            }}>
-            Commencer →
+
+        {motsFiltres.length < 4 && (
+          <p className="quiz-category-warning" role="status">
+            Cette catégorie ne contient pas assez de mots pour créer quatre propositions.
+          </p>
+        )}
+
+        <div className="quiz-actions">
+          <button
+            type="button"
+            onClick={demarrerQuiz}
+            disabled={motsFiltres.length < 4}
+            className="quiz-button quiz-button-primary"
+          >
+            Commencer le quiz <span aria-hidden="true">→</span>
           </button>
-          <button onClick={onQuitter}
-            style={{ padding: '12px 24px', borderRadius: '9999px', backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '14px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+          <button type="button" onClick={onQuitter} className="quiz-button quiz-button-secondary">
             Annuler
           </button>
         </div>
-      </div>
+      </section>
     )
   }
 
   if (questions.length === 0) return null
 
   const question = questions[index]
+  const progressionQuiz = Math.round(((index + 1) / questions.length) * 100)
+  const pourcentageFinal = Math.round((score / questions.length) * 100)
 
   // Écran résultat
   if (termine) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <p style={{ fontSize: '48px', marginBottom: '16px' }}>
+      <section className="quiz-panel quiz-result" aria-labelledby="quiz-result-title" aria-live="polite">
+        <p className="quiz-result-icon" aria-hidden="true">
           {score >= 8 ? '🎯' : score >= 5 ? '💪' : '📚'}
         </p>
-        <h2 style={{ fontSize: '28px', color: 'var(--text)', marginBottom: '8px' }}>
-          {score} / {questions.length}
+        <p className="quiz-eyebrow">Session terminée</p>
+        <h2 id="quiz-result-title" className="quiz-result-title">
+          {score >= 8 ? 'Excellent résultat !' : score >= 5 ? 'Bon travail !' : 'Continuez à pratiquer !'}
         </h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '8px' }}>
-          {score >= 8 ? 'Excellent !' : score >= 5 ? 'Bien joué !' : 'Continue à pratiquer !'}
-        </p>
-        <p style={{ color: '#E07B39', fontSize: '13px', marginBottom: '40px' }}>
+        <div className="quiz-score-summary" aria-label={`${score} bonnes réponses sur ${questions.length}, soit ${pourcentageFinal} pour cent`}>
+          <strong>{score} / {questions.length}</strong>
+          <span>{pourcentageFinal}% de bonnes réponses</span>
+        </div>
+        <p className="quiz-saved-message">
           {score} mot{score > 1 ? 's' : ''} maîtrisé{score > 1 ? 's' : ''} sauvegardé{score > 1 ? 's' : ''}
         </p>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-          <button onClick={demarrerQuiz}
-            style={{ padding: '12px 24px', borderRadius: '9999px', backgroundColor: '#E07B39', border: 'none', color: 'white', fontSize: '14px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+        <div className="quiz-actions quiz-result-actions">
+          <button type="button" onClick={demarrerQuiz} className="quiz-button quiz-button-primary">
             Rejouer
           </button>
-          <button onClick={() => setPhase('choix')}
-            style={{ padding: '12px 24px', borderRadius: '9999px', backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '14px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+          <button type="button" onClick={() => setPhase('choix')} className="quiz-button quiz-button-secondary">
             Changer de catégorie
           </button>
-          <button onClick={onQuitter}
-            style={{ padding: '12px 24px', borderRadius: '9999px', backgroundColor: 'transparent', border: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: '14px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+          <button type="button" onClick={onQuitter} className="quiz-button quiz-button-quiet">
             Quitter
           </button>
         </div>
-      </div>
+      </section>
     )
   }
 
   // Quiz
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
-        <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-          Question {index + 1} / {questions.length}
-        </span>
-        <span style={{ color: '#E07B39', fontSize: '13px' }}>Score : {score}</span>
-      </div>
+    <section className="quiz-panel quiz-question-panel" aria-labelledby="quiz-question-title">
+      <header className="quiz-status">
+        <div className="quiz-status-copy">
+          <span>Question {index + 1} sur {questions.length}</span>
+          <span className="quiz-current-score">Score : {score}</span>
+        </div>
+        <div
+          className="quiz-progress-track"
+          role="progressbar"
+          aria-label={`Progression du quiz : question ${index + 1} sur ${questions.length}`}
+          aria-valuemin={1}
+          aria-valuemax={questions.length}
+          aria-valuenow={index + 1}
+        >
+          <div className="quiz-progress-value" style={{ width: `${progressionQuiz}%` }} />
+        </div>
+      </header>
 
-      <div style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '40px 24px', textAlign: 'center', marginBottom: '24px' }}>
-        <p style={{ fontSize: '11px', letterSpacing: '2px', color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase' }}>
+      <article key={question.mot.id} className="quiz-question-card">
+        <p className="quiz-question-prompt">
           Que signifie ce mot en Dendi ?
         </p>
-        <p style={{ fontSize: '32px', fontWeight: '700', color: '#E07B39' }}>{question.mot.dendi}</p>
-        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '8px', fontStyle: 'italic' }}>{question.mot.phonetique}</p>
-      </div>
+        <h2 id="quiz-question-title" className="quiz-question-word">{question.mot.dendi}</h2>
+        <p className="quiz-question-phonetic">{question.mot.phonetique}</p>
+      </article>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      <div className="quiz-answer-grid" aria-label="Propositions de réponse">
         {question.propositions.map((prop) => {
-          let bg = 'var(--card)'
-          let border = '1px solid var(--border)'
-          let color = 'var(--text)'
-          if (selected) {
-            if (prop === question.bonneReponse) { bg = '#0D2B00'; border = '1px solid #4CAF50'; color = '#4CAF50' }
-            else if (prop === selected) { bg = '#2B0000'; border = '1px solid #F44336'; color = '#F44336' }
-          }
+          const isCorrect = Boolean(selected) && prop === question.bonneReponse
+          const isIncorrect = Boolean(selected) && prop === selected && prop !== question.bonneReponse
+
           return (
-            <button key={prop} onClick={() => handleReponse(prop)}
-              style={{ padding: '16px', borderRadius: '12px', backgroundColor: bg, border, color, fontSize: '15px', cursor: selected ? 'default' : 'pointer', fontFamily: 'Georgia, serif', transition: 'all 0.2s' }}>
-              {prop}
+            <button
+              key={prop}
+              type="button"
+              onClick={() => handleReponse(prop)}
+              className={`quiz-answer${isCorrect ? ' is-correct' : ''}${isIncorrect ? ' is-incorrect' : ''}`}
+              aria-disabled={Boolean(selected)}
+            >
+              <span>{prop}</span>
+              {isCorrect && <span className="quiz-answer-status"><span aria-hidden="true">✓</span> Correcte</span>}
+              {isIncorrect && <span className="quiz-answer-status"><span aria-hidden="true">✕</span> Votre réponse</span>}
             </button>
           )
         })}
       </div>
-    </div>
+
+      <div className="quiz-feedback" aria-live="polite">
+        {selected && (
+          selected === question.bonneReponse
+            ? <p className="is-correct"><span aria-hidden="true">✓</span> Bonne réponse.</p>
+            : <p className="is-incorrect"><span aria-hidden="true">✕</span> Pas tout à fait. La bonne réponse est <strong>{question.bonneReponse}</strong>.</p>
+        )}
+      </div>
+    </section>
   )
 }

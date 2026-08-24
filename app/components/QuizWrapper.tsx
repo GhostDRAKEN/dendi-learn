@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Quiz from './Quiz'
 
 type Mot = {
@@ -14,24 +14,34 @@ type Mot = {
 export default function QuizWrapper({ mots }: { mots: Mot[] }) {
   const [modeQuiz, setModeQuiz] = useState(false)
 
+  useEffect(() => {
+    if (!modeQuiz) return
+
+    const overflowInitial = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = overflowInitial
+    }
+  }, [modeQuiz])
+
   if (modeQuiz) {
     return (
-      <div style={{
-        position: 'fixed', inset: 0, backgroundColor: '#0A0A0A',
-        zIndex: 100, overflowY: 'auto',
-      }}>
-        <div style={{ padding: '24px 5vw' }}>
+      <div
+        className="quiz-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quiz Dendi-Learn"
+      >
+        <div className="quiz-overlay-inner">
           <button
+            type="button"
             onClick={() => setModeQuiz(false)}
-            style={{
-              marginBottom: '24px', padding: '8px 16px',
-              borderRadius: '9999px', backgroundColor: 'transparent',
-              border: '1px solid #3A3A3A', color: '#A89A8A',
-              fontSize: '13px', cursor: 'pointer',
-              fontFamily: 'Georgia, serif',
-            }}
+            className="quiz-close-button"
+            aria-label="Fermer le quiz"
+            autoFocus
           >
-            ← Retour
+            <span aria-hidden="true">←</span> Fermer
           </button>
           <Quiz mots={mots} onQuitter={() => setModeQuiz(false)} />
         </div>
