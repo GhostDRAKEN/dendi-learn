@@ -25,7 +25,7 @@ export default function NiveauxPage() {
           {NIVEAUX.map((niveau) => (
             <Link
               key={niveau.slug}
-              href={`/apprendre?niveau=${niveau.slug}`}
+              href={`/parcours?niveau=${niveau.slug}`}
               className={`level-card level-card-${niveau.slug}`}
             >
               <article>

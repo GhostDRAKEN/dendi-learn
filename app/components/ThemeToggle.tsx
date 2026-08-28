@@ -5,17 +5,14 @@ import { supabase } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTheme } from './ThemeProvider'
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(true)
+  const { theme, toggleTheme } = useTheme()
+  const dark = theme === 'dark'
   const [user, setUser] = useState<User | null>(null)
   const [authLoaded, setAuthLoaded] = useState(false)
   const router = useRouter()
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', dark)
-    document.body.classList.toggle('light', !dark)
-  }, [dark])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -39,8 +36,9 @@ export default function ThemeToggle() {
       <button
         type="button"
         className="site-nav-action site-theme-toggle"
-        onClick={() => setDark(!dark)}
+        onClick={toggleTheme}
         aria-label={dark ? 'Passer au thème clair' : 'Passer au thème sombre'}
+        aria-pressed={dark}
       >
         <span aria-hidden="true">{dark ? '☀️' : '🌙'}</span>
         {dark ? 'Clair' : 'Sombre'}

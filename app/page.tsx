@@ -35,7 +35,7 @@ export default async function HomePage() {
           </p>
 
           <div className="home-cta-group">
-            <Link href="/apprendre?niveau=debutant" className="home-cta-primary">
+            <Link href="/parcours?niveau=debutant" className="home-cta-primary">
               <span aria-hidden="true">🌱</span>
               Commencer par le début
             </Link>
