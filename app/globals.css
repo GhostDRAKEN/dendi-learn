@@ -196,6 +196,15 @@ html[data-theme='dark'] body {
   outline-offset: 3px;
 }
 
+.mobile-bottom-nav {
+  display: none;
+}
+
+@keyframes mobile-nav-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes site-nav-loading {
   from { background-position: 100% 0; }
   to { background-position: -100% 0; }
@@ -2434,6 +2443,102 @@ html[data-theme='light'] .quiz-overlay {
   color: var(--text);
 }
 
+@media (max-width: 700px) {
+  body:has(.mobile-bottom-nav) {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+
+  body:has(.mobile-bottom-nav) .site-primary-nav,
+  body:has(.mobile-bottom-nav) .site-profile-link {
+    display: none;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    z-index: 60;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: 7px 12px max(7px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 94%, transparent);
+    box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(14px);
+    animation: mobile-nav-enter 200ms ease-out both;
+  }
+
+  .mobile-bottom-nav-inner {
+    width: min(430px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .mobile-bottom-nav-link {
+    position: relative;
+    min-height: 52px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 3px;
+    padding: 5px 8px;
+    border-radius: 14px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.1;
+    text-decoration: none;
+    transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+  }
+
+  .mobile-bottom-nav-link:hover {
+    color: var(--site-accent);
+    background: rgba(224, 123, 57, 0.07);
+  }
+
+  .mobile-bottom-nav-link.is-active {
+    color: var(--site-accent);
+    background: rgba(224, 123, 57, 0.13);
+    font-weight: 800;
+  }
+
+  .mobile-bottom-nav-link.is-active::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    width: 22px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--site-accent);
+    transform: translateX(-50%);
+  }
+
+  .mobile-bottom-nav-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+  }
+
+  .mobile-bottom-nav-icon svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-bottom-nav-link:focus-visible {
+    outline: 3px solid rgba(224, 123, 57, 0.52);
+    outline-offset: 1px;
+  }
+}
+
 .path-content {
   width: min(900px, calc(100% - 40px));
   margin: 0 auto;
@@ -3852,6 +3957,7 @@ html[data-theme='light'] .quiz-overlay {
   .path-level-options,
   .path-continue-card,
   .path-unit,
+  .mobile-bottom-nav,
   .guided-panel {
     animation: none;
   }
@@ -3880,6 +3986,7 @@ html[data-theme='light'] .quiz-overlay {
   .home-word-card,
   .home-word-link,
   .site-primary-nav a,
+  .mobile-bottom-nav-link,
   .path-level-toggle,
   .path-level-link,
   .path-program-toggle,
