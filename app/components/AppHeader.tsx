@@ -14,6 +14,10 @@ export default function AppHeader({ actions }: { actions?: ReactNode }) {
         </h1>
 
         <div className="site-header-controls">
+          <nav className="site-primary-nav" aria-label="Navigation principale">
+            <Link href="/parcours">Parcours</Link>
+            <Link href="/apprendre">Explorer</Link>
+          </nav>
           {actions && <div className="site-page-actions">{actions}</div>}
           <ThemeToggle />
         </div>

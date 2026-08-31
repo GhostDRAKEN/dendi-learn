@@ -212,7 +212,7 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
       )}
 
       <div className="profile-actions">
-        <Link href="/apprendre" className="profile-primary-action">
+        <Link href="/parcours" className="profile-primary-action">
           Continuer à apprendre
         </Link>
         <button

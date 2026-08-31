@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AppHeader from './components/AppHeader'
+import LearningStartLink from './components/LearningStartLink'
 import { createClient } from '@/lib/supabase/server'
 
 async function getMotDuJour() {
@@ -35,10 +36,7 @@ export default async function HomePage() {
           </p>
 
           <div className="home-cta-group">
-            <Link href="/apprendre?niveau=debutant" className="home-cta-primary">
-              <span aria-hidden="true">🌱</span>
-              Commencer par le début
-            </Link>
+            <LearningStartLink />
             <Link href="/apprendre" className="home-cta-secondary">
               Explorer librement <span aria-hidden="true">→</span>
             </Link>
