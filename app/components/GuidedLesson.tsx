@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import type { CurriculumLesson, CurriculumMot } from '@/lib/curriculum'
+import SoundToggle from './SoundToggle'
+import { useSoundFeedback } from './SoundProvider'
 
 type LessonPhase = 'intro' | 'learn' | 'practice' | 'test' | 'review' | 'result'
 type ExerciseType = 'dendi-fr' | 'fr-dendi' | 'phonetic-fr'
@@ -27,6 +29,18 @@ const PHASE_LABELS: Array<{ id: Exclude<LessonPhase, 'intro' | 'result'>; label:
   { id: 'practice', label: 'Entraînement' },
   { id: 'test', label: 'Test' },
   { id: 'review', label: 'Révision' },
+]
+
+const CORRECT_FEEDBACK = ['Exact !', 'Bien joué !', 'Oui !', 'Continuez comme ça.']
+const PRACTICE_INCORRECT_FEEDBACK = [
+  'Pas encore — voici la bonne réponse :',
+  'Presque — retenons plutôt :',
+  'Regardons la bonne réponse :',
+]
+const TEST_INCORRECT_FEEDBACK = [
+  'Pas tout à fait — bonne réponse :',
+  'Presque — la bonne réponse est :',
+  'À retenir :',
 ]
 
 function stableHash(value: string) {
@@ -206,6 +220,9 @@ export default function GuidedLesson({
   const [savedWrites, setSavedWrites] = useState(0)
   const [saveIssue, setSaveIssue] = useState(false)
   const presentedMotIds = useRef(new Set<number>())
+  const answerLockRef = useRef(false)
+  const lessonFinishedRef = useRef(false)
+  const { playSound } = useSoundFeedback()
 
   const currentPractice = exercises.practice[practiceIndex]
   const currentTest = exercises.test[testIndex]
@@ -265,6 +282,7 @@ export default function GuidedLesson({
       return
     }
 
+    void playSound('phase-complete')
     setPhase('practice')
   }
 
@@ -278,25 +296,31 @@ export default function GuidedLesson({
   }
 
   const answerPractice = (answer: string) => {
-    if (selectedAnswer || !currentPractice) return
+    if (selectedAnswer || answerLockRef.current || !currentPractice) return
+    answerLockRef.current = true
     setSelectedAnswer(answer)
+    void playSound(answer === currentPractice.correctAnswer ? 'correct' : 'incorrect')
   }
 
   const advancePractice = () => {
     if (!selectedAnswer) return
+    answerLockRef.current = false
     if (practiceIndex + 1 < exercises.practice.length) {
       setPracticeIndex((index) => index + 1)
       setSelectedAnswer(null)
       return
     }
 
+    void playSound('phase-complete')
     setSelectedAnswer(null)
     setPhase('test')
   }
 
   const answerTest = (answer: string) => {
-    if (selectedAnswer || !currentTest) return
+    if (selectedAnswer || answerLockRef.current || !currentTest) return
+    answerLockRef.current = true
     setSelectedAnswer(answer)
+    void playSound(answer === currentTest.correctAnswer ? 'correct' : 'incorrect')
 
     if (answer === currentTest.correctAnswer) {
       setTestScore((score) => score + 1)
@@ -308,6 +332,7 @@ export default function GuidedLesson({
 
   const advanceTest = () => {
     if (!selectedAnswer) return
+    answerLockRef.current = false
     if (testIndex + 1 < exercises.test.length) {
       setTestIndex((index) => index + 1)
       setSelectedAnswer(null)
@@ -315,8 +340,10 @@ export default function GuidedLesson({
     }
 
     setSelectedAnswer(null)
-    if (testErrorIds.length > 0) setPhase('review')
-    else finishLesson()
+    if (testErrorIds.length > 0) {
+      void playSound('phase-complete')
+      setPhase('review')
+    } else finishLesson()
   }
 
   const advanceReview = () => {
@@ -334,6 +361,9 @@ export default function GuidedLesson({
   }
 
   const finishLesson = () => {
+    if (lessonFinishedRef.current) return
+    lessonFinishedRef.current = true
+    void playSound('lesson-complete')
     setPhase('result')
     storeResume(nextLesson?.id ?? lesson.id, nextLesson?.niveau ?? lesson.niveau)
   }
@@ -351,6 +381,8 @@ export default function GuidedLesson({
     setRevealedMotIds([])
     setSavedWrites(0)
     setSaveIssue(false)
+    answerLockRef.current = false
+    lessonFinishedRef.current = false
     presentedMotIds.current.clear()
     storeResume(lesson.id, lesson.niveau)
   }
@@ -361,6 +393,13 @@ export default function GuidedLesson({
       : `Continuer vers ${nextLesson.unitTitle}`
     : 'Retour au parcours'
   const translationRevealed = revealedMotIds.includes(lesson.mots[learnIndex].id)
+  const scoreRatio = exercises.test.length > 0 ? testScore / exercises.test.length : 0
+  const resultMessage = scoreRatio >= 0.8
+    ? 'Très belle maîtrise.'
+    : scoreRatio >= 0.5
+      ? 'Bonne progression.'
+      : 'Continuez — les mots difficiles reviendront.'
+  const reachesUnitBoundary = !nextLesson || nextLesson.unitId !== lesson.unitId
 
   return (
     <main className="guided-page">
@@ -372,6 +411,7 @@ export default function GuidedLesson({
           <span>{lesson.unitTitle}</span>
           <strong>Leçon {lesson.index} sur {lesson.totalInUnit}</strong>
         </div>
+        <SoundToggle compact />
       </header>
 
       <div className="guided-shell">
@@ -380,7 +420,7 @@ export default function GuidedLesson({
             <p className="guided-eyebrow">{lesson.unitTitle}</p>
             <h1 id="guided-intro-title">{lesson.title}</h1>
             <p className="guided-lead">
-              Commencez par découvrir tranquillement les {lesson.mots.length} mots de cette leçon.
+              Prêt ? Découvrez tranquillement les {lesson.mots.length} mots de cette leçon.
             </p>
             <div className="guided-intro-summary" aria-label="Contenu de la leçon">
               <span><strong>{lesson.mots.length}</strong> mots</span>
@@ -388,7 +428,7 @@ export default function GuidedLesson({
               <span>Pratiquer</span>
             </div>
             <button type="button" onClick={startLesson} className="guided-primary-button">
-              Commencer <span aria-hidden="true">→</span>
+              Commencer la leçon <span aria-hidden="true">→</span>
             </button>
           </section>
         )}
@@ -411,6 +451,12 @@ export default function GuidedLesson({
                 </button>
               )}
             </article>
+            {translationRevealed && learnIndex + 1 === lesson.mots.length && (
+              <div className="guided-transition-note">
+                <strong>Les mots sont en place.</strong>
+                <span>Maintenant, entraînons-nous.</span>
+              </div>
+            )}
             <div className="guided-learn-actions">
               {learnIndex > 0 && (
                 <button type="button" onClick={goBackLearning} className="guided-back-button">
@@ -432,8 +478,8 @@ export default function GuidedLesson({
             <PhaseProgress phase="practice" current={practiceIndex + 1} total={exercises.practice.length} itemLabel="Question guidée" />
             {practiceIndex === 0 && (
               <div className="guided-phase-intro">
-                <strong>Vous pouvez essayer.</strong>
-                <p>Reconnaissons ensemble les mots que vous venez d’apprendre.</p>
+                <strong>S’entraîner</strong>
+                <p>Essayons tranquillement de reconnaître les mots que vous venez d’apprendre.</p>
               </div>
             )}
             <article className="guided-question-card">
@@ -447,9 +493,15 @@ export default function GuidedLesson({
               onAnswer={answerPractice}
               gentle
             />
+            {selectedAnswer && practiceIndex + 1 === exercises.practice.length && (
+              <div className="guided-transition-note is-test">
+                <strong>Bien.</strong>
+                <span>Vous êtes prêt pour le test.</span>
+              </div>
+            )}
             {selectedAnswer && (
               <button type="button" onClick={advancePractice} className="guided-primary-button">
-                {practiceIndex + 1 < exercises.practice.length ? 'Continuer' : 'Passer au test'}
+                {practiceIndex + 1 < exercises.practice.length ? 'Continuer' : 'Commencer le test'}
                 <span aria-hidden="true">→</span>
               </button>
             )}
@@ -461,8 +513,8 @@ export default function GuidedLesson({
             <PhaseProgress phase="test" current={testIndex + 1} total={exercises.test.length} itemLabel="Question du test" />
             {testIndex === 0 && (
               <div className="guided-phase-intro is-test">
-                <strong>Prêt pour le test ?</strong>
-                <p>Cette fois, essayez sans aide.</p>
+                <strong>Le test commence.</strong>
+                <p>Voyons ce que vous avez retenu, sans aide.</p>
               </div>
             )}
             <article className="guided-question-card">
@@ -471,6 +523,16 @@ export default function GuidedLesson({
               {currentTest.detail && <span>{currentTest.detail}</span>}
             </article>
             <QuestionAnswers exercise={currentTest} selectedAnswer={selectedAnswer} onAnswer={answerTest} />
+            {selectedAnswer && testIndex + 1 === exercises.test.length && (
+              <div className="guided-transition-note is-test">
+                <strong>Test terminé.</strong>
+                <span>
+                  {testErrorIds.length > 0
+                    ? 'Revoyons rapidement les mots difficiles.'
+                    : 'Très bien — aucune révision nécessaire.'}
+                </span>
+              </div>
+            )}
             {selectedAnswer && (
               <button type="button" onClick={advanceTest} className="guided-primary-button">
                 {testIndex + 1 < exercises.test.length
@@ -487,7 +549,7 @@ export default function GuidedLesson({
             <PhaseProgress phase="review" current={reviewIndex + 1} total={reviewWords.length} itemLabel="Mot à revoir" />
             <header className="guided-review-heading">
               <p className="guided-eyebrow">À revoir</p>
-              <h1 id="guided-review-title">Retenons ce mot</h1>
+              <h1 id="guided-review-title">Test terminé.</h1>
               <p>Revoyons rapidement les mots difficiles.</p>
             </header>
             <article className="guided-word-card guided-review-card">
@@ -508,9 +570,15 @@ export default function GuidedLesson({
           <section className="guided-panel guided-result" aria-labelledby="guided-result-title" aria-live="polite">
             <p className="guided-result-mark" aria-hidden="true">✓</p>
             <p className="guided-eyebrow">Leçon terminée</p>
-            <h1 id="guided-result-title">
-              {testErrorIds.length === 0 ? 'Très beau résultat !' : 'Vous avez avancé.'}
-            </h1>
+            <h1 id="guided-result-title">{resultMessage}</h1>
+            {testErrorIds.length === 0 && (
+              <p className="guided-result-context">Test terminé — aucune révision nécessaire.</p>
+            )}
+            {reachesUnitBoundary && (
+              <p className="guided-unit-complete">
+                <span aria-hidden="true">◇</span> Unité {lesson.unitTitle} parcourue
+              </p>
+            )}
             <div className="guided-score" aria-label={`${testScore} bonnes réponses sur ${exercises.test.length} au test`}>
               <strong>{testScore} / {exercises.test.length}</strong>
               <span>au test</span>
@@ -566,6 +634,10 @@ function QuestionAnswers({
   gentle?: boolean
 }) {
   const answerIsCorrect = selectedAnswer === exercise.correctAnswer
+  const feedbackIndex = stableHash(`${exercise.mot.id}-${exercise.type}-${gentle ? 'practice' : 'test'}`)
+  const correctFeedback = CORRECT_FEEDBACK[feedbackIndex % CORRECT_FEEDBACK.length]
+  const incorrectFeedbacks = gentle ? PRACTICE_INCORRECT_FEEDBACK : TEST_INCORRECT_FEEDBACK
+  const incorrectFeedback = incorrectFeedbacks[feedbackIndex % incorrectFeedbacks.length]
 
   return (
     <>
@@ -592,10 +664,10 @@ function QuestionAnswers({
       <div className="guided-feedback" aria-live="polite">
         {selectedAnswer && (
           answerIsCorrect
-            ? <p className="is-correct"><span aria-hidden="true">✓</span> {gentle ? 'Bien vu — vous pouvez continuer.' : 'Correct'}</p>
+            ? <p className="is-correct"><span aria-hidden="true">✓</span> {correctFeedback}</p>
             : (
               <p className="is-incorrect">
-                <span aria-hidden="true">✕</span> {gentle ? 'Pas encore — voici la bonne réponse :' : 'Pas tout à fait — bonne réponse :'} <strong>{exercise.correctAnswer}</strong>.
+                <span aria-hidden="true">✕</span> {incorrectFeedback} <strong>{exercise.correctAnswer}</strong>.
               </p>
             )
         )}

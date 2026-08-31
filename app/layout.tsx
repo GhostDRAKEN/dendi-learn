@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "./components/Footer";
 import MobileBottomNav from "./components/MobileBottomNav";
+import SoundProvider from "./components/SoundProvider";
 import ThemeProvider from "./components/ThemeProvider";
 import "./globals.css";
 
@@ -43,11 +44,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          {children}
-          <Suspense fallback={null}>
-            <MobileBottomNav />
-          </Suspense>
-          <Footer />
+          <SoundProvider>
+            {children}
+            <Suspense fallback={null}>
+              <MobileBottomNav />
+            </Suspense>
+            <Footer />
+          </SoundProvider>
         </ThemeProvider>
       </body>
     </html>

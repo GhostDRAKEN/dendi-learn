@@ -6,6 +6,7 @@ import type { User } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTheme } from './ThemeProvider'
+import SoundToggle from './SoundToggle'
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -32,7 +33,7 @@ export default function ThemeToggle() {
   }
 
   return (
-    <nav className="site-account-nav" aria-label="Compte et apparence" aria-busy={!authLoaded}>
+    <nav className="site-account-nav" aria-label="Compte et préférences" aria-busy={!authLoaded}>
       <button
         type="button"
         className="site-nav-action site-theme-toggle"
@@ -43,6 +44,8 @@ export default function ThemeToggle() {
         <span aria-hidden="true">{dark ? '☀️' : '🌙'}</span>
         {dark ? 'Clair' : 'Sombre'}
       </button>
+
+      <SoundToggle />
 
       {!authLoaded ? (
         <span className="site-auth-placeholder" aria-hidden="true" />
