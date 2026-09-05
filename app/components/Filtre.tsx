@@ -138,6 +138,25 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
         )}
       </div>
 
+      <div className="learn-mobile-category">
+        <label htmlFor="learn-category-select">Catégorie</label>
+        <select id="learn-category-select" value={active} onChange={(event) => handleCategorieChange(event.target.value)}>
+          <option value="Tous">Toutes les catégories ({mots.length})</option>
+          {CATEGORIES_ORDER.filter(cat => cat !== 'Tous').map(cat => {
+            if (cat === 'temps') {
+              const available = TEMPS_SOUS_CATEGORIES.filter(sub => categoriesDisponibles.has(sub))
+              return available.length > 0 ? (
+                <optgroup key={cat} label="Temps">
+                  <option value="temps">Temps — tous les mots ({countForCat('temps')})</option>
+                  {available.map(sub => <option key={sub} value={sub}>{CATEGORIES_LABELS[sub]} ({countForCat(sub)})</option>)}
+                </optgroup>
+              ) : null
+            }
+            return categoriesDisponibles.has(cat) ? <option key={cat} value={cat}>{CATEGORIES_LABELS[cat]} ({countForCat(cat)})</option> : null
+          })}
+        </select>
+      </div>
+
       <div className="learn-categories" role="group" aria-label="Filtrer les mots par catégorie">
         {CATEGORIES_ORDER.map((cat) => {
           // Cacher ⊞ si niveau actif

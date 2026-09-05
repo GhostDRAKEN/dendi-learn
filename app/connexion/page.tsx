@@ -21,24 +21,24 @@ export default function ConnexionPage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+    <main className="auth-page" style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: '400px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '20px', padding: '40px 32px' }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>← Dendi Learn</p>
         </Link>
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>Se connecter</h1>
-        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouve ta progression et continue d&apos;apprendre.</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouvez votre progression et continuez d&apos;apprendre.</p>
 
         <div style={{ marginBottom: '16px' }}>
-          <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton@email.com"
-            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none', boxSizing: 'border-box' }} />
+          <label htmlFor="email" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Email</label>
+          <input id="email" autoComplete="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton@email.com"
+            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Mot de passe</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Ton mot de passe"
-            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none', boxSizing: 'border-box' }} />
+          <label htmlFor="password" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Mot de passe</label>
+          <input id="password" autoComplete="current-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Ton mot de passe"
+            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
         </div>
 
         {error && <p style={{ color: '#F44336', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}

@@ -55,7 +55,7 @@ export default function QuizWrapper({ mots }: { mots: Mot[] }) {
       onClick={() => setModeQuiz(true)}
       className="quiz-launch-button"
     >
-      Mode Quiz
+      Lancer un quiz
     </button>
   )
 }

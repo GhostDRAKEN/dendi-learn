@@ -25,7 +25,7 @@ export default async function ParcoursPage({
   if (motsError || !mots) {
     return (
       <main className="path-page">
-        <AppHeader />
+        <AppHeader page="parcours" />
         <section className="path-load-error" role="alert">
           <h2>Parcours indisponible</h2>
           <p>Impossible de charger les leçons pour le moment.</p>
@@ -55,7 +55,7 @@ export default async function ParcoursPage({
   if (!section || !recommendedLesson) {
     return (
       <main className="path-page">
-        <AppHeader />
+        <AppHeader page="parcours" />
         <section className="path-load-error" role="status">
           <h2>Aucune leçon disponible</h2>
           <p>Le parcours ne contient pas encore de mots pour ce niveau.</p>
@@ -66,7 +66,7 @@ export default async function ParcoursPage({
 
   return (
     <main className="path-page">
-      <AppHeader />
+      <AppHeader page="parcours" />
       <ParcoursOverview
         section={section}
         progression={progression}

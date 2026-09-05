@@ -22,7 +22,7 @@ export default async function ApprendrePage({
 
   return (
     <main className="learn-page">
-      <AppHeader actions={<QuizWrapper mots={mots ?? []} />} />
+      <AppHeader page="apprendre" />
 
       <section className="learn-content" aria-labelledby="learn-title">
         <div className="learn-intro">
@@ -32,6 +32,7 @@ export default async function ApprendrePage({
             <p className="learn-subtitle">
               Recherchez un mot, choisissez une catégorie ou explorez librement les cartes.
             </p>
+            <div className="explorer-quiz-action"><QuizWrapper mots={mots ?? []} /></div>
           </div>
 
           <div className="learn-level-summary">

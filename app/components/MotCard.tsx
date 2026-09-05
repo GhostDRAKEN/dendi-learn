@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import PronunciationButton from './PronunciationButton'
 
 type Mot = {
   id: number
@@ -40,8 +41,9 @@ export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () =
             onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
             className="mot-card-text-action"
           >
-            {modePhon ? 'Voir l\'écriture officielle' : 'Voir la prononciation'}
+            {modePhon ? 'Voir l\'écriture Dendi' : 'Voir la phonétique'}
           </button>
+          <PronunciationButton wordId={mot.id} word={mot.dendi} />
           <div className="mot-card-divider" aria-hidden="true" />
           <p className="mot-card-reminder">{mot.fr}</p>
           <button

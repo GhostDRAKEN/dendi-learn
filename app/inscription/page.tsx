@@ -36,7 +36,7 @@ export default function InscriptionPage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+    <main className="auth-page" style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{
         width: '100%', maxWidth: '400px',
         backgroundColor: 'var(--card)',
@@ -51,10 +51,10 @@ export default function InscriptionPage() {
         </Link>
 
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>
-          Créer un compte
+          Créer votre compte
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>
-          Sauvegarde ta progression et suis ton apprentissage.
+          Sauvegardez votre progression et retrouvez-la sur vos appareils.
         </p>
 
         {success ? (
@@ -68,11 +68,11 @@ export default function InscriptionPage() {
         ) : (
           <>
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>
+              <label htmlFor="email" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>
                 Email
               </label>
               <input
-                type="email"
+                id="email" autoComplete="email" type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ton@email.com"
@@ -80,18 +80,18 @@ export default function InscriptionPage() {
                   width: '100%', padding: '12px 16px',
                   borderRadius: '12px', border: '1px solid var(--border)',
                   backgroundColor: 'var(--input-bg)', color: 'var(--text)',
-                  fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none',
+                  fontSize: '14px', fontFamily: 'Georgia, serif',
                   boxSizing: 'border-box',
                 }}
               />
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>
+              <label htmlFor="password" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>
                 Mot de passe
               </label>
               <input
-                type="password"
+                id="password" autoComplete="new-password" type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min. 6 caractères"
@@ -99,7 +99,7 @@ export default function InscriptionPage() {
                   width: '100%', padding: '12px 16px',
                   borderRadius: '12px', border: '1px solid var(--border)',
                   backgroundColor: 'var(--input-bg)', color: 'var(--text)',
-                  fontSize: '14px', fontFamily: 'Georgia, serif', outline: 'none',
+                  fontSize: '14px', fontFamily: 'Georgia, serif',
                   boxSizing: 'border-box',
                 }}
               />

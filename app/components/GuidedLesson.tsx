@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import type { CurriculumLesson, CurriculumMot } from '@/lib/curriculum'
 import SoundToggle from './SoundToggle'
+import PronunciationButton from './PronunciationButton'
 import { useSoundFeedback } from './SoundProvider'
 
 type LessonPhase = 'intro' | 'learn' | 'practice' | 'test' | 'review' | 'result'
@@ -440,6 +441,7 @@ export default function GuidedLesson({
               <p className="guided-word-label">Dendi</p>
               <h1 id="guided-learn-title">{lesson.mots[learnIndex].dendi}</h1>
               <p className="guided-word-phonetic">{lesson.mots[learnIndex].phonetique}</p>
+              <PronunciationButton wordId={lesson.mots[learnIndex].id} word={lesson.mots[learnIndex].dendi} />
               {translationRevealed ? (
                 <div className="guided-translation" aria-live="polite">
                   <div className="guided-word-divider" aria-hidden="true" />
@@ -556,6 +558,7 @@ export default function GuidedLesson({
               <p className="guided-word-label">Dendi</p>
               <h2>{reviewWords[reviewIndex].dendi}</h2>
               <p className="guided-word-phonetic">{reviewWords[reviewIndex].phonetique}</p>
+              <PronunciationButton wordId={reviewWords[reviewIndex].id} word={reviewWords[reviewIndex].dendi} />
               <div className="guided-word-divider" aria-hidden="true" />
               <p className="guided-word-french">{reviewWords[reviewIndex].fr}</p>
             </article>
