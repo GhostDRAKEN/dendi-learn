@@ -4,7 +4,13 @@
 
 ## 🎯 Pourquoi ce projet ?
 
-Le Dendi est une langue parlée dans le nord du Bénin, mais elle n'existait sur aucune plateforme d'apprentissage en ligne. Dendi-Learn est né d'une volonté de préservation culturelle et linguistique — pas d'une logique commerciale.
+Le Dendi est une langue du nord du Bénin qui porte une histoire, une culture et un patrimoine linguistique importants.
+
+Avec l’évolution des usages et la place grandissante du numérique, l’un des enjeux est de faciliter sa transmission, notamment auprès des jeunes générations, des personnes qui ne la pratiquent plus régulièrement et de celles qui souhaitent la découvrir.
+
+Dendi-Learn est né de cette volonté : utiliser le numérique comme outil de vulgarisation, d’apprentissage et de valorisation de la langue.
+
+Le projet n’est pas pensé en priorité dans une logique commerciale, mais comme une contribution à la transmission culturelle et linguistique.
 
 ## ✨ Fonctionnalités
 
