@@ -20,32 +20,51 @@ avec validation humaine ; aucune correction automatique.
 
 ## Ajouter progressivement de vrais enregistrements
 
-Le manifeste `lib/pronunciation-manifest.json` est volontairement vide.
-Il associe la clé numérique de mots.id (clé JSON sous forme de chaîne décimale)
-à un objet avec `path`, et éventuellement `speaker`, `variant`, `source`,
-`recordedAt` (date ISO), `validated` (booléen). Ne pas inventer ces métadonnées.
-L’absence de validated ne vaut pas validation. Vérifier humainement chaque
-association entre mot et enregistrement avant de la publier.
+Le manifeste `lib/pronunciation-manifest.json` déclare les 27 WAV réels du lot
+pilote intégré le 10 novembre 2026. Il associe l’ID décimal du mot à `path`,
+`speakerId` et `format: "wav"`. Les champs `speaker`, `variant`, `source`,
+`recordedAt` et `validated` restent optionnels : ils ne sont jamais déduits
+automatiquement, hormis l’identifiant technique du locuteur inscrit dans le nom.
+`spk001` ne donne aucune information sur son nom, sa région, son sexe ou son statut.
 
-1. Enregistrer un locuteur Dendi avec son accord de diffusion ; conserver
-   la provenance, la zone/variété déclarée, la date et l’identité ou référence
-   consentie du locuteur, ainsi que la trace de relecture et de validation.
-2. Vérifier l’ID exact dans le corpus ; écouter et valider le fichier avec
-   un relecteur natif. Vérifier format, volume, absence de coupure et de silence excessif.
-3. Placer le vrai fichier dans `public/audio/dendi/{wordId}.mp3` (format recommandé),
-   ou `.webm` / `.wav`. Le chemin public est `/audio/dendi/{wordId}.mp3`.
-   Utiliser l’ID sans zéro initial, jamais seulement l’orthographe.
-4. Ajouter uniquement cette entrée au manifeste avec son chemin réel et les
-   métadonnées connues. Une entrée désigne actuellement un enregistrement ;
-   le support de plusieurs variantes par mot pourra être décidé ultérieurement.
-5. Exécuter TypeScript, lint, build et vérifier manuellement l’écoute.
-   next.config.ts refuse un chemin non conforme, un fichier absent ou vide.
-   Publier le manifeste et ses fichiers ensemble. Redémarrer le serveur de
-   développement après un ajout pour relancer la vérification des assets.
+Convention officielle : `public/audio/dendi/ddn_{wordId sur au moins 3 chiffres}_{speakerId}.wav`.
+Exemple réel pour l’ID 1 : `/audio/dendi/ddn_001_spk001.wav`.
+L’ID du manifeste reste `"1"`, pas `"001"`. Les speaker IDs vont de `spk001`
+à `spk999`. Le mot est complété à gauche à trois chiffres, sans zéro superflu.
+L’ancienne convention `{wordId}.mp3`, `.webm` ou `.wav` est remplacée.
+Les WAV existants ne sont ni renommés ni convertis.
 
-Pas de 182 entrées factices, de TTS générique, de speechSynthesis, de voix
-fabriquée à partir de la phonétique, de téléchargement Internet ni de son
-repris d’une autre application. Aucun enregistrement n’a été ajouté dans cette passe.
+L’entrée principale désigne le locuteur par défaut. Pour un futur deuxième
+locuteur, déclarer son objet dans `alternatives`, avec son propre `path`,
+`speakerId` et `format`, par exemple `ddn_001_spk002.wav`.
+`getPronunciation(wordId)` conserve le défaut ; `getPronunciation(wordId, speakerId)`
+peut résoudre une autre prise. Aucun sélecteur de locuteur n’est ajouté à l’UX.
+Un couple mot/locuteur apparaît une seule fois. Tous les fichiers publics doivent
+être déclarés ; un autre locuteur non déclaré est signalé comme orphelin.
+
+Présence, intégration et validation linguistique sont trois états distincts.
+L’intégration technique des fichiers réels est autorisée sans prétendre à une
+validation humaine indépendante. Aucun des 27 fichiers n’a reçu `validated: true`.
+Ce champ ne devient vrai qu’avec une décision documentée et un relecteur renseigné.
+Le rapport conserve donc 27 fichiers présents/intégrés et 0 validation documentée.
+
+Pour ajouter des fichiers :
+
+1. Identifier l’ID exact et le speaker ID ; documenter séparément les informations
+   réellement connues et conserver l’accord du locuteur dans un espace approprié.
+2. Déposer les vrais WAV sous leur nom officiel, sans modifier le contenu linguistique.
+3. Exécuter `python scripts/generate-pronunciation-manifest.py`. Le générateur
+   refuse les fichiers invalides/inconnus et préserve les métadonnées existantes.
+   Il ne fabrique aucune validation. Avec plusieurs locuteurs sans défaut existant,
+   choisir explicitement `--default-speaker spk001`.
+4. Exécuter `python scripts/check-pronunciation-assets.py --require-pilot` et
+   consulter `docs/data/pronunciation-coverage.md`. L’option `--require-validation`
+   rend les validations manquantes bloquantes dans un contrôle éditorial distinct.
+5. Vérifier l’écoute sur téléphone, puis TypeScript, lint et build. Publier les
+   fichiers et le manifeste ensemble. next.config.ts valide le nom, l’ID,
+   les métadonnées techniques, l’unicité du locuteur et la présence du fichier.
+
+Pas de TTS, de voix issue de la phonétique ou de téléchargement d’autres applications.
 Le stockage distant sera décidé séparément, sans migration Supabase ici.
 
 ## Deux systèmes indépendants

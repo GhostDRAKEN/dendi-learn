@@ -39,27 +39,29 @@ privé ; les CSV et métadonnées publiés ne contiennent que les références c
    sans passer par un service qui recompresse les messages vocaux.
 8. Ne pas compresser plusieurs fois. Si le téléphone produit du M4A, le garder
    comme original hors application puis faire au besoin une seule conversion
-   vers un format autorisé. Renommer l’extension ne convertit pas le fichier.
+   vers le WAV de publication. Les WAV réels actuellement fournis sont conservés intacts, sans conversion. Renommer l’extension ne convertit pas le fichier.
 
 Une prise n’est finale qu’après écoute et validation linguistique humaine.
 Les scripts ne peuvent pas attester de la vraie prononciation ni du consentement.
 
 ## Dossiers et noms
 
-Les prises brutes, variantes et fichiers à relire restent dans un espace de
-travail privé **hors de `public/` et hors du dépôt**. Un sous-dossier par ID
-peut y regrouper les prises ; cette organisation privée n’est pas la convention
-de publication. Aucun fichier de test ou non validé dans le manifeste.
+Les prises de travail restent dans un espace privé hors de `public/`. Les vrais
+WAV intégrés utilisent désormais la convention officielle :
 
-Après validation, placer un seul fichier final par ID dans :
+`public/audio/dendi/ddn_{word_id sur au moins 3 chiffres}_{speaker_id}.wav`
 
-`public/audio/dendi/{word_id}.mp3`
+Exemples réels : `ddn_001_spk001.wav`, `ddn_011_spk001.wav`, `ddn_188_spk001.wav`.
+Pour le mot 1, le chemin public est `/audio/dendi/ddn_001_spk001.wav`.
+L’ID lexical reste l’entier 1. Utiliser le remplissage minimum à trois chiffres ;
+`ddn_0001_spk001.wav` est rejeté. `speaker_id` suit `spk001` à `spk999`.
+Seule l’extension `.wav` minuscule est utilisée par cette convention.
 
-Le chemin utilisé par le manifeste est `/audio/dendi/{word_id}.mp3`.
-`.webm` et `.wav` sont aussi autorisés, en minuscules. Garder l’ID exact sans
-zéro initial. Pas de nom fondé seulement sur l’orthographe. Si un autre format
-autorisé est choisi, mettre à jour `expected_filename` dans le pilote.
-Pas de variantes ni de plusieurs extensions pour un même ID dans le dossier public.
+Ne pas renommer les WAV fournis en noms basés sur l’orthographe ou l’ancien
+`1.mp3`. Ne pas les convertir en MP3. Une prise par couple mot/locuteur ;
+un deuxième locuteur utilise `ddn_001_spk002.wav`. Il doit être déclaré comme
+alternative dans le manifeste pour ne pas rester orphelin. Aucun doublon exact
+de chemin, de couple mot/locuteur ou de contenu audio n’est accepté.
 
 ## Fichiers de suivi
 
@@ -67,8 +69,9 @@ Pas de variantes ni de plusieurs extensions pour un même ID dans le dossier pub
   Les six premiers champs sont copiés sans normalisation depuis Supabase.
   Les colonnes inconnues restent vides ; vide ne signifie ni faux ni validé.
 - `docs/data/pronunciation-pilot.csv` : proposition de prises, pas un lot approuvé.
-  `recorded` reste vide avant constat d’une prise réelle ; utiliser `true` une
-  fois enregistrée. Ce statut ne donne aucune autorisation de publication.
+  `recorded=true` indique la présence constatée d’une prise réelle. Les 27 prises
+  sont actuellement présentes et intégrées, sans validation linguistique documentée.
+  La colonne `linguistic_validated` reste vide ; ces états ne se confondent pas.
 - `linguistic_validated` : mettre `true` uniquement après validation documentée,
   `false` si une décision explicite de non-validation existe, sinon laisser vide.
   Reporter la décision dans les deux CSV, puis `validated_by` dans l’inventaire.
@@ -76,7 +79,9 @@ Pas de variantes ni de plusieurs extensions pour un même ID dans le dossier pub
   `source` désigne la provenance linguistique, pas simplement « Supabase ».
 - `audio_status` peut suivre `recorded`, `in_review`, `validated`, `published` ;
   il reste vide dans l’export initial. `audio_file` contient seulement le nom
-  final, par exemple l’ID suivi de `.mp3`, quand ce fichier a été intégré.
+  officiel, tel que `ddn_001_spk001.wav`, si cette annotation est renseignée.
+  Le rapport technique calcule présence/intégration depuis les fichiers et le manifeste,
+  sans remplir automatiquement les annotations de l’inventaire.
 - `notes` peut contenir les remarques, la date d’enregistrement ISO, la référence
   de validation et les points à revoir, sans donnée personnelle non consentie.
 
@@ -86,26 +91,28 @@ Ne pas lancer de nettoyage, de correction orthographique ou de dédoublonnage au
 
 ## Intégration du pilote
 
-1. Faire relire le CSV pilote, puis enregistrer progressivement les candidats acceptés.
-2. Valider le fichier réel et son association exacte à l’ID ; mettre à jour les
-   annotations des CSV. Une correction linguistique proposée reste à traiter
-   séparément avec accord humain, sans écraser les six colonnes sources ici.
-3. Copier le fichier final dans le dossier public, puis ajouter uniquement son
-   entrée à `lib/pronunciation-manifest.json` : `path`, `validated: true`, et les
-   métadonnées connues (`speaker`, `variant`, `source`, `recordedAt`).
-4. Le résolveur actuel affiche toute entrée du manifeste, sans filtrer `validated`.
-   Le manifeste est donc une liste de publication, jamais une file d’attente.
-   Le nouveau contrôle signale comme erreur toute entrée publiée sans
-   `validated: true`, `linguistic_validated=true` et `validated_by` dans l’inventaire.
-5. Exécuter les contrôles ci-dessous avant chaque intégration. Fichiers et
-   manifeste doivent être livrés ensemble. Ne rien publier tant qu’une erreur
-   de cohérence ou une validation manquante subsiste.
-6. Écouter manuellement dans l’application sur téléphone : bon mot, bon son,
-   début et fin entiers, volume confortable, arrêt/relecture fonctionnels.
-   Vérifier l’écoute avec les sons d’interface désactivés.
+1. Enregistrer les mots avec leur ID exact et faire documenter leur variété et leur
+   relecture lorsque ces informations sont disponibles. Ne pas corriger les textes
+   source automatiquement.
+2. Placer les vrais WAV dans le dossier public et lancer le générateur de manifeste.
+   Il ajoute seulement `path`, `speakerId`, `format: "wav"` et conserve les métadonnées
+   connues des entrées existantes. Il ne marque jamais un fichier comme validé.
+3. La racine de chaque entrée reste le défaut de lecture ; `alternatives` peut
+   contenir d’autres locuteurs. Le générateur préserve le défaut existant et exige
+   un choix explicite si plusieurs locuteurs sont nouveaux.
+4. Le résolveur affiche le bouton pour tout fichier déclaré, indépendamment du champ
+   `validated`. Cette disponibilité technique ne signifie pas validation linguistique.
+   Ne définir `validated: true` qu’après décision explicite avec
+   `linguistic_validated=true` et `validated_by` dans l’inventaire. Le contrôle
+   signale une validation annoncée sans ces justificatifs.
+5. Exécuter les contrôles techniques et consulter les trois états du rapport pilote.
+   Le contrôle éditorial `--require-validation` reste distinct et échoue actuellement,
+   puisque les 27 enregistrements n’ont pas de validation documentée.
+6. Écouter manuellement dans l’application : bon mot, début et fin entiers, volume
+   confortable, arrêt/relecture. Vérifier avec les sons d’interface désactivés.
+   Le contrôle Python vérifie le WAV PCM et ses trames, mais ne juge pas la langue.
 
-Sans entrée dans le manifeste, le bouton reste masqué. Aucun audio synthétique,
-aucun téléchargement Internet, aucune voix générée à partir de la phonétique.
+Sans fichier déclaré pour un mot, aucun bouton n’apparaît. Aucune synthèse vocale.
 
 ## Commandes reproductibles
 
@@ -115,8 +122,10 @@ Depuis la racine du dépôt, Python 3.9+ sans dépendance externe :
 python scripts/export-dendi-inventory.py --output docs/data/dendi-content-audit-new.csv
 python scripts/audit-dendi-content.py --report docs/data/dendi-content-audit-report.md
 python scripts/propose-pronunciation-pilot.py --output docs/data/pronunciation-pilot-new.csv
+python scripts/generate-pronunciation-manifest.py
 python scripts/check-pronunciation-assets.py --report docs/data/pronunciation-coverage.md
 python scripts/check-pronunciation-assets.py --require-pilot
+python scripts/check-pronunciation-assets.py --require-pilot --require-validation
 npx tsc --noEmit --incremental false
 npm run lint
 npm run build
@@ -132,14 +141,14 @@ Audit et contrôle audio lisent uniquement les entrées ; ils affichent leur
 rapport. `--report` écrit seulement le rapport dérivé demandé. Le contrôle
 audio ne télécharge rien, ne répare rien et ne modifie jamais le manifeste.
 
-Le contrôle audio retourne 0 si la structure est cohérente, même si les prises
-du pilote n’existent pas encore ; 1 en cas d’erreur de cohérence, ou de pilote
-incomplet avec `--require-pilot` ; 2 si le contrôle ne peut pas s’exécuter.
-Le mode strict doit donc échouer tant que les 27 mots ne sont pas intégrés et validés.
-Le script vérifie noms, IDs, extensions, taille, doublons, orphelins, manifeste
-et traces de validation. Il ne décode pas les codecs et ne mesure pas le bruit,
-la durée ou la saturation : l’écoute technique et linguistique reste obligatoire.
+Le contrôle audio retourne 0 si la structure est cohérente, 1 en cas d’erreur
+ou d’exigence non satisfaite, 2 si le contrôle ne peut pas s’exécuter.
+`--require-pilot` exige la présence et l’intégration des fichiers attendus ; il passe
+pour les 27 WAV actuels. `--require-validation` exige une validation documentée de
+chaque enregistrement intégré ; il ne passe pas pour ce lot non encore relu.
 
-La couverture distingue fichiers locaux et audio intégré avec validation
-documentée ; elle est détaillée par niveau et catégorie. Aucun script n’est
-ajouté automatiquement au build : exécuter explicitement ce contrôle avant publication.
+Le script contrôle noms, speaker IDs, IDs lexicaux, extensions, tailles, WAV PCM
+complets, doublons exacts, orphelins et cohérence du manifeste. La couverture
+technique est calculée séparément de la validation, par niveau et catégorie.
+Il ne mesure pas le bruit, la saturation ou l’adéquation linguistique.
+Aucun contrôle Python n’est ajouté automatiquement au build.

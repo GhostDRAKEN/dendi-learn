@@ -1,6 +1,7 @@
 """Propose up to 30 beginner words without editing the curriculum or existing CSVs."""
 import argparse
 import csv
+import re
 import importlib.util
 from pathlib import Path
 import sys
@@ -16,7 +17,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--inventory', type=Path, default=ROOT / 'docs/data/dendi-content-audit.csv')
     parser.add_argument('--output', type=Path, default=ROOT / 'docs/data/pronunciation-pilot.csv')
+    parser.add_argument('--speaker-id', default='spk001', help='Identifiant technique du futur locuteur, sans validation implicite.')
     args = parser.parse_args()
+    if not re.fullmatch(r'spk[0-9]{3}', args.speaker_id) or args.speaker_id == 'spk000':
+        parser.error('Speaker ID attendu : spk001 à spk999.')
     if args.output.exists():
         parser.error('Le pilote existe déjà ; choisir un nouveau --output pour préserver les annotations.')
     rows = audit.read_inventory(args.inventory)
@@ -34,7 +38,7 @@ def main():
         writer.writeheader()
         for row in selected:
             writer.writerow({**{key: row[key] for key in fields[:4]},
-                             'expected_filename': f'{row["word_id"]}.mp3',
+                             'expected_filename': f'ddn_{int(row["word_id"]):03d}_{args.speaker_id}.wav',
                              'notes': 'Lot proposé ; validation linguistique requise avant enregistrement final.'})
     print(f'{len(selected)} candidats ; absence de signal automatique ≠ validation linguistique.')
 

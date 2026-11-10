@@ -1,1 +1,137 @@
-{}
+{
+  "1": {
+    "path": "/audio/dendi/ddn_001_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "2": {
+    "path": "/audio/dendi/ddn_002_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "6": {
+    "path": "/audio/dendi/ddn_006_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "7": {
+    "path": "/audio/dendi/ddn_007_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "8": {
+    "path": "/audio/dendi/ddn_008_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "11": {
+    "path": "/audio/dendi/ddn_011_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "12": {
+    "path": "/audio/dendi/ddn_012_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "13": {
+    "path": "/audio/dendi/ddn_013_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "14": {
+    "path": "/audio/dendi/ddn_014_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "17": {
+    "path": "/audio/dendi/ddn_017_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "18": {
+    "path": "/audio/dendi/ddn_018_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "19": {
+    "path": "/audio/dendi/ddn_019_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "21": {
+    "path": "/audio/dendi/ddn_021_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "22": {
+    "path": "/audio/dendi/ddn_022_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "23": {
+    "path": "/audio/dendi/ddn_023_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "24": {
+    "path": "/audio/dendi/ddn_024_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "25": {
+    "path": "/audio/dendi/ddn_025_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "26": {
+    "path": "/audio/dendi/ddn_026_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "27": {
+    "path": "/audio/dendi/ddn_027_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "28": {
+    "path": "/audio/dendi/ddn_028_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "29": {
+    "path": "/audio/dendi/ddn_029_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "188": {
+    "path": "/audio/dendi/ddn_188_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "189": {
+    "path": "/audio/dendi/ddn_189_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "190": {
+    "path": "/audio/dendi/ddn_190_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "191": {
+    "path": "/audio/dendi/ddn_191_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "192": {
+    "path": "/audio/dendi/ddn_192_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  },
+  "193": {
+    "path": "/audio/dendi/ddn_193_spk001.wav",
+    "speakerId": "spk001",
+    "format": "wav"
+  }
+}
