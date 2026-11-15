@@ -4663,13 +4663,22 @@ html[data-theme='light'] .quiz-overlay {
   line-height: 1.25;
 }
 .sound-toggle-compact .sound-toggle-label { max-width: 76px; }
-.pronunciation-action { margin-top: 12px; text-align: center; }
+.pronunciation-action {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  margin-top: 18px;
+  vertical-align: middle;
+}
 .pronunciation-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  min-width: 112px;
+  height: 44px;
   min-height: 44px;
+  flex-shrink: 0;
   padding: 9px 14px;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -4677,6 +4686,8 @@ html[data-theme='light'] .quiz-overlay {
   color: var(--text);
   font-size: 14px;
   font-weight: 600;
+  line-height: 20px;
+  white-space: nowrap;
   cursor: pointer;
 }
 .pronunciation-button svg {
@@ -4695,8 +4706,35 @@ html[data-theme='light'] .quiz-overlay {
   outline: 3px solid var(--site-accent);
   outline-offset: 3px;
 }
-.pronunciation-status { display: block; font-size: 12px; color: var(--text-muted); }
-.pronunciation-status:empty { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .pronunciation-button:is([data-playback-state='loading'], [data-playback-state='playing']) .pronunciation-waves {
+    animation: pronunciation-wave-pulse 1.2s ease-in-out infinite;
+  }
+}
+@keyframes pronunciation-wave-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+.pronunciation-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pronunciation-error {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 12px;
+  white-space: nowrap;
+}
 
 /* Shell mobile : même seuil de 700px que MobileBottomNav. */
 .site-mobile-account,

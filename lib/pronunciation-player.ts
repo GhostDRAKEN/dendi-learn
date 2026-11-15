@@ -7,6 +7,8 @@ type PlaybackState = {
 const idle: PlaybackState = { owner: null, status: 'idle' }
 let state = idle
 let active: HTMLAudioElement | null = null
+let loadingTimeout: ReturnType<typeof setTimeout> | null = null
+const LOADING_TIMEOUT_MS = 10_000
 const listeners = new Set<() => void>()
 
 function publish(next: PlaybackState) {
@@ -22,8 +24,14 @@ export function subscribePronunciation(listener: () => void) {
 export const getPlaybackState = () => state
 export const getServerPlaybackState = () => idle
 
+function clearLoadingTimeout() {
+  if (loadingTimeout !== null) clearTimeout(loadingTimeout)
+  loadingTimeout = null
+}
+
 export function stopPronunciation(owner?: symbol) {
   if (owner && state.owner !== owner) return
+  clearLoadingTimeout()
   const previous = active
   active = null
   if (previous) {
@@ -51,8 +59,14 @@ export async function playPronunciation(owner: symbol, src: string) {
     audio.preload = 'none'
     audio.onended = () => { if (active === audio) stopPronunciation(owner) }
     audio.onerror = fail
+    loadingTimeout = setTimeout(() => {
+      if (state.status === 'loading') fail()
+    }, LOADING_TIMEOUT_MS)
     await audio.play()
-    if (active === audio) publish({ owner, status: 'playing' })
+    if (active === audio) {
+      clearLoadingTimeout()
+      publish({ owner, status: 'playing' })
+    }
   } catch {
     fail()
   }

@@ -45,3 +45,72 @@ test('single stream, obsolete promises, stop, end, error and retry', async () =>
   await pending
   assert.equal(getPlaybackState().status, 'idle')
 })
+
+test('replaying the same owner restarts one stream and ignores obsolete callbacks', async () => {
+  const owner = Symbol('replay')
+  const first = playPronunciation(owner, 'DEV ONLY replay')
+  const previous = instances.at(-1)
+  previous.resolve()
+  await first
+  const obsoleteError = previous.onerror
+  const replay = playPronunciation(owner, 'DEV ONLY replay')
+  const current = instances.at(-1)
+  assert.notEqual(current, previous)
+  assert.equal(previous.paused, true)
+  assert.equal(previous.released, true)
+  obsoleteError()
+  assert.equal(getPlaybackState().status, 'loading')
+  current.resolve()
+  await replay
+  assert.equal(getPlaybackState().status, 'playing')
+  current.onended()
+  assert.equal(getPlaybackState().status, 'idle')
+})
+
+test('a stalled load times out, permits retry and clears obsolete deadlines', async () => {
+  const nativeSetTimeout = globalThis.setTimeout
+  const nativeClearTimeout = globalThis.clearTimeout
+  const deadlines = new Map()
+  let next = 0
+  globalThis.setTimeout = (callback, delay) => {
+    assert.equal(delay, 10_000)
+    deadlines.set(++next, callback)
+    return next
+  }
+  globalThis.clearTimeout = (id) => { deadlines.delete(id) }
+  const owner = Symbol('deadline')
+  try {
+    const pending = playPronunciation(owner, 'DEV ONLY stalled')
+    const stalled = instances.at(-1)
+    assert.equal(deadlines.size, 1)
+    deadlines.values().next().value()
+    assert.equal(getPlaybackState().status, 'error')
+    assert.equal(stalled.paused, true)
+    assert.equal(deadlines.size, 0)
+    stalled.reject(Error('aborted after timeout'))
+    await pending
+    const retry = playPronunciation(owner, 'DEV ONLY retry deadline')
+    const audio = instances.at(-1)
+    const obsoleteDeadline = deadlines.values().next().value
+    audio.resolve()
+    await retry
+    assert.equal(deadlines.size, 0)
+    obsoleteDeadline()
+    // Even a stale deadline cannot interrupt playback that has already started.
+    assert.equal(getPlaybackState().status, 'playing')
+    stopPronunciation(owner)
+    const cancelled = playPronunciation(owner, 'DEV ONLY cancelled load')
+    const cancelledAudio = instances.at(-1)
+    const cancelledDeadline = deadlines.values().next().value
+    stopPronunciation(owner)
+    cancelledDeadline()
+    assert.equal(getPlaybackState().status, 'idle')
+    cancelledAudio.reject(Error('aborted'))
+    await cancelled
+    assert.equal(deadlines.size, 0)
+  } finally {
+    stopPronunciation(owner)
+    globalThis.setTimeout = nativeSetTimeout
+    globalThis.clearTimeout = nativeClearTimeout
+  }
+})
