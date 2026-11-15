@@ -7,6 +7,7 @@ import type { CurriculumLesson, CurriculumMot } from '@/lib/curriculum'
 import SoundToggle from './SoundToggle'
 import PronunciationButton from './PronunciationButton'
 import { useSoundFeedback } from './SoundProvider'
+import { recordLessonEvent } from '@/lib/lesson-progress'
 
 type LessonPhase = 'intro' | 'learn' | 'practice' | 'test' | 'review' | 'result'
 type ExerciseType = 'dendi-fr' | 'fr-dendi' | 'phonetic-fr'
@@ -271,6 +272,7 @@ export default function GuidedLesson({
   }
 
   const startLesson = () => {
+    recordLessonEvent(lesson.id, userId, 'started')
     setPhase('learn')
     markWordAsPresented(lesson.mots[0].id)
   }
@@ -364,6 +366,7 @@ export default function GuidedLesson({
   const finishLesson = () => {
     if (lessonFinishedRef.current) return
     lessonFinishedRef.current = true
+    recordLessonEvent(lesson.id, userId, 'completed')
     void playSound('lesson-complete')
     setPhase('result')
     storeResume(nextLesson?.id ?? lesson.id, nextLesson?.niveau ?? lesson.niveau)

@@ -69,10 +69,10 @@ export default async function ParcoursPage({
       <AppHeader page="parcours" />
       <ParcoursOverview
         section={section}
-        progression={progression}
-        authenticated={Boolean(user)}
+        userId={user?.id ?? null}
         progressionAvailable={progressionAvailable}
         recommendedLesson={recommendedLesson}
+        nextSection={curriculum.slice(curriculum.indexOf(section) + 1).find(item => item.units.length > 0)?.id ?? null}
       />
     </main>
   )

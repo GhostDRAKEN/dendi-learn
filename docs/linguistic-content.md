@@ -71,7 +71,7 @@ Le stockage distant sera décidé séparément, sans migration Supabase ici.
 
 `public/sounds` contient seulement welcome.wav, correct.wav, incorrect.wav,
 phase-complete.wav et lesson-complete.wav. SoundProvider conserve sa préférence
-et son fonctionnement. Le contrôle est nommé « Sons de l’interface ».
+et son fonctionnement. Le contrôle est nommé « Sons d’interface ».
 
 PronunciationButton reçoit wordId, word et éventuellement audioUrl déjà résolue
 et vérifiée par l’appelant. Les intégrations actuelles utilisent exclusivement

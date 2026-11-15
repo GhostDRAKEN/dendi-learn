@@ -10,7 +10,7 @@ export default function SoundToggle({ compact = false }: { compact?: boolean }) 
       type="button"
       className={`site-nav-action site-sound-toggle${compact ? ' sound-toggle-compact' : ''}`}
       onClick={toggleSound}
-      aria-label={soundEnabled ? 'Désactiver les sons de l’interface' : 'Activer les sons de l’interface'}
+      aria-label={soundEnabled ? 'Désactiver les sons d’interface' : 'Activer les sons d’interface'}
       aria-pressed={soundEnabled}
       title="Active ou désactive les sons des réponses et des célébrations."
     >
@@ -27,7 +27,7 @@ export default function SoundToggle({ compact = false }: { compact?: boolean }) 
           )}
         </svg>
       </span>
-      <span className="sound-toggle-label">Sons de l’interface</span>
+      <span className="sound-toggle-label">Sons d’interface</span>
     </button>
   )
 }
