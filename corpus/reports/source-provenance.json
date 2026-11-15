@@ -1,0 +1,171 @@
+{
+  "schema_version": "0.1",
+  "split_seed": 42,
+  "text_hash_line_endings": "LF",
+  "source_files": [
+    {
+      "path": "docs/data/dendi-content-audit.csv",
+      "sha256": "a0339c5af0312ac434462090fb3c6320392819af6c222ae9272d1733212dc8b0"
+    },
+    {
+      "path": "docs/data/pronunciation-pilot.csv",
+      "sha256": "aaf533b9e8b013a29f7b885a6e3f2c06b06a33acaa7be4bc85e48fcc72670df9"
+    },
+    {
+      "path": "lib/pronunciation-manifest.json",
+      "sha256": "c58de14b6d6e25be6c1e38df6152dab766f02e6b18cdce84982d441145e9f5fc"
+    }
+  ],
+  "pipeline_files": [
+    {
+      "path": "scripts/dendi_corpus.py",
+      "sha256": "5989cd32bc83f3c42ed1b4e0ac1a01177885dac1b2afdafcae4189065a9f1905"
+    },
+    {
+      "path": "scripts/audit-dendi-content.py",
+      "sha256": "1f85e43d9fc0d302d6d5ec8f374b46fd1b219fea13982d078bc5c0ebbe325c9e"
+    },
+    {
+      "path": "scripts/check-pronunciation-assets.py",
+      "sha256": "f56f52689a2e6c5db951d539e9162fb7051c9785a0e55b941493b34aee426f56"
+    }
+  ],
+  "audio_files": [
+    {
+      "audio_path": "public/audio/dendi/ddn_001_spk001.wav",
+      "sha256": "87fffb3e69cda461da2baafd4de92454e3c00f460adb689661768c49f618335d",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_002_spk001.wav",
+      "sha256": "ba92c90d26d7eff16979d234f5e64c82ea96b8a2fdc82bbf373f653e0d7d5c08",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_006_spk001.wav",
+      "sha256": "f88d1b31a46ce606a32c74c7931340fb73007aa073c890407c27755a6ff266c1",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_007_spk001.wav",
+      "sha256": "f4b97d9ec341504e0ae90cf0fb51c5f45ee60f6ff6eab3701ab1d7bd9d36c91a",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_008_spk001.wav",
+      "sha256": "4c1c37bca4ecb8e8dc98badab48b0b07b1a604066174524630e4799b7c1329eb",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_011_spk001.wav",
+      "sha256": "240288c65fd7eb1c9479d8ddf04e69d92552aa5ded701abcb74c9d0fe322387e",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_012_spk001.wav",
+      "sha256": "5c6977323d57725f27364cd533b8a3eafd8edd674570ca715fe8d2d7abcdf738",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_013_spk001.wav",
+      "sha256": "62cd98575c813869ea2d8cc653a966097ae2995a496bc0803e63df73305b61a6",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_014_spk001.wav",
+      "sha256": "e71290a69e2a7425ce9f9c3bcfbb44c50cfdf75658993cce38b44a735d5970ab",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_017_spk001.wav",
+      "sha256": "6f9cfa2b0bd6694b32e3a2afc0830ad6fb0bf57ab336f0103a5824f97ac28e45",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_018_spk001.wav",
+      "sha256": "a29e9f8f44ebeed5d73c015603654d5c12c521bdd2243e649ce8dc0fd931623c",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_019_spk001.wav",
+      "sha256": "62244823d5ed79b83acd5a5ab87fcc410b5dbeb14ead869cd8b7c555449a059f",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_021_spk001.wav",
+      "sha256": "12d08f2898194cfd9bff25f8038c8134949a56710a09cb019651512a3e47ac34",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_022_spk001.wav",
+      "sha256": "57d537fc2e4bf9caabab9452ba3d6978ea80e83b067268140730a92654dee8c9",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_023_spk001.wav",
+      "sha256": "cb57a99542939456c9682f31f25271b1569e9bda4efeb9da3fc4c38c0ef6397e",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_024_spk001.wav",
+      "sha256": "37da57de304214fea9c8cf9f2cfd7aa9153e3adb0d7f9ba6a314ce8c55b49a6a",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_025_spk001.wav",
+      "sha256": "821284b86fe00f377953d828eaa02d70de8ca3bb25f6333f6966f1babc38a883",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_026_spk001.wav",
+      "sha256": "4438cbd4c1f8f8f93aff1a38746f65b4132ff3266857c30538cd78b9e8319a46",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_027_spk001.wav",
+      "sha256": "2885ab4cd0e06474a459f53183ef35c2fd1137279c596a1aa3f310cab3ce7dd2",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_028_spk001.wav",
+      "sha256": "81f084eff2e1f31e9629c473927c6428c1057489dbc7411195d767c40b5a35ba",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_029_spk001.wav",
+      "sha256": "5ee3530ef8d2f685b1b1178913fb06108ef1c7652d0d3b129d533a2d869ec98b",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_188_spk001.wav",
+      "sha256": "bb389d9bdd27c31adf68dddcf4bd82695668c5dd00825daf9dce97e0dc74a19f",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_189_spk001.wav",
+      "sha256": "0708356589a9bd567f27467f47a65ed5b24713118338982d3a408c29628617bb",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_190_spk001.wav",
+      "sha256": "843e8042bd03fe7e16f9e8b7494ae1ada4d15f9f3a9c0e131b1842c8793db56f",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_191_spk001.wav",
+      "sha256": "3c29cbc44a9048937e5d14498d3e1bb7ec145bc0f5b7237c6e74afbaf20a5429",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_192_spk001.wav",
+      "sha256": "e231179a05a6568a7f907c3e882cd1d92bebc024937cfe8454efef59d574de19",
+      "excluded_from_speech": false
+    },
+    {
+      "audio_path": "public/audio/dendi/ddn_193_spk001.wav",
+      "sha256": "d12fc307f51090433d11d5b8d58f7acb031b7143ee50d0d170d136fbc603ddc4",
+      "excluded_from_speech": false
+    }
+  ],
+  "unreferenced_wav_files": []
+}

@@ -1,0 +1,28 @@
+utterance_id,word_id,fr,dendi,phonetique,speaker_id,audio_path,audio_format,linguistic_validated,variant_region,duration_seconds,sample_rate,channels,file_size_bytes,needs_review,review_reasons,phonetic_status
+ddn_001_spk001,1,Bonjour (matin),Fɔɔ nna suba !,Fo nna souba !,spk001,public/audio/dendi/ddn_001_spk001.wav,wav,,,3.12,48000,2,599084,false,[],present
+ddn_002_spk001,2,Bonjour (après-midi),Fɔɔ nna zari !,Fo nna zari !,spk001,public/audio/dendi/ddn_002_spk001.wav,wav,,,3.0,48000,2,576044,false,[],present
+ddn_006_spk001,6,Comment vas-tu ?,Wɔ kani banni ?,Wo kani banni ?,spk001,public/audio/dendi/ddn_006_spk001.wav,wav,,,3.4,48000,2,652844,false,[],present
+ddn_007_spk001,7,Je vais bien,Baani,Bani,spk001,public/audio/dendi/ddn_007_spk001.wav,wav,,,2.96,48000,2,568364,false,[],present
+ddn_008_spk001,8,Et toi ?,Nï ni,Ni ni,spk001,public/audio/dendi/ddn_008_spk001.wav,wav,,,2.2,48000,2,422444,false,[],present
+ddn_011_spk001,11,S'il te plaît,Suurù,Souroù,spk001,public/audio/dendi/ddn_011_spk001.wav,wav,,,2.56,48000,2,491564,false,[],present
+ddn_012_spk001,12,Excuse-moi / Pardon,Wc gàafara tè à cɛ,Wo gaafara tè à sè,spk001,public/audio/dendi/ddn_012_spk001.wav,wav,,,2.64,48000,2,506924,true,"[""possible_variant_separator""]",present
+ddn_013_spk001,13,Oui,Ô,Ô,spk001,public/audio/dendi/ddn_013_spk001.wav,wav,,,3.04,48000,2,583724,false,[],present
+ddn_014_spk001,14,Non,Ao,Aô,spk001,public/audio/dendi/ddn_014_spk001.wav,wav,,,2.04,48000,2,391724,false,[],present
+ddn_017_spk001,17,Bienvenue,Fɔɔ nna nakàa,Fo nna nakaa,spk001,public/audio/dendi/ddn_017_spk001.wav,wav,,,2.16,48000,2,414764,false,[],present
+ddn_018_spk001,18,Comment tu t'appelles ?,Mɛtɛ n màa ?,Mètè n maa ?,spk001,public/audio/dendi/ddn_018_spk001.wav,wav,,,3.16,48000,2,606764,false,[],present
+ddn_019_spk001,19,Je m'appelle...,A màa nɔ̀ ..,A maa nò,spk001,public/audio/dendi/ddn_019_spk001.wav,wav,,,3.16,48000,2,606764,false,[],present
+ddn_021_spk001,21,Matin,Súusuba,Suusuba,spk001,public/audio/dendi/ddn_021_spk001.wav,wav,,,2.28,48000,2,437804,false,[],present
+ddn_022_spk001,22,Après-midi,Zaarì,Zaari,spk001,public/audio/dendi/ddn_022_spk001.wav,wav,,,2.04,48000,2,391724,false,[],present
+ddn_023_spk001,23,Soir,Wícírì,Wichiri,spk001,public/audio/dendi/ddn_023_spk001.wav,wav,,,1.92,48000,2,368684,false,[],present
+ddn_024_spk001,24,Nuit,Cíinì,Tchini,spk001,public/audio/dendi/ddn_024_spk001.wav,wav,,,1.68,48000,2,322604,false,[],present
+ddn_025_spk001,25,Hier,Bî,Bii,spk001,public/audio/dendi/ddn_025_spk001.wav,wav,,,2.4,48000,2,460844,false,[],present
+ddn_026_spk001,26,Aujourd'hui,Hòn,Hon,spk001,public/audio/dendi/ddn_026_spk001.wav,wav,,,2.04,48000,2,391724,false,[],present
+ddn_027_spk001,27,Demain,Suba,Souba,spk001,public/audio/dendi/ddn_027_spk001.wav,wav,,,1.72,48000,2,330284,false,[],present
+ddn_028_spk001,28,Avant-hier,Bifó,Bifo,spk001,public/audio/dendi/ddn_028_spk001.wav,wav,,,1.84,48000,2,353324,false,[],present
+ddn_029_spk001,29,Après-demain,Suba sí,Souba si,spk001,public/audio/dendi/ddn_029_spk001.wav,wav,,,1.96,48000,2,376364,false,[],present
+ddn_188_spk001,188,Noir,Íbi,Ibi,spk001,public/audio/dendi/ddn_188_spk001.wav,wav,,,1.84,48000,2,353324,false,[],present
+ddn_189_spk001,189,Blanc,Íkpaare,Ikpaarè,spk001,public/audio/dendi/ddn_189_spk001.wav,wav,,,1.52,48000,2,291884,false,[],present
+ddn_190_spk001,190,Rouge,Ícíre,Itsire,spk001,public/audio/dendi/ddn_190_spk001.wav,wav,,,1.68,48000,2,322604,false,[],present
+ddn_191_spk001,191,Bleu,Íboogu,Ibougou,spk001,public/audio/dendi/ddn_191_spk001.wav,wav,,,1.84,48000,2,353324,false,[],present
+ddn_192_spk001,192,Vert,Subùganyi,Soubouganyi,spk001,public/audio/dendi/ddn_192_spk001.wav,wav,,,2.28,48000,2,437804,false,[],present
+ddn_193_spk001,193,Jaune,Ídosò,Idoso,spk001,public/audio/dendi/ddn_193_spk001.wav,wav,,,2.08,48000,2,399404,false,[],present

@@ -1,0 +1,182 @@
+word_id,fr,dendi,phonetique,categorie,niveau,variant_region,source,linguistic_validated,validated_by,needs_review,review_reasons,phonetic_status,has_audio,audio_count
+1,Bonjour (matin),Fɔɔ nna suba !,Fo nna souba !,Salutations,debutant,,,,,false,[],present,true,1
+2,Bonjour (après-midi),Fɔɔ nna zari !,Fo nna zari !,Salutations,debutant,,,,,false,[],present,true,1
+3,Bonsoir,Fɔɔ nna wìcírì !,Fo nna wiciri !,Salutations,debutant,,,,,true,"[""shared_phonetic""]",present,false,0
+4,Bonne nuit,Fɔɔ nna cíinì !,Fo nna wiciri !,Salutations,debutant,,,,,true,"[""shared_phonetic""]",present,false,0
+5,Salut / Coucou,Fɔɔ ,Fo,Salutations,debutant,,,,,true,"[""possible_variant_separator"",""source_characters_or_placeholder""]",present,false,0
+6,Comment vas-tu ?,Wɔ kani banni ?,Wo kani banni ?,Salutations,debutant,,,,,false,[],present,true,1
+7,Je vais bien,Baani,Bani,Salutations,debutant,,,,,false,[],present,true,1
+8,Et toi ?,Nï ni,Ni ni,Salutations,debutant,,,,,false,[],present,true,1
+9,Merci, Fɔɔ nna gbéi/ À sàabu,Fo nna gbéi / A saabu,Salutations,debutant,,,,,true,"[""possible_variant_separator"",""source_characters_or_placeholder""]",present,false,0
+11,S'il te plaît,Suurù,Souroù,Salutations,debutant,,,,,false,[],present,true,1
+12,Excuse-moi / Pardon,Wc gàafara tè à cɛ,Wo gaafara tè à sè,Salutations,debutant,,,,,true,"[""possible_variant_separator""]",present,true,1
+13,Oui,Ô,Ô,Salutations,debutant,,,,,false,[],present,true,1
+14,Non,Ao,Aô,Salutations,debutant,,,,,false,[],present,true,1
+15,Au revoir,À cí demsu !,A chi demsu !,Salutations,debutant,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+16,À bientôt,À cí demsu !,A chi demsu !,Salutations,debutant,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+17,Bienvenue,Fɔɔ nna nakàa,Fo nna nakaa,Salutations,debutant,,,,,false,[],present,true,1
+18,Comment tu t'appelles ?,Mɛtɛ n màa ?,Mètè n maa ?,Salutations,debutant,,,,,false,[],present,true,1
+19,Je m'appelle...,A màa nɔ̀ ..,A maa nò,Salutations,debutant,,,,,false,[],present,true,1
+21,Matin,Súusuba,Suusuba,temps__journee,debutant,,,,,false,[],present,true,1
+22,Après-midi,Zaarì,Zaari,temps__journee,debutant,,,,,false,[],present,true,1
+23,Soir,Wícírì,Wichiri,temps__journee,debutant,,,,,false,[],present,true,1
+24,Nuit,Cíinì,Tchini,temps__journee,debutant,,,,,false,[],present,true,1
+25,Hier,Bî,Bii,temps__journee,debutant,,,,,false,[],present,true,1
+26,Aujourd'hui,Hòn,Hon,temps__repere,debutant,,,,,false,[],present,true,1
+27,Demain,Suba,Souba,temps__repere,debutant,,,,,false,[],present,true,1
+28,Avant-hier,Bifó,Bifo,temps__repere,debutant,,,,,false,[],present,true,1
+29,Après-demain,Suba sí,Souba si,temps__repere,debutant,,,,,false,[],present,true,1
+30,Lundi,Litɛni,Litèni,temps__semaine,intermediaire,,,,,false,[],present,false,0
+31,Mardi,Talata,Talata,temps__semaine,intermediaire,,,,,false,[],present,false,0
+32,Mercredi,Làaruba,Laar-rouba,temps__semaine,intermediaire,,,,,false,[],present,false,0
+33,Jeudi,Làamisi,Laamisi,temps__semaine,intermediaire,,,,,false,[],present,false,0
+34,Vendredi,Àruzuma,Arou-zouma,temps__semaine,intermediaire,,,,,false,[],present,false,0
+35,Samedi,Asiibi,Acibi,temps__semaine,intermediaire,,,,,false,[],present,false,0
+36,Dimanche,Lahadi,Lahadi,temps__semaine,intermediaire,,,,,false,[],present,false,0
+37,Janvier,Dundumaha,Doun-dou-maha,temps__mois,intermediaire,,,,,false,[],present,false,0
+38,Février,Dambaha,Dambaha,temps__mois,intermediaire,,,,,false,[],present,false,0
+39,Mars,Weedɛlha,Wèdèlha,temps__mois,intermediaire,,,,,false,[],present,false,0
+40,Avril,Kɔɔgiha,Koguiha,temps__mois,intermediaire,,,,,false,[],present,false,0
+41,Mai,Ganhiha,Ganhiha,temps__mois,intermediaire,,,,,false,[],present,false,0
+42,Juin,Dumaha,Doumaha,temps__mois,intermediaire,,,,,false,[],present,false,0
+43,Juillet,Ceedoha,Tchédoha,temps__mois,intermediaire,,,,,false,[],present,false,0
+44,Août,Dunduha,Doundouha,temps__mois,intermediaire,,,,,false,[],present,false,0
+45,Septembre,Kasiha,Kasiha,temps__mois,intermediaire,,,,,false,[],present,false,0
+46,octobre,Bunnɔaha,Boun-noaha,temps__mois,intermediaire,,,,,false,[],present,false,0
+47,Novembre,Kɔɔkaha,Koukaha,temps__mois,intermediaire,,,,,false,[],present,false,0
+48,Décembre,Fumtuha,Foumtouha,temps__mois,intermediaire,,,,,false,[],present,false,0
+49,La tête,Bonnò,Bonno,corps,avance,,,,,false,[],present,false,0
+50,Le cerveau,Bonnò-lòomì/Bonnò-lòopî,Bonno-loomi/Boon-loopi,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+51,Les cheveux,Hamini yo,Hamini yo,corps,avance,,,,,false,[],present,false,0
+52,le cou,Jindè,Jinde,corps,avance,,,,,false,[],present,false,0
+53,La gorge,Jindè kòlò/Jindè kòô,Jinde kolo/Jindè kôô,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+54,Le visage,Mongînîn,Monginin,corps,avance,,,,,false,[],present,false,0
+55,Le front,Gòosi,Goosi,corps,avance,,,,,true,"[""duplicate_lexical_pair"",""exact_lexical_duplicate"",""shared_phonetic""]",present,false,0
+56,La joue,Jèbèrè/Djèbè,Jèbère/Djèèbè,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+57,La mâchoire,Djèbè-kinnin,Djèbè-kinnin,corps,avance,,,,,false,[],present,false,0
+58,la gencive,Dîini/Dîin,Diini,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+59,Le menton,kaabê,Kaabè,corps,avance,,,,,false,[],present,false,0
+60,La barbe,kaabê hamini,Kaabè hamini,corps,avance,,,,,false,[],present,false,0
+61,la langue,Dèllè,Dèllè,corps,avance,,,,,false,[],present,false,0
+62,Le nez,Nuunin,Nounin,corps,avance,,,,,false,[],present,false,0
+63,L'oeil,Moon,Moon,corps,avance,,,,,false,[],present,false,0
+64,Les sourcils,Moo-baasi yo/Moo sabou yo,Moo-baasi yo/Moo saabu,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+65,La lèvre,Mɛɛ-baasi,Mèè-baasi,corps,avance,,,,,false,[],present,false,0
+66,La bouche,Mɛɛ,Mèè,corps,avance,,,,,false,[],present,false,0
+67,Les dents,Hinjè yo/Hinyin yo,Hinjè yo,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+68,L'oreille,Hanna/hangan,Hanna/Hangan,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+69,La côte,tchèro,Tchèro,corps,avance,,,,,false,[],present,false,0
+70,Le dos,Banna daayi/Baana,Banna daayi,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+71,Le bras,Jèsè,Jèsè,corps,avance,,,,,false,[],present,false,0
+72,Le coude,Jèsèkonto,Jèsèkonto,corps,avance,,,,,false,[],present,false,0
+73,La main,Kammè,Kammè,corps,avance,,,,,false,[],present,false,0
+74,le doigt,Kammèizé,Kammèizé,corps,avance,,,,,false,[],present,false,0
+75,La paume,kammè taafe,Kammè taafe,corps,avance,,,,,false,[],present,false,0
+76,Le poignet,Kammè jindè,Kammè jinde,corps,avance,,,,,false,[],present,false,0
+77,Le coeur,Binèize,Binèize,corps,avance,,,,,false,[],present,false,0
+80,Le rein,Toosi hini,Toosi hini,corps,avance,,,,,false,[],present,false,0
+81,La fesse,Buuté/Fiti-baka,Bouté,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+82,La jambe,Cèekpana,Cèekpana,corps,avance,,,,,false,[],present,false,0
+83,Le genou,Cɛnnɛ,Cènne,corps,avance,,,,,false,[],present,false,0
+84,Le tibia,Cee-bírí,Cee-biri,corps,avance,,,,,false,[],present,false,0
+85,La cheville,Ceè jindè,Cèè jinde,corps,avance,,,,,false,[],present,false,0
+86,Le pied,Cee,Cee,corps,avance,,,,,false,[],present,false,0
+87,Le talon,Ceè banna,Cèè banna,corps,avance,,,,,false,[],present,false,0
+88,Les orteils,Cèeinze yo,Cèeinze yo,corps,avance,,,,,false,[],present,false,0
+89,L'ongle,Kòkòbè,Kokobè,corps,avance,,,,,false,[],present,false,0
+90,La cuisse,Taala/Taa,Taala,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+91,La hanche,Kòsè-banna,Kosè-banna,corps,avance,,,,,false,[],present,false,0
+92,La poitrine,Jèndè,Jènde,corps,avance,,,,,false,[],present,false,0
+93,Le ventre,Gundè,Goundè,corps,avance,,,,,false,[],present,false,0
+94,La nuque,Kpanna,Kpanna,corps,avance,,,,,false,[],present,false,0
+95,Le front,Gòosi,Goosi,corps,avance,,,,,true,"[""duplicate_lexical_pair"",""exact_lexical_duplicate"",""shared_phonetic""]",present,false,0
+96,L'os,Biri,Biri,corps,avance,,,,,false,[],present,false,0
+97,La chair,gaabaasî,Gaabaasi,corps,avance,,,,,false,[],present,false,0
+98,La colonne vertébrale,Banna binni biri,Banna binni biri,corps,avance,,,,,false,[],present,false,0
+100,Le poumon,Hinanzobu Foolo/Fuuka,Hinanzobu Foolo,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+101,le pharynx,Hinanzobu Hiinu,Hinanzobu Hiinu,corps,avance,,,,,false,[],present,false,0
+102,Le sang,Kpírí,Kpiri,corps,avance,,,,,false,[],present,false,0
+103,La salive,Yolo/Yoro,Yolo,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+104,le lombril,fumnè,Foumnè,corps,avance,,,,,false,[],present,false,0
+106,La vessie,Toosi Fôolo/Toosi Fôo,Toosi Foolo,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+111,Acheter,Deiyo,Deiyo,verbes,intermediaire,,,,,false,[],present,false,0
+112,Manger,ŋwaayo,umwaayo,verbes,intermediaire,,,,,false,[],present,false,0
+113,Dormir,Kaniyo,Kaniyo,verbes,intermediaire,,,,,false,[],present,false,0
+114,Laver,Hínnuyo,Hinnouyo,verbes,intermediaire,,,,,false,[],present,false,0
+115,Parler,Sènnìyo,Sènnìyo,verbes,intermediaire,,,,,false,[],present,false,0
+116,Marcher,Dirayo,Dirayo,verbes,intermediaire,,,,,false,[],present,false,0
+117,Courir,Zuruyo,Zourouyo,verbes,intermediaire,,,,,false,[],present,false,0
+118,Chanter,Dòoniyo,Dooniyo,verbes,intermediaire,,,,,false,[],present,false,0
+119,Apprendre,Dendeniyo,Dendéniyo,verbes,intermediaire,,,,,false,[],present,false,0
+120,Écrire,Hàntumyo,Hantoumyo,verbes,intermediaire,,,,,false,[],present,false,0
+121,Entendre,Mãayo,Maayo,verbes,intermediaire,,,,,false,[],present,false,0
+122,Regarder,Gunayo,Gounayo,verbes,intermediaire,,,,,false,[],present,false,0
+123,Penser,Làsabuyo,Lasabouyo,verbes,intermediaire,,,,,false,[],present,false,0
+124,Sourire,Haaruyo,Haarouyo,verbes,intermediaire,,,,,false,[],present,false,0
+125,Pleurer,Heeiniyo,Heeiniyo,verbes,intermediaire,,,,,false,[],present,false,0
+126,Boire,Hamyo,Hammyo,verbes,intermediaire,,,,,false,[],present,false,0
+127,Vendre,Nèerayo/Nian,Nèèra yo /Nian yo,verbes,intermediaire,,,,,true,"[""possible_variant_separator""]",present,false,0
+128,Donner,Noonyô,Noonyô,verbes,intermediaire,,,,,false,[],present,false,0
+129,Trouver,Duuyo,Douyô,verbes,intermediaire,,,,,false,[],present,false,0
+130,Appeler,Ceyo,chèyo,verbes,intermediaire,,,,,false,[],present,false,0
+131,Refuser,Houn-yo,Hou-yo,verbes,intermediaire,,,,,false,[],present,false,0
+132,Accepter,Toûyo,Toûyo,verbes,intermediaire,,,,,false,[],present,false,0
+133,Voler,Fatakariyo,Fatakariyo,verbes,intermediaire,,,,,false,[],present,false,0
+134,Guérir,Bàabuyo,Baabouyo,verbes,intermediaire,,,,,false,[],present,false,0
+135,Sortir,Hunuyo,Hounouyo,verbes,intermediaire,,,,,false,[],present,false,0
+136,Entrer,Wuroyo,Wourouyo,verbes,intermediaire,,,,,false,[],present,false,0
+137,Demander,ŋwaareyo,n'waareyo,verbes,intermediaire,,,,,false,[],present,false,0
+138,Mentir,Tangariyô,Tangariyo,verbes,intermediaire,,,,,false,[],present,false,0
+139,Vouloir,Bâayo,Baayo,verbes,intermediaire,,,,,false,[],present,false,0
+140,Voir,Díayo,Diayo,verbes,intermediaire,,,,,false,[],present,false,0
+141,Dedans,À kuna,A kouna,prepositions,intermediaire,,,,,false,[],present,false,0
+142,Au dessus,À boŋò,A bonhondo,prepositions,intermediaire,,,,,false,[],present,false,0
+143,En dessous,À gânan,A gânan,prepositions,intermediaire,,,,,false,[],present,false,0
+144,Sur,À ga,A ga,prepositions,intermediaire,,,,,false,[],present,false,0
+145,Devant,Moojinè,Moojine,prepositions,intermediaire,,,,,false,[],present,false,0
+146,Derrière,Banna,Banna,prepositions,intermediaire,,,,,false,[],present,false,0
+147,À côté,À jerε,A jere,prepositions,intermediaire,,,,,false,[],present,false,0
+148,Au milieu,Binni,Binni,prepositions,intermediaire,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+149,En haut,Boŋò,Bongo,prepositions,intermediaire,,,,,false,[],present,false,0
+150,En bas,Gannà,Ganna,prepositions,intermediaire,,,,,false,[],present,false,0
+151,À gauche,Kamme-wo,Kamme-wo,prepositions,intermediaire,,,,,false,[],present,false,0
+152,Au centre,Binni,Binni,prepositions,intermediaire,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+153,À droite,Kamme-gumô,Kamme-goumô,prepositions,intermediaire,,,,,false,[],present,false,0
+154,Entrer dans,Huro kuna,Houro kouna,prepositions,intermediaire,,,,,false,[],present,false,0
+155,Sortir de,Hunu kuna,Hounou kouna,prepositions,intermediaire,,,,,false,[],present,false,0
+156,S'approcher de,Màanìyo nna,Maaniyo nna,prepositions,intermediaire,,,,,false,[],present,false,0
+157,S'éloigner de,Wayo nna,Wayo nna,prepositions,intermediaire,,,,,false,[],present,false,0
+158,Traverser,Dàarìyo,Daariyo,prepositions,intermediaire,,,,,false,[],present,false,0
+159,Contourner,Koòliyo,Kooliyo,prepositions,intermediaire,,,,,false,[],present,false,0
+160,Maison,Fúu,Fou,noms,avance,,,,,false,[],present,false,0
+161,Chaise,Kitâ,Kita,noms,avance,,,,,false,[],present,false,0
+162,Porte,Gàmmu,Ganmou,noms,avance,,,,,false,[],present,false,0
+163,Fenêtre,Togolo,Togolo,noms,avance,,,,,false,[],present,false,0
+164,Lit,Kânido,Kânido,noms,avance,,,,,false,[],present,false,0
+165,Brousse,Subù,Soubu,noms,avance,,,,,false,[],present,false,0
+166,Voiture,Loole/Hii,Loole/Hii,noms,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+167,Moto,Kpòkpò,Kpokpo,noms,avance,,,,,false,[],present,false,0
+168,Vélo,Guurubari/Guurubai,Gourubai,noms,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+169,Ciel,Beînîn,Bèène,noms,avance,,,,,false,[],present,false,0
+170,Vent,Heô/Hô,Héou/Ho,noms,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+171,Déluge,Ciniji tonni,Tchinji tonni,noms,avance,,,,,false,[],present,false,0
+172,Bouteille,Kpalbà,Kpalba,noms,avance,,,,,false,[],present,false,0
+173,Vieillesse,Zèenin,Zèènin,noms,avance,,,,,false,[],present,false,0
+174,Miel,Yùu,Youu,noms,avance,,,,,false,[],present,false,0
+175,Sourd,Lùtù,Loutou,noms,avance,,,,,false,[],present,false,0
+176,Fou,Hòllòkom,Hollokom,noms,avance,,,,,false,[],present,false,0
+177,Niais,Hoota,Hoota,noms,avance,,,,,false,[],present,false,0
+178,Sage,Laakalikpè,Laakalikpè,noms,avance,,,,,false,[],present,false,0
+179,Intelligent,Coberekom,Tchiobèrèkom,noms,avance,,,,,false,[],present,false,0
+180,Malade,Zayînkom,Zanyinkom,noms,avance,,,,,false,[],present,false,0
+181,Pauvre,Talika,Talika,noms,avance,,,,,false,[],present,false,0
+182,Riche,Noorukpe,Noorukpè,noms,avance,,,,,false,[],present,false,0
+183,Méchant,Futékpe,Foutékpè,noms,avance,,,,,false,[],present,false,0
+185,Patient,Suurukpe,Sourroukpè,noms,avance,,,,,false,[],present,false,0
+187,Courageux,Himmakpe,Himmakpè,noms,avance,,,,,false,[],present,false,0
+188,Noir,Íbi,Ibi,couleurs,debutant,,,,,false,[],present,true,1
+189,Blanc,Íkpaare,Ikpaarè,couleurs,debutant,,,,,false,[],present,true,1
+190,Rouge,Ícíre,Itsire,couleurs,debutant,,,,,false,[],present,true,1
+191,Bleu,Íboogu,Ibougou,couleurs,debutant,,,,,false,[],present,true,1
+192,Vert,Subùganyi,Soubouganyi,couleurs,debutant,,,,,false,[],present,true,1
+193,Jaune,Ídosò,Idoso,couleurs,debutant,,,,,false,[],present,true,1

@@ -1,0 +1,19 @@
+word_id,fr,dendi,phonetique,categorie,niveau,variant_region,source,linguistic_validated,validated_by,needs_review,review_reasons,phonetic_status,has_audio,audio_count
+6,Comment vas-tu ?,Wɔ kani banni ?,Wo kani banni ?,Salutations,debutant,,,,,false,[],present,true,1
+8,Et toi ?,Nï ni,Ni ni,Salutations,debutant,,,,,false,[],present,true,1
+9,Merci, Fɔɔ nna gbéi/ À sàabu,Fo nna gbéi / A saabu,Salutations,debutant,,,,,true,"[""possible_variant_separator"",""source_characters_or_placeholder""]",present,false,0
+12,Excuse-moi / Pardon,Wc gàafara tè à cɛ,Wo gaafara tè à sè,Salutations,debutant,,,,,true,"[""possible_variant_separator""]",present,true,1
+16,À bientôt,À cí demsu !,A chi demsu !,Salutations,debutant,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+19,Je m'appelle...,A màa nɔ̀ ..,A maa nò,Salutations,debutant,,,,,false,[],present,true,1
+26,Aujourd'hui,Hòn,Hon,temps__repere,debutant,,,,,false,[],present,true,1
+40,Avril,Kɔɔgiha,Koguiha,temps__mois,intermediaire,,,,,false,[],present,false,0
+41,Mai,Ganhiha,Ganhiha,temps__mois,intermediaire,,,,,false,[],present,false,0
+49,La tête,Bonnò,Bonno,corps,avance,,,,,false,[],present,false,0
+81,La fesse,Buuté/Fiti-baka,Bouté,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+88,Les orteils,Cèeinze yo,Cèeinze yo,corps,avance,,,,,false,[],present,false,0
+98,La colonne vertébrale,Banna binni biri,Banna binni biri,corps,avance,,,,,false,[],present,false,0
+106,La vessie,Toosi Fôolo/Toosi Fôo,Toosi Foolo,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+113,Dormir,Kaniyo,Kaniyo,verbes,intermediaire,,,,,false,[],present,false,0
+117,Courir,Zuruyo,Zourouyo,verbes,intermediaire,,,,,false,[],present,false,0
+127,Vendre,Nèerayo/Nian,Nèèra yo /Nian yo,verbes,intermediaire,,,,,true,"[""possible_variant_separator""]",present,false,0
+148,Au milieu,Binni,Binni,prepositions,intermediaire,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0

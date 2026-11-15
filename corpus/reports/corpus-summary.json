@@ -1,0 +1,22 @@
+{
+  "source_entries": 182,
+  "excluded_na": 1,
+  "excluded_empty": 0,
+  "excluded_total": 1,
+  "lexical_entries": 181,
+  "with_phonetic": 181,
+  "without_phonetic": 0,
+  "words_with_audio": 27,
+  "audio_count": 27,
+  "manifest_audio_count": 27,
+  "speaker_count": 1,
+  "audio_coverage_percent": 14.9171,
+  "linguistically_validated": 0,
+  "needs_review": 28,
+  "split_seed": 42,
+  "splits": {
+    "train": 145,
+    "validation": 18,
+    "test": 18
+  }
+}

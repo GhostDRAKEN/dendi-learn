@@ -1,0 +1,2 @@
+# Keep generated corpus exports reproducible on Windows and Unix checkouts.
+/corpus/** text eol=lf

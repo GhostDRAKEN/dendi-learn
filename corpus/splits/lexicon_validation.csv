@@ -1,0 +1,19 @@
+word_id,fr,dendi,phonetique,categorie,niveau,variant_region,source,linguistic_validated,validated_by,needs_review,review_reasons,phonetic_status,has_audio,audio_count
+15,Au revoir,À cí demsu !,A chi demsu !,Salutations,debutant,,,,,true,"[""dendi_multiple_translations"",""shared_phonetic""]",present,false,0
+32,Mercredi,Làaruba,Laar-rouba,temps__semaine,intermediaire,,,,,false,[],present,false,0
+63,L'oeil,Moon,Moon,corps,avance,,,,,false,[],present,false,0
+64,Les sourcils,Moo-baasi yo/Moo sabou yo,Moo-baasi yo/Moo saabu,corps,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+69,La côte,tchèro,Tchèro,corps,avance,,,,,false,[],present,false,0
+76,Le poignet,Kammè jindè,Kammè jinde,corps,avance,,,,,false,[],present,false,0
+83,Le genou,Cɛnnɛ,Cènne,corps,avance,,,,,false,[],present,false,0
+93,Le ventre,Gundè,Goundè,corps,avance,,,,,false,[],present,false,0
+114,Laver,Hínnuyo,Hinnouyo,verbes,intermediaire,,,,,false,[],present,false,0
+126,Boire,Hamyo,Hammyo,verbes,intermediaire,,,,,false,[],present,false,0
+143,En dessous,À gânan,A gânan,prepositions,intermediaire,,,,,false,[],present,false,0
+146,Derrière,Banna,Banna,prepositions,intermediaire,,,,,false,[],present,false,0
+154,Entrer dans,Huro kuna,Houro kouna,prepositions,intermediaire,,,,,false,[],present,false,0
+166,Voiture,Loole/Hii,Loole/Hii,noms,avance,,,,,true,"[""possible_variant_separator""]",present,false,0
+176,Fou,Hòllòkom,Hollokom,noms,avance,,,,,false,[],present,false,0
+182,Riche,Noorukpe,Noorukpè,noms,avance,,,,,false,[],present,false,0
+187,Courageux,Himmakpe,Himmakpè,noms,avance,,,,,false,[],present,false,0
+193,Jaune,Ídosò,Idoso,couleurs,debutant,,,,,false,[],present,true,1
