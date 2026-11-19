@@ -7,6 +7,7 @@ import { getLearningLesson, hasLinguisticValue, type CurriculumLesson, type Curr
 import { createLessonExercises, stableHash, type Exercise } from '@/lib/lesson-exercises'
 import SoundToggle from './SoundToggle'
 import PronunciationButton from './PronunciationButton'
+import GuidedIntro from './GuidedIntro'
 import { useSoundFeedback } from './SoundProvider'
 import { recordLessonEvent } from '@/lib/lesson-progress'
 
@@ -101,10 +102,12 @@ function AvailableGuidedLesson({
   lesson,
   nextLesson,
   userId,
+  unitNumber,
 }: {
   lesson: CurriculumLesson
   nextLesson: CurriculumLesson | null
   userId: string | null
+  unitNumber?: number
 }) {
   const exercises = useMemo(() => createLessonExercises(lesson), [lesson])
   const [phase, setPhase] = useState<LessonPhase>('intro')
@@ -305,36 +308,20 @@ function AvailableGuidedLesson({
   const reachesUnitBoundary = !nextLesson || nextLesson.unitId !== lesson.unitId
 
   return (
-    <main className="guided-page">
+    <main className={phase === 'intro' ? 'guided-page guided-page-intro' : 'guided-page'}>
       <header className="guided-header">
         <Link href={`/parcours?niveau=${lesson.niveau}`} className="guided-exit">
           <span aria-hidden="true">←</span> Quitter
         </Link>
         <div className="guided-header-copy">
-          <span>{lesson.unitTitle}</span>
+          {phase !== 'intro' && <span>{lesson.unitTitle}</span>}
           <strong>Leçon {lesson.index} sur {lesson.totalInUnit}</strong>
         </div>
         <SoundToggle compact />
       </header>
 
       <div className="guided-shell">
-        {phase === 'intro' && (
-          <section className="guided-panel guided-intro" aria-labelledby="guided-intro-title">
-            <p className="guided-eyebrow">{lesson.unitTitle}</p>
-            <h1 id="guided-intro-title">{lesson.title}</h1>
-            <p className="guided-lead">
-              Prêt ? Découvrez tranquillement les {lesson.mots.length} mots de cette leçon.
-            </p>
-            <div className="guided-intro-summary" aria-label="Contenu de la leçon">
-              <span><strong>{lesson.mots.length}</strong> mots</span>
-              <span>Apprendre</span>
-              <span>Pratiquer</span>
-            </div>
-            <button type="button" onClick={startLesson} className="guided-primary-button">
-              Commencer la leçon <span aria-hidden="true">→</span>
-            </button>
-          </section>
-        )}
+        {phase === 'intro' && <GuidedIntro lesson={lesson} unitNumber={unitNumber} onStart={startLesson} />}
 
         {phase === 'learn' && (
           <section className="guided-panel guided-phase-panel is-learn" aria-labelledby="guided-learn-title">
@@ -530,6 +517,7 @@ export default function GuidedLesson(props: {
   lesson: CurriculumLesson
   nextLesson: CurriculumLesson | null
   userId: string | null
+  unitNumber?: number
 }) {
   const lesson = getLearningLesson(props.lesson)
   if (lesson.mots.length === 0) {

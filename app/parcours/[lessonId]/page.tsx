@@ -30,16 +30,19 @@ export default async function GuidedLessonPage({
     )
   }
 
-  const lessons = flattenLessons(buildCurriculum(mots as CurriculumMot[]))
+  const curriculum = buildCurriculum(mots as CurriculumMot[])
+  const lessons = flattenLessons(curriculum)
   const lessonIndex = lessons.findIndex((lesson) => lesson.id === lessonId)
   if (lessonIndex < 0) notFound()
 
   const lesson = lessons[lessonIndex]
+  const unitIndex = curriculum.find(section => section.id === lesson.niveau)?.units.findIndex(unit => unit.id === lesson.unitId) ?? -1
   const nextLesson = lessons.slice(lessonIndex + 1).find((item) => item.mots.length > 0) ?? null
 
   return (
     <GuidedLesson
       lesson={lesson}
+      unitNumber={unitIndex >= 0 ? unitIndex + 1 : undefined}
       nextLesson={nextLesson}
       userId={authData.user?.id ?? null}
     />

@@ -3773,15 +3773,48 @@ a.path-lesson:hover,
 .guided-intro {
   max-width: 650px;
   margin: 0 auto;
-  padding: clamp(30px, 6vw, 54px);
+  padding: clamp(24px, 4vw, 36px);
   border: 1px solid var(--border);
   border-radius: 28px;
   background: var(--card);
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.055);
   text-align: center;
 }
 
-.guided-intro h1,
+.guided-intro h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.guided-intro-identity {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: var(--accent-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.guided-intro-icon {
+  width: 52px;
+  height: 52px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent-text) 32%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--site-accent) 12%, transparent);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .guided-result h1,
 .guided-review-heading h1 {
   margin-top: 12px;
@@ -3790,39 +3823,111 @@ a.path-lesson:hover,
 }
 
 .guided-lead {
-  max-width: 520px;
-  margin: 18px auto 0;
+  max-width: 30rem;
+  margin: 16px auto 0;
   color: var(--text-muted);
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
-.guided-intro-summary {
-  margin: 30px 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--border);
-  border-radius: 16px;
-}
+.guided-lead strong { color: var(--accent-text); }
 
-.guided-intro-summary span {
-  min-height: 70px;
-  display: grid;
-  place-items: center;
-  padding: 12px;
-  border-right: 1px solid var(--border);
+.guided-intro-flow {
+  max-width: 27rem;
+  margin: 16px auto 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
-.guided-intro-summary span:last-child {
-  border-right: 0;
-}
+.guided-intro-actions { margin-top: 24px; }
 
-.guided-intro-summary strong {
-  display: block;
-  color: var(--text);
-  font-size: 23px;
+.guided-intro-actions .guided-primary-button { font-size: 0.9375rem; }
+.guided-page-intro .guided-exit { min-height: 44px; }
+
+@media (max-width: 700px) {
+  .guided-page-intro {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .guided-page-intro .guided-header {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 8px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .guided-page-intro .guided-header-copy strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .guided-page-intro .guided-exit {
+    padding-inline: 9px;
+  }
+
+  .guided-page-intro .guided-header > .site-sound-toggle {
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+
+  .guided-page-intro .site-sound-toggle .sound-toggle-label { display: none; }
+
+  .guided-page-intro .guided-shell {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    width: min(650px, 100%);
+    padding: 0 max(16px, env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  }
+
+  .guided-intro {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .guided-intro-copy {
+    display: grid;
+    flex: 1;
+    align-content: center;
+    padding-block: clamp(18px, 4dvh, 36px);
+  }
+
+  .guided-intro h1 {
+    font-size: clamp(2rem, min(9vw, 8dvh), 3rem);
+  }
+
+  .guided-intro-icon {
+    width: 60px;
+    height: 60px;
+    padding: 15px;
+  }
+
+  .guided-intro-flow {
+    margin: 0 auto 14px;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .guided-intro-actions { margin-top: 0; }
+
+  .guided-intro-actions .guided-primary-button {
+    width: min(100%, 24rem);
+    min-height: 52px;
+  }
 }
 
 .guided-primary-button,
@@ -4596,20 +4701,6 @@ a.path-lesson:hover,
 
   .guided-shell {
     padding: 20px 0 38px;
-  }
-
-  .guided-intro {
-    padding: 28px 22px;
-    border-radius: 22px;
-  }
-
-  .guided-intro-summary {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .guided-intro-summary span {
-    min-height: 64px;
-    padding-inline: 7px;
   }
 
   .guided-word-card,
