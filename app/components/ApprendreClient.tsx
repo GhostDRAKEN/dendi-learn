@@ -4,6 +4,8 @@ import { useState, useEffect, useSyncExternalStore } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { createExplorerAccountProgress } from '@/lib/explorer-account-progress'
 import { guestWordHistory, subscribeToGuestWordHistory } from '@/lib/guest-word-history'
+import type { NiveauId } from '@/lib/curriculum'
+import type { ExplorerTheme } from '@/lib/explorer-themes'
 import Filtre from './Filtre'
 import BanniereInscription from './BanniereInscription'
 
@@ -17,10 +19,10 @@ type Mot = {
 
 const noSubscription = () => () => {}
 
-export default function ApprendreClient({ mots, categorieInitiale, niveau }: { 
+export default function ApprendreClient({ mots, theme, niveau }: {
   mots: Mot[]
-  categorieInitiale?: string
-  niveau?: string
+  theme?: ExplorerTheme
+  niveau?: NiveauId
 }) {
   const [progress] = useState(() => createExplorerAccountProgress({
     async load(userId) {
@@ -82,7 +84,7 @@ export default function ApprendreClient({ mots, categorieInitiale, niveau }: {
     <>
       <Filtre
         mots={mots}
-        categorieInitiale={categorieInitiale}
+        theme={theme}
         onMotVu={account.owner === 'checking' ? undefined : handleMotVu}
         motsDejaVus={motsDejaVus}
         historyScope={account.scope}

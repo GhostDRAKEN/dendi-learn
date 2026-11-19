@@ -11,13 +11,14 @@ type Mot = {
   categorie: string
 }
 
-export default function QuizWrapper({ mots }: { mots: Mot[] }) {
+export default function QuizWrapper({ mots, description }: { mots: Mot[], description: string }) {
   const [modeQuiz, setModeQuiz] = useState(false)
   const [sessionActive, setSessionActive] = useState(false)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const dialogId = useId()
   const titleId = `${dialogId}-title`
+  const descriptionId = `${dialogId}-description`
 
   const openQuiz = () => {
     if (modeQuiz || !dialogRef.current) return
@@ -62,9 +63,11 @@ export default function QuizWrapper({ mots }: { mots: Mot[] }) {
         className="quiz-launch-button"
         aria-haspopup="dialog"
         aria-controls={dialogId}
+        aria-describedby={descriptionId}
       >
-        Lancer un quiz
+        Quiz libre
       </button>
+      <p id={descriptionId} className="learn-quiz-scope">{description}</p>
       <dialog
         ref={dialogRef}
         id={dialogId}

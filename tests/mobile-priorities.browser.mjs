@@ -93,9 +93,9 @@ try {
     const page = await context.newPage()
     page.on('pageerror', e => item.errors.push(e.message))
     try {
-      await page.goto(base + '/apprendre'); await settle(page)
+      await page.goto(base + '/apprendre?categorie=Salutations'); await settle(page)
       item.explorerCount = await page.locator('.learn-progress-count').innerText()
-      assert.match(item.explorerCount, /181/)
+      assert.match(item.explorerCount, /18$/)
       const search = page.getByRole('combobox', { name: /Rechercher un mot/ })
       await search.fill('De rien'); await page.locator('#learn-title').click()
       assert.equal(await page.locator('.mot-card').count(), 0)
@@ -139,8 +139,8 @@ try {
         await page.waitForFunction(() => document.querySelector('.pronunciation-button')?.dataset.playbackState === 'idle')
       }
       await search.fill(''); await page.locator('#learn-title').click()
-      for (let i = 0; i < 9; i++) await page.locator('.mot-card-front').first().click()
       const banner = page.locator('.signup-banner')
+      for (let i = 0; i < 18 && !await banner.isVisible(); i++) await page.locator('.mot-card-front').first().click()
       await banner.waitFor(); await settle(page)
       if (width === 390) {
         const nav = page.locator('.mobile-bottom-nav')

@@ -29,8 +29,10 @@ function assertWithinViewport(locator) {
 }
 
 async function selectColours(page, touch) {
-  if (touch) await page.getByLabel('Catégorie', { exact: true }).selectOption('couleurs')
-  else await page.getByRole('button', { name: /^Couleurs\b/ }).click()
+  const link = page.getByRole('link', { name: /^Couleurs\b/ })
+  if (touch) await link.tap()
+  else await link.click()
+  await page.getByRole('heading', { name: 'Couleurs', exact: true }).waitFor()
 }
 
 async function activeOption(search) {
@@ -63,7 +65,7 @@ async function checkSearch(page, item) {
   await empty.waitFor()
   await noOptions(page, search)
   await page.screenshot({ path: path.join(artifacts, `${item.key}-no-results.png`) })
-  await page.getByRole('button', { name: 'Effacer les filtres' }).click()
+  await page.getByRole('link', { name: 'Rechercher dans tous les thèmes' }).click()
   await page.getByRole('button', { name: 'Révéler la traduction Dendi de Lundi', exact: true }).waitFor()
   assert.equal(await search.inputValue(), 'Lundi')
   await focusIs(search)
@@ -101,7 +103,8 @@ async function checkSearch(page, item) {
   await clear.click()
   await focusIs(search)
   assert.equal(await search.inputValue(), '')
-  assert.ok(await main.locator('.mot-card').count() > 1)
+  assert.equal(await main.locator('.mot-card').count(), 0)
+  assert.equal(await page.getByRole('heading', { name: 'Explorer par thème' }).count(), 1)
 
   await search.fill('LITƐNI')
   assert.equal(await options.count(), 1)
@@ -123,19 +126,23 @@ async function checkSearch(page, item) {
   await search.fill('Lundi')
   await empty.waitFor()
   await noOptions(page, search)
+  await clear.click()
   await selectColours(page, item.touch)
   await search.fill('Íkpaare')
   assert.equal(await options.count(), 1)
   assert.match(await options.first().innerText(), /Blanc[\s\S]*Íkpaare/)
   await options.first().click()
   assert.equal(await search.inputValue(), 'Blanc')
-  if (item.touch) assert.equal(await page.locator('#learn-category-select').inputValue(), 'couleurs')
-  else assert.equal(await page.getByRole('button', { name: /^Couleurs\b/ }).getAttribute('aria-pressed'), 'true')
+  assert.equal(new URL(page.url()).searchParams.get('categorie'), 'couleurs')
   assert.match(page.url(), /niveau=debutant/)
   await search.fill('Lundi')
   await empty.waitFor()
   await noOptions(page, search)
-  await page.getByRole('link', { name: 'Effacer les filtres' }).click()
+  await page.getByRole('link', { name: 'Rechercher dans tous les thèmes' }).click()
+  await page.waitForURL(base + '/apprendre?niveau=debutant')
+  await empty.waitFor()
+  await noOptions(page, search)
+  await page.getByRole('link', { name: 'Rechercher dans tous les niveaux', exact: true }).click()
   await page.waitForURL(base + '/apprendre')
   await page.getByRole('button', { name: 'Révéler la traduction Dendi de Lundi', exact: true }).waitFor()
   assert.equal(await search.inputValue(), 'Lundi')
@@ -145,7 +152,10 @@ async function checkSearch(page, item) {
 }
 
 async function checkQuiz(page, item) {
-  const trigger = page.getByRole('button', { name: 'Lancer un quiz', exact: true })
+  const trigger = page.getByRole('button', { name: 'Quiz libre', exact: true })
+  assert.equal(await trigger.count(), 0)
+  await page.getByRole('button', { name: 'Effacer la recherche' }).click()
+  await selectColours(page, item.touch)
   const dialog = page.getByRole('dialog', { name: 'Quiz Dendi-Learn' })
   const close = dialog.getByRole('button', { name: 'Fermer le quiz' })
   const cancel = dialog.getByRole('button', { name: 'Annuler', exact: true })
@@ -156,6 +166,8 @@ async function checkQuiz(page, item) {
 
   await dialog.getByRole('heading', { name: 'Choisissez votre catégorie' }).waitFor()
   assert.ok(await dialog.evaluate(e => e.matches('dialog:modal')))
+  assert.equal(await dialog.getByRole('button', { name: 'Tous les mots 181 mots' }).getAttribute('aria-pressed'), 'true')
+  assert.ok(await dialog.getByRole('button', { name: 'Salutations 18 mots' }).isVisible())
   if (item.key.endsWith('-dark')) {
     assert.equal(await dialog.locator('.quiz-panel').evaluate(e => getComputedStyle(e).animationName), 'none')
   }
