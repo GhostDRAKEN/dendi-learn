@@ -51,7 +51,11 @@ function genererQuestions(mots: Mot[], motsVus: Set<number>): Question[] {
   })
 }
 
-export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () => void }) {
+export default function Quiz({ mots, onQuitter, onSessionActiveChange }: {
+  mots: Mot[]
+  onQuitter: () => void
+  onSessionActiveChange: (active: boolean) => void
+}) {
   const [questions, setQuestions] = useState<Question[]>([])
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
@@ -65,6 +69,7 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
   const [sauvegardesReussies, setSauvegardesReussies] = useState(0)
   const [sauvegardesEchouees, setSauvegardesEchouees] = useState(0)
   const authRequestRef = useRef<Promise<string | null> | null>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
     authRequestRef.current = supabase.auth.getUser().then(async ({ data }) => {
@@ -83,8 +88,18 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
   }, [])
 
   useEffect(() => {
-    document.querySelector<HTMLElement>('.quiz-overlay')?.scrollTo({ top: 0 })
+    const heading = headingRef.current
+    const dialog = heading?.closest('dialog')
+    if (!dialog?.open) return
+    dialog.scrollTo({ top: 0 })
+    if (phase === 'quiz' || !dialog.contains(document.activeElement)) {
+      heading?.focus({ preventScroll: true })
+    }
   }, [phase, index, termine])
+
+  useEffect(() => {
+    onSessionActiveChange(phase === 'quiz' && !termine)
+  }, [onSessionActiveChange, phase, termine])
 
   const categories = ['Tous', ...Array.from(new Set(mots.map(m => m.categorie)))]
 
@@ -156,7 +171,7 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
       <section className="quiz-panel quiz-category-panel" aria-labelledby="quiz-category-title">
         <header className="quiz-section-header">
           <p className="quiz-eyebrow">Session d’apprentissage</p>
-          <h2 id="quiz-category-title" className="quiz-title">Choisissez votre catégorie</h2>
+          <h2 ref={headingRef} id="quiz-category-title" className="quiz-title" tabIndex={-1}>Choisissez votre catégorie</h2>
           <p className="quiz-description">
             Sélectionnez le vocabulaire à réviser. Chaque session contient jusqu’à 10 questions.
           </p>
@@ -219,7 +234,7 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
           {score >= 8 ? '🎯' : score >= 5 ? '💪' : '📚'}
         </p>
         <p className="quiz-eyebrow">Session terminée</p>
-        <h2 id="quiz-result-title" className="quiz-result-title">
+        <h2 ref={headingRef} id="quiz-result-title" className="quiz-result-title" tabIndex={-1}>
           {score >= 8 ? 'Excellent résultat !' : score >= 5 ? 'Bon travail !' : 'Continuez à pratiquer !'}
         </h2>
         <div className="quiz-score-summary" aria-label={`${score} bonnes réponses sur ${questions.length}, soit ${pourcentageFinal} pour cent`}>
@@ -282,7 +297,7 @@ export default function Quiz({ mots, onQuitter }: { mots: Mot[], onQuitter: () =
         <p className="quiz-question-prompt">
           Que signifie ce mot en Dendi ?
         </p>
-        <h2 id="quiz-question-title" className="quiz-question-word">{question.mot.dendi}</h2>
+        <h2 ref={headingRef} id="quiz-question-title" className="quiz-question-word" tabIndex={-1}>{question.mot.dendi}</h2>
         <p className="quiz-question-phonetic">{question.mot.phonetique}</p>
       </article>
 

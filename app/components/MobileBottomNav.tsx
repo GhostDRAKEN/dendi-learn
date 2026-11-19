@@ -60,8 +60,8 @@ export default function MobileBottomNav() {
     const keepFocusVisible = () => {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
-        // Modal focus management belongs to the dialog (outside this correction).
-        if (document.querySelector('.quiz-overlay')) return
+        // Modal focus management belongs to the open dialog.
+        if (document.querySelector('.quiz-overlay:modal')) return
         const target = document.activeElement
         if (!(target instanceof HTMLElement) || target === document.body ||
             target.closest('.mobile-bottom-nav, .signup-banner, .quiz-overlay')) return

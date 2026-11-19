@@ -1,5 +1,6 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useId, useMemo, useRef, type KeyboardEvent } from 'react'
+import Link from 'next/link'
 import MotCard from './MotCard'
 
 type Mot = {
@@ -42,6 +43,10 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(-1)
+  const [selectedWordId, setSelectedWordId] = useState<number | null>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
+  const listId = useId()
   const [showTempsMenu, setShowTempsMenu] = useState(false)
   const [vusIdsLocaux, setVusIdsLocaux] = useState<Set<number>>(new Set())
   const vusIds = useMemo(
@@ -53,27 +58,66 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
     onVusCountChange?.(vusIds.size)
   }, [vusIds, onVusCountChange])
 
-  const isTempsActive = TEMPS_SOUS_CATEGORIES.includes(active)
+  const isTempsActive = active === 'temps' || TEMPS_SOUS_CATEGORIES.includes(active)
+  const query = recherche.toLowerCase()
+  // The server already applies the level. Use one matching pool for cards and suggestions.
+  const matches = mots.filter((mot) =>
+    (active === 'Tous' || mot.categorie === active ||
+      (active === 'temps' && TEMPS_SOUS_CATEGORIES.includes(mot.categorie))) &&
+    (query === '' || [mot.fr, mot.dendi, mot.phonetique].some(
+      (value) => value?.toLowerCase().includes(query),
+    )),
+  )
+  const motsFiltres = selectedWordId === null
+    ? matches
+    : matches.filter((mot) => mot.id === selectedWordId)
+  const suggestions = recherche.length >= 2 ? matches.slice(0, 5) : []
+  const expanded = showSuggestions && suggestions.length > 0
+  const activeSuggestion = expanded ? suggestions[activeIndex] : undefined
+  const optionId = (id: number) => `${listId}-${id}`
 
-  const suggestions = recherche.length >= 2
-    ? mots.filter((m) =>
-        m.fr.toLowerCase().includes(recherche.toLowerCase()) ||
-        m.dendi.toLowerCase().includes(recherche.toLowerCase())
-      ).slice(0, 5)
-    : []
+  useEffect(() => {
+    if (!activeSuggestion) return
+    const option = document.getElementById(`${listId}-${activeSuggestion.id}`)
+    option?.scrollIntoView({ block: 'nearest' })
+  }, [activeSuggestion, listId])
 
-  const motsFiltres = mots
-    .filter((m) => {
-      if (active === 'Tous') return true
-      if (active === 'temps') return TEMPS_SOUS_CATEGORIES.includes(m.categorie)
-      return m.categorie === active
-    })
-    .filter((m) =>
-      recherche === '' ||
-      m.fr.toLowerCase().includes(recherche.toLowerCase()) ||
-      m.dendi.toLowerCase().includes(recherche.toLowerCase()) ||
-      m.phonetique.toLowerCase().includes(recherche.toLowerCase())
-    )
+  const closeSuggestions = () => {
+    setShowSuggestions(false)
+    setActiveIndex(-1)
+  }
+
+  const selectSuggestion = (mot: Mot) => {
+    searchRef.current?.focus({ preventScroll: true })
+    setRecherche(mot.fr)
+    setSelectedWordId(mot.id)
+    closeSuggestions()
+  }
+
+  const handleSearchKey = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+    if (event.key === 'Escape' && expanded) {
+      event.preventDefault()
+      closeSuggestions()
+    } else if (event.key === 'Enter' && activeSuggestion) {
+      event.preventDefault()
+      selectSuggestion(activeSuggestion)
+    } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && suggestions.length > 0) {
+      event.preventDefault()
+      setShowSuggestions(true)
+      const forward = event.key === 'ArrowDown'
+      const lastIndex = suggestions.length - 1
+      const nextIndex = activeSuggestion ? activeIndex + (forward ? 1 : -1) : (forward ? 0 : lastIndex)
+      setActiveIndex(Math.max(0, Math.min(lastIndex, nextIndex)))
+    }
+  }
+
+  const clearSearch = () => {
+    searchRef.current?.focus()
+    setRecherche('')
+    setSelectedWordId(null)
+    closeSuggestions()
+  }
 
   const countForCat = (cat: string) => {
     if (cat === 'temps') return mots.filter(m => TEMPS_SOUS_CATEGORIES.includes(m.categorie)).length
@@ -82,7 +126,14 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
 
   const handleCategorieChange = (cat: string) => {
     setActive(cat)
+    setSelectedWordId(null)
     setShowTempsMenu(false)
+    closeSuggestions()
+  }
+
+  const clearFilters = () => {
+    searchRef.current?.focus()
+    handleCategorieChange('Tous')
   }
 
   const handleVue = (id: number) => {
@@ -107,35 +158,49 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
           </svg>
         </div>
         <input
+          ref={searchRef}
           type="text"
           placeholder="Rechercher en français ou en Dendi..."
           value={recherche}
-          onChange={(e) => { setRecherche(e.target.value); setShowSuggestions(true) }}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          onFocus={() => setShowSuggestions(true)}
+          onChange={(e) => {
+            setRecherche(e.target.value)
+            setSelectedWordId(null)
+            setActiveIndex(-1)
+            setShowSuggestions(true)
+          }}
+          onBlur={closeSuggestions}
+          onFocus={() => { if (selectedWordId === null) setShowSuggestions(true) }}
+          onKeyDown={handleSearchKey}
+          autoComplete="off"
           className="learn-search-input"
           role="combobox"
           aria-label="Rechercher un mot en français, en Dendi ou par sa phonétique"
           aria-autocomplete="list"
-          aria-expanded={showSuggestions && suggestions.length > 0}
-          aria-controls="learn-search-suggestions"
+          aria-expanded={expanded}
+          aria-controls={listId}
+          aria-activedescendant={activeSuggestion ? optionId(activeSuggestion.id) : undefined}
         />
-        {showSuggestions && suggestions.length > 0 && (
-          <ul id="learn-search-suggestions" className="learn-search-suggestions">
-            {suggestions.map((mot) => (
-              <li key={mot.id}>
-                <button
-                  type="button"
-                  className="learn-search-suggestion"
-                  onClick={() => { setRecherche(mot.fr); setShowSuggestions(false) }}
-                >
-                  <span>{mot.fr}</span>
-                  <span className="learn-search-suggestion-dendi">{mot.dendi}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
+        {recherche && (
+          <button type="button" className="learn-search-clear" aria-label="Effacer la recherche" onClick={clearSearch}>
+            <span aria-hidden="true">×</span>
+          </button>
         )}
+        <ul id={listId} hidden={!expanded} tabIndex={-1} role="listbox" aria-label="Suggestions de mots" className="learn-search-suggestions">
+          {expanded && suggestions.map((mot) => (
+            <li
+              key={mot.id}
+              id={optionId(mot.id)}
+              role="option"
+              aria-selected={activeSuggestion?.id === mot.id}
+              className="learn-search-suggestion"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => selectSuggestion(mot)}
+            >
+              <span>{mot.fr}</span>
+              <span className="learn-search-suggestion-dendi">{mot.dendi}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="learn-mobile-category">
@@ -159,9 +224,6 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
 
       <div className="learn-categories" role="group" aria-label="Filtrer les mots par catégorie">
         {CATEGORIES_ORDER.map((cat) => {
-          // Cacher ⊞ si niveau actif
-          if (cat === 'Tous' && niveauActif) return null
-
           // Cacher les catégories non disponibles dans les mots filtrés
           if (cat !== 'Tous' && cat !== 'temps') {
             if (!categoriesDisponibles.has(cat)) return null
@@ -240,14 +302,25 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
       </section>
 
       {motsFiltres.length === 0 ? (
-        <div className="learn-empty-state" role="status">
+        <div className="learn-empty-state">
           <span className="learn-empty-icon" aria-hidden="true">⌕</span>
-          <h3>Aucun mot trouvé</h3>
-          <p>
-            {recherche
-              ? <>Aucun résultat ne correspond à &quot;{recherche}&quot;. Essayez un autre mot ou une autre catégorie.</>
-              : 'Aucun mot n’est disponible dans cette catégorie.'}
-          </p>
+          <div role="status">
+            <h3>Aucun mot trouvé</h3>
+            <p>
+              {recherche
+                ? <>Aucun résultat pour « {recherche} »{active !== 'Tous' || niveauActif ? ' avec ces filtres' : ''}.</>
+                : 'Aucun mot n’est disponible avec ces filtres.'}
+            </p>
+          </div>
+          {niveauActif ? (
+            <Link href="/apprendre" scroll={false} className="learn-reset-filters" onNavigate={clearFilters}>
+              Effacer les filtres
+            </Link>
+          ) : active !== 'Tous' && (
+            <button type="button" className="learn-reset-filters" onClick={clearFilters}>
+              Effacer les filtres
+            </button>
+          )}
         </div>
       ) : (
         <div className="mot-grid">
