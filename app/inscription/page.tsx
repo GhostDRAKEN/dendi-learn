@@ -45,7 +45,7 @@ export default function InscriptionPage() {
         padding: '40px 32px',
       }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--accent-text)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>
             ← Dendi Learn
           </p>
         </Link>
@@ -78,7 +78,7 @@ export default function InscriptionPage() {
                 placeholder="ton@email.com"
                 style={{
                   width: '100%', padding: '12px 16px',
-                  borderRadius: '12px', border: '1px solid var(--border)',
+                  borderRadius: '12px', border: '1px solid var(--control-border)',
                   backgroundColor: 'var(--input-bg)', color: 'var(--text)',
                   fontSize: '14px', fontFamily: 'Georgia, serif',
                   boxSizing: 'border-box',
@@ -97,7 +97,7 @@ export default function InscriptionPage() {
                 placeholder="Min. 6 caractères"
                 style={{
                   width: '100%', padding: '12px 16px',
-                  borderRadius: '12px', border: '1px solid var(--border)',
+                  borderRadius: '12px', border: '1px solid var(--control-border)',
                   backgroundColor: 'var(--input-bg)', color: 'var(--text)',
                   fontSize: '14px', fontFamily: 'Georgia, serif',
                   boxSizing: 'border-box',
@@ -106,7 +106,7 @@ export default function InscriptionPage() {
             </div>
 
             {error && (
-              <p style={{ color: '#F44336', fontSize: '13px', marginBottom: '16px' }}>{error}</p>
+              <p style={{ color: 'var(--negative-text)', fontSize: '13px', marginBottom: '16px' }}>{error}</p>
             )}
 
             <button
@@ -115,7 +115,7 @@ export default function InscriptionPage() {
               style={{
                 width: '100%', padding: '14px',
                 backgroundColor: '#E07B39', border: 'none',
-                borderRadius: '12px', color: 'white',
+                borderRadius: '12px', color: 'var(--on-accent)',
                 fontSize: '15px', fontWeight: '600',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontFamily: 'Georgia, serif',
@@ -127,7 +127,7 @@ export default function InscriptionPage() {
 
             <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'var(--text-muted)' }}>
               Déjà un compte ?{' '}
-              <Link href="/connexion" style={{ color: '#E07B39', textDecoration: 'none' }}>
+              <Link href="/connexion" style={{ color: 'var(--accent-text)', textDecoration: 'none' }}>
                 Se connecter
               </Link>
             </p>

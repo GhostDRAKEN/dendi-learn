@@ -3,6 +3,7 @@ import QuizWrapper from '../components/QuizWrapper'
 import AppHeader from '../components/AppHeader'
 import ApprendreClient from '../components/ApprendreClient'
 import Link from 'next/link'
+import { getLearningWords } from '@/lib/curriculum'
 
 export default async function ApprendrePage({
   searchParams,
@@ -19,6 +20,7 @@ export default async function ApprendrePage({
   const { data: mots, error } = await query
 
   if (error) return <p>Erreur : {error.message}</p>
+  const learningWords = getLearningWords(mots ?? [])
 
   return (
     <main className="learn-page">
@@ -32,7 +34,7 @@ export default async function ApprendrePage({
             <p className="learn-subtitle">
               Recherchez un mot, choisissez une catégorie ou explorez librement les cartes.
             </p>
-            <div className="explorer-quiz-action"><QuizWrapper mots={mots ?? []} /></div>
+            <div className="explorer-quiz-action"><QuizWrapper mots={learningWords} /></div>
           </div>
 
           <div className="learn-level-summary">
@@ -52,7 +54,7 @@ export default async function ApprendrePage({
           </div>
         </div>
 
-        <ApprendreClient mots={mots ?? []} categorieInitiale={params.categorie} niveau={params.niveau} />
+        <ApprendreClient mots={learningWords} categorieInitiale={params.categorie} niveau={params.niveau} />
       </section>
     </main>
   )

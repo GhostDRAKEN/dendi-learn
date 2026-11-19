@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import PronunciationButton from './PronunciationButton'
+import { hasLinguisticValue, isLearningWord } from '@/lib/curriculum'
 
 type Mot = {
   id: number
@@ -13,6 +14,7 @@ type Mot = {
 export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () => void, dejaVu?: boolean }) {
   const [retournee, setRetournee] = useState(false)
   const [modePhon, setModePhon] = useState(false)
+  if (!isLearningWord(mot)) return null
 
   return (
     <article className={`mot-card${retournee ? ' mot-card-revealed' : ''}${dejaVu ? ' mot-card-seen' : ''}`}>
@@ -34,15 +36,15 @@ export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () =
       ) : (
         <div className="mot-card-face mot-card-back" aria-live="polite">
           <p className="mot-card-dendi">
-            {modePhon ? mot.phonetique : mot.dendi}
+            {modePhon && hasLinguisticValue(mot.phonetique) ? mot.phonetique : mot.dendi}
           </p>
-          <button
+          {hasLinguisticValue(mot.phonetique) && <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setModePhon(!modePhon) }}
             className="mot-card-text-action"
           >
             {modePhon ? 'Voir l\'écriture Dendi' : 'Voir la phonétique'}
-          </button>
+          </button>}
           <PronunciationButton wordId={mot.id} word={mot.dendi} />
           <div className="mot-card-divider" aria-hidden="true" />
           <p className="mot-card-reminder">{mot.fr}</p>

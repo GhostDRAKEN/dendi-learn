@@ -24,7 +24,7 @@ export default function ConnexionPage() {
     <main className="auth-page" style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: '400px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '20px', padding: '40px 32px' }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <p style={{ fontSize: '13px', color: '#E07B39', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>← Dendi Learn</p>
+          <p style={{ fontSize: '13px', color: 'var(--accent-text)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>← Dendi Learn</p>
         </Link>
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>Se connecter</h1>
         <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouvez votre progression et continuez d&apos;apprendre.</p>
@@ -32,25 +32,25 @@ export default function ConnexionPage() {
         <div style={{ marginBottom: '16px' }}>
           <label htmlFor="email" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Email</label>
           <input id="email" autoComplete="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton@email.com"
-            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
+            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--control-border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
         </div>
 
         <div style={{ marginBottom: '24px' }}>
           <label htmlFor="password" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Mot de passe</label>
           <input id="password" autoComplete="current-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Ton mot de passe"
-            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
+            style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--control-border)', backgroundColor: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }} />
         </div>
 
-        {error && <p style={{ color: '#F44336', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
+        {error && <p style={{ color: 'var(--negative-text)', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
 
         <button onClick={handleConnexion} disabled={loading}
-          style={{ width: '100%', padding: '14px', backgroundColor: '#E07B39', border: 'none', borderRadius: '12px', color: 'white', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Georgia, serif', opacity: loading ? 0.7 : 1 }}>
+          style={{ width: '100%', padding: '14px', backgroundColor: '#E07B39', border: 'none', borderRadius: '12px', color: 'var(--on-accent)', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Georgia, serif', opacity: loading ? 0.7 : 1 }}>
           {loading ? 'Connexion...' : 'Se connecter'}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'var(--text-muted)' }}>
           Pas encore de compte ?{' '}
-          <Link href="/inscription" style={{ color: '#E07B39', textDecoration: 'none' }}>S&apos;inscrire</Link>
+          <Link href="/inscription" style={{ color: 'var(--accent-text)', textDecoration: 'none' }}>S&apos;inscrire</Link>
         </p>
       </div>
     </main>

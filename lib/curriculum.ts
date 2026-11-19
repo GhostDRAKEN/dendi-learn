@@ -11,6 +11,23 @@ export type CurriculumMot = {
   niveau: string
 }
 
+// Content eligibility is a presentation rule, never a correction of source data.
+export function hasLinguisticValue(value: unknown): value is string {
+  return typeof value === 'string' && value.trim() !== '' && !/\bN\/A\b/i.test(value)
+}
+
+export function isLearningWord(mot: { fr: unknown; dendi: unknown }) {
+  return hasLinguisticValue(mot.fr) && hasLinguisticValue(mot.dendi)
+}
+
+export function getLearningWords<T extends { fr: unknown; dendi: unknown }>(mots: readonly T[]): T[] {
+  return mots.filter(isLearningWord)
+}
+
+export function getLearningLesson(lesson: CurriculumLesson): CurriculumLesson {
+  return { ...lesson, mots: getLearningWords(lesson.mots) }
+}
+
 export type ProgressionMot = {
   mot_id: number
   vu: boolean
@@ -158,7 +175,8 @@ function createUnit(definition: UnitDefinition, niveau: NiveauId, mots: Curricul
       unitTitle: definition.title,
       index: index + 1,
       totalInUnit: groups.length,
-      mots: lessonWords,
+      // Filter AFTER distribution: preserve lesson IDs, boundaries and word order.
+      mots: getLearningWords(lessonWords),
     })),
   }
 }
@@ -195,6 +213,7 @@ export function flattenLessons(curriculum: CurriculumSection[]) {
 }
 
 export function getLessonStatus(lesson: CurriculumLesson, progression: ProgressionMot[]): LessonStatus {
+  if (lesson.mots.length === 0) return 'a-decouvrir'
   const progressionByMot = new Map(progression.map((item) => [item.mot_id, item]))
   const vus = lesson.mots.filter((mot) => {
     const state = progressionByMot.get(mot.id)
@@ -226,6 +245,7 @@ export function getRecommendedLesson(
 ) {
   const sectionsFromCurrent = curriculum.slice(Math.max(0, NIVEAUX.indexOf(niveau)))
   const lessons = sectionsFromCurrent.flatMap((section) => section.units.flatMap((unit) => unit.lessons))
+    .filter((lesson) => lesson.mots.length > 0)
 
   const partiallyStarted = lessons.find((lesson) => {
     const { seen, total } = getLessonProgress(lesson, progression)

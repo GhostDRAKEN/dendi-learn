@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import Link from 'next/link'
@@ -9,6 +9,8 @@ export default function BanniereInscription({ vusCount }: { vusCount: number }) 
   const [user, setUser] = useState<User | null>(null)
   const [dismissed, setDismissed] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const bannerRef = useRef<HTMLElement>(null)
+  const visible = loaded && !user && !dismissed && vusCount >= 10
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -17,44 +19,41 @@ export default function BanniereInscription({ vusCount }: { vusCount: number }) 
     })
   }, [])
 
+  useEffect(() => {
+    const banner = bannerRef.current
+    if (!visible || !banner) return
+    const root = document.documentElement
+    const measure = () => root.style.setProperty('--signup-banner-height', `${banner.getBoundingClientRect().height}px`)
+    const observer = new ResizeObserver(measure)
+    observer.observe(banner, { box: 'border-box' })
+    measure()
+    return () => {
+      observer.disconnect()
+      root.style.removeProperty('--signup-banner-height')
+    }
+  }, [visible])
+
   // Afficher seulement si : pas connecté, 10+ mots vus, pas fermé
-  if (!loaded || user || dismissed || vusCount < 10) return null
+  if (!visible) return null
 
   return (
-    <div style={{
-      position: 'fixed', bottom: '20px', left: '50%',
-      transform: 'translateX(-50%)',
-      width: '90%', maxWidth: '500px',
-      backgroundColor: '#1A0F00',
-      border: '1px solid #E07B39',
-      borderRadius: '16px',
-      padding: '20px 24px',
-      zIndex: 50,
-      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: '16px',
-    }}>
+    <aside ref={bannerRef} className="signup-banner" aria-label="Sauvegarder votre progression">
       <div>
-        <p style={{ color: '#F5F0EB', fontSize: '15px', fontWeight: '600', marginBottom: '4px' }}>
+        <p className="signup-banner-title">
           🎯 Tu progresses bien !
         </p>
-        <p style={{ color: '#A89A8A', fontSize: '13px' }}>
+        <p className="signup-banner-copy">
           Crée un compte gratuit pour sauvegarder tes {vusCount} mots appris.
         </p>
       </div>
-      <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-        <button onClick={() => setDismissed(true)}
-          style={{ padding: '8px 12px', borderRadius: '9999px', border: '1px solid #3A3A3A', backgroundColor: 'transparent', color: '#A89A8A', fontSize: '12px', cursor: 'pointer', fontFamily: 'Georgia, serif' }}>
+      <div className="signup-banner-actions">
+        <button type="button" onClick={() => setDismissed(true)} className="signup-banner-dismiss">
           Plus tard
         </button>
-        <Link href="/inscription">
-          <button style={{ padding: '8px 16px', borderRadius: '9999px', border: 'none', backgroundColor: '#E07B39', color: 'white', fontSize: '12px', cursor: 'pointer', fontWeight: '600', fontFamily: 'Georgia, serif' }}>
-            S&apos;inscrire
-          </button>
+        <Link href="/inscription" className="signup-banner-action">
+          S&apos;inscrire
         </Link>
       </div>
-    </div>
+    </aside>
   )
 }

@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useSyncExternalStore, type ReactNode } from 'react'
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'
 import { isNiveauId } from '@/lib/curriculum'
+import { getFocusScrollDelta } from '@/lib/fixed-surfaces'
 
 const LEVEL_KEY = 'dendi-guided-level'
 const MOBILE_NAV_ROUTES = ['/parcours', '/apprendre', '/profil'] as const
@@ -40,11 +41,46 @@ function getStoredLevelServerSnapshot() {
 export default function MobileBottomNav() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const navRef = useRef<HTMLElement>(null)
   const storedLevel = useSyncExternalStore(
     subscribeToLevel,
     getStoredLevel,
     getStoredLevelServerSnapshot,
   )
+
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+    const root = document.documentElement
+    const measure = () => root.style.setProperty('--mobile-nav-height', `${nav.getBoundingClientRect().height}px`)
+    const observer = new ResizeObserver(measure)
+    observer.observe(nav, { box: 'border-box' })
+    measure()
+    let frame = 0
+    const keepFocusVisible = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        // Modal focus management belongs to the dialog (outside this correction).
+        if (document.querySelector('.quiz-overlay')) return
+        const target = document.activeElement
+        if (!(target instanceof HTMLElement) || target === document.body ||
+            target.closest('.mobile-bottom-nav, .signup-banner, .quiz-overlay')) return
+        const navBounds = nav.getBoundingClientRect()
+        if (navBounds.height === 0) return
+        const banner = document.querySelector('.signup-banner')?.getBoundingClientRect()
+        const availableBottom = Math.min(navBounds.top, banner?.top ?? innerHeight)
+        const delta = getFocusScrollDelta(target.getBoundingClientRect(), availableBottom)
+        if (delta) window.scrollBy({ top: delta, behavior: 'instant' })
+      })
+    }
+    document.addEventListener('focusin', keepFocusVisible)
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+      document.removeEventListener('focusin', keepFocusVisible)
+      root.style.removeProperty('--mobile-nav-height')
+    }
+  }, [pathname])
 
   if (!MOBILE_NAV_ROUTES.includes(pathname as (typeof MOBILE_NAV_ROUTES)[number])) {
     return null
@@ -94,7 +130,7 @@ export default function MobileBottomNav() {
   ]
 
   return (
-    <nav className="mobile-bottom-nav" aria-label="Navigation mobile principale">
+    <nav ref={navRef} className="mobile-bottom-nav" aria-label="Navigation mobile principale">
       <div className="mobile-bottom-nav-inner">
         {items.map((item) => {
           const active = pathname === item.path

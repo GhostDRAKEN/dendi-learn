@@ -66,12 +66,14 @@ export default function ParcoursOverview({
   progressionAvailable,
   recommendedLesson,
   nextSection,
+  lexiconWordCount,
 }: {
   section: CurriculumSection
   userId: string | null
   progressionAvailable: boolean
   recommendedLesson: CurriculumLesson
   nextSection: NiveauId | null
+  lexiconWordCount: number
 }) {
   const [levelPickerOpen, setLevelPickerOpen] = useState(false)
   const [openUnitIds, setOpenUnitIds] = useState<Set<string>>(() => new Set())
@@ -325,7 +327,7 @@ export default function ParcoursOverview({
           <h3>Le lexique complet reste disponible.</h3>
         </div>
         <Link href="/apprendre" className="path-secondary-action">
-          Explorer les 182 mots <span aria-hidden="true">→</span>
+          Explorer les {lexiconWordCount} mots <span aria-hidden="true">→</span>
         </Link>
       </aside>
     </section>

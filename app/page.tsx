@@ -2,6 +2,7 @@ import Link from 'next/link'
 import AppHeader from './components/AppHeader'
 import LearningStartLink from './components/LearningStartLink'
 import { createClient } from '@/lib/supabase/server'
+import { getLearningWords } from '@/lib/curriculum'
 
 async function getMotDuJour() {
   const supabase = await createClient()
@@ -11,13 +12,14 @@ async function getMotDuJour() {
     .not('dendi', 'eq', 'N/A')
     .not('phonetique', 'eq', 'N/A')
 
-  if (!mots || mots.length === 0) return null
+  const learningWords = getLearningWords(mots ?? [])
+  if (learningWords.length === 0) return null
 
   const today = new Date()
   const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
-  const index = seed % mots.length
+  const index = seed % learningWords.length
 
-  return mots[index]
+  return learningWords[index]
 }
 
 export default async function HomePage() {

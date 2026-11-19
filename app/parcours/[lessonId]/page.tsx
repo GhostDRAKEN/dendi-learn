@@ -35,7 +35,7 @@ export default async function GuidedLessonPage({
   if (lessonIndex < 0) notFound()
 
   const lesson = lessons[lessonIndex]
-  const nextLesson = lessons[lessonIndex + 1] ?? null
+  const nextLesson = lessons.slice(lessonIndex + 1).find((item) => item.mots.length > 0) ?? null
 
   return (
     <GuidedLesson

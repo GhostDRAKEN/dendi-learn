@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   buildCurriculum,
   getRecommendedLesson,
+  getLearningWords,
   isNiveauId,
   type CurriculumMot,
   type ProgressionMot,
@@ -73,6 +74,7 @@ export default async function ParcoursPage({
         progressionAvailable={progressionAvailable}
         recommendedLesson={recommendedLesson}
         nextSection={curriculum.slice(curriculum.indexOf(section) + 1).find(item => item.units.length > 0)?.id ?? null}
+        lexiconWordCount={getLearningWords(mots as CurriculumMot[]).length}
       />
     </main>
   )

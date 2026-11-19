@@ -3,26 +3,14 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import type { CurriculumLesson, CurriculumMot } from '@/lib/curriculum'
+import { getLearningLesson, hasLinguisticValue, type CurriculumLesson, type CurriculumMot } from '@/lib/curriculum'
+import { createLessonExercises, stableHash, type Exercise } from '@/lib/lesson-exercises'
 import SoundToggle from './SoundToggle'
 import PronunciationButton from './PronunciationButton'
 import { useSoundFeedback } from './SoundProvider'
 import { recordLessonEvent } from '@/lib/lesson-progress'
 
 type LessonPhase = 'intro' | 'learn' | 'practice' | 'test' | 'review' | 'result'
-type ExerciseType = 'dendi-fr' | 'fr-dendi' | 'phonetic-fr'
-type ExerciseMode = 'practice' | 'test'
-
-type Exercise = {
-  mot: CurriculumMot
-  type: ExerciseType
-  prompt: string
-  instruction: string
-  detail?: string
-  correctAnswer: string
-  options: string[]
-}
-
 const RESUME_KEY = 'dendi-guided-resume'
 const LEVEL_KEY = 'dendi-guided-level'
 
@@ -44,95 +32,6 @@ const TEST_INCORRECT_FEEDBACK = [
   'Presque — la bonne réponse est :',
   'À retenir :',
 ]
-
-function stableHash(value: string) {
-  let hash = 0
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0
-  }
-  return hash
-}
-
-function deterministicOptions(pool: string[], correctAnswer: string, seed: string, maximum: number) {
-  const uniquePool = Array.from(new Set(pool.filter(Boolean)))
-  const distractors = uniquePool
-    .filter((value) => value !== correctAnswer)
-    .sort((a, b) => stableHash(`${seed}-${a}`) - stableHash(`${seed}-${b}`))
-    .slice(0, Math.max(0, maximum - 1))
-
-  return [correctAnswer, ...distractors]
-    .sort((a, b) => stableHash(`${seed}-position-${a}`) - stableHash(`${seed}-position-${b}`))
-}
-
-function selectEvenly<T>(items: T[], count: number) {
-  if (count >= items.length) return [...items]
-  if (count <= 1) return items.slice(0, count)
-
-  return Array.from({ length: count }, (_, index) => {
-    const itemIndex = Math.round((index * (items.length - 1)) / (count - 1))
-    return items[itemIndex]
-  })
-}
-
-function createExercise(
-  lesson: CurriculumLesson,
-  mot: CurriculumMot,
-  questionIndex: number,
-  mode: ExerciseMode,
-): Exercise {
-  const type: ExerciseType = questionIndex % 3 === 0
-    ? 'dendi-fr'
-    : questionIndex % 3 === 1
-      ? 'fr-dendi'
-      : 'phonetic-fr'
-  const seed = `${lesson.id}-${mode}-${mot.id}-${type}`
-  const maximumOptions = mode === 'practice' ? 3 : 4
-
-  if (type === 'fr-dendi') {
-    return {
-      mot,
-      type,
-      prompt: mot.fr,
-      instruction: 'Quelle est la forme Dendi ?',
-      correctAnswer: mot.dendi,
-      options: deterministicOptions(lesson.mots.map((item) => item.dendi), mot.dendi, seed, maximumOptions),
-    }
-  }
-
-  if (type === 'phonetic-fr') {
-    return {
-      mot,
-      type,
-      prompt: mot.phonetique,
-      instruction: 'Quelle traduction correspond à cette prononciation ?',
-      detail: 'Phonétique',
-      correctAnswer: mot.fr,
-      options: deterministicOptions(lesson.mots.map((item) => item.fr), mot.fr, seed, maximumOptions),
-    }
-  }
-
-  return {
-    mot,
-    type,
-    prompt: mot.dendi,
-    instruction: 'Que signifie ce mot en Dendi ?',
-    detail: mode === 'practice' ? mot.phonetique : undefined,
-    correctAnswer: mot.fr,
-    options: deterministicOptions(lesson.mots.map((item) => item.fr), mot.fr, seed, maximumOptions),
-  }
-}
-
-export function createLessonExercises(lesson: CurriculumLesson) {
-  const practiceCount = Math.min(4, Math.max(2, Math.ceil(lesson.mots.length / 2)))
-  const testCount = Math.min(6, lesson.mots.length)
-  const practiceMots = selectEvenly(lesson.mots, practiceCount)
-  const testMots = selectEvenly(lesson.mots, testCount)
-
-  return {
-    practice: practiceMots.map((mot, index) => createExercise(lesson, mot, index, 'practice')),
-    test: testMots.map((mot, index) => createExercise(lesson, mot, index, 'test')),
-  }
-}
 
 function storeResume(lessonId: string, niveau: string) {
   try {
@@ -198,7 +97,7 @@ function PhaseProgress({
   )
 }
 
-export default function GuidedLesson({
+function AvailableGuidedLesson({
   lesson,
   nextLesson,
   userId,
@@ -443,7 +342,7 @@ export default function GuidedLesson({
             <article className="guided-word-card">
               <p className="guided-word-label">Dendi</p>
               <h1 id="guided-learn-title">{lesson.mots[learnIndex].dendi}</h1>
-              <p className="guided-word-phonetic">{lesson.mots[learnIndex].phonetique}</p>
+              {hasLinguisticValue(lesson.mots[learnIndex].phonetique) && <p className="guided-word-phonetic">{lesson.mots[learnIndex].phonetique}</p>}
               <PronunciationButton wordId={lesson.mots[learnIndex].id} word={lesson.mots[learnIndex].dendi} />
               {translationRevealed ? (
                 <div className="guided-translation" aria-live="polite">
@@ -560,7 +459,7 @@ export default function GuidedLesson({
             <article className="guided-word-card guided-review-card">
               <p className="guided-word-label">Dendi</p>
               <h2>{reviewWords[reviewIndex].dendi}</h2>
-              <p className="guided-word-phonetic">{reviewWords[reviewIndex].phonetique}</p>
+              {hasLinguisticValue(reviewWords[reviewIndex].phonetique) && <p className="guided-word-phonetic">{reviewWords[reviewIndex].phonetique}</p>}
               <PronunciationButton wordId={reviewWords[reviewIndex].id} word={reviewWords[reviewIndex].dendi} />
               <div className="guided-word-divider" aria-hidden="true" />
               <p className="guided-word-french">{reviewWords[reviewIndex].fr}</p>
@@ -626,6 +525,26 @@ export default function GuidedLesson({
       </div>
     </main>
   )
+}
+
+export default function GuidedLesson(props: {
+  lesson: CurriculumLesson
+  nextLesson: CurriculumLesson | null
+  userId: string | null
+}) {
+  const lesson = getLearningLesson(props.lesson)
+  if (lesson.mots.length === 0) {
+    return (
+      <main className="guided-page">
+        <section className="guided-load-error" role="status">
+          <h1>Leçon momentanément indisponible</h1>
+          <p>Le contenu de cette leçon doit être vérifié avant de pouvoir être proposé.</p>
+          <Link href={`/parcours?niveau=${lesson.niveau}`} className="guided-secondary-link">Retour au parcours</Link>
+        </section>
+      </main>
+    )
+  }
+  return <AvailableGuidedLesson {...props} lesson={lesson} />
 }
 
 function QuestionAnswers({
