@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useId, useMemo, useRef, type KeyboardEvent } from 'react'
+import { useState, useEffect, useId, useRef, type KeyboardEvent } from 'react'
 import Link from 'next/link'
 import MotCard from './MotCard'
 
@@ -32,13 +32,20 @@ const CATEGORIES_LABELS: Record<string, string> = {
   'couleurs': 'Couleurs',
 }
 
-export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMotVu, motsDejaVus, niveauActif }: {
+export default function Filtre({
+  mots, categorieInitiale, onMotVu, motsDejaVus, niveauActif, historyScope,
+  counterState, isGuest, progressNotice, onResetHistory,
+}: {
   mots: Mot[]
   categorieInitiale?: string
-  onVusCountChange?: (count: number) => void
   onMotVu?: (motId: number) => void
-  motsDejaVus?: Set<number>
+  motsDejaVus: ReadonlySet<number>
   niveauActif?: string
+  historyScope: number
+  counterState: 'loading' | 'ready' | 'error'
+  isGuest: boolean
+  progressNotice: string | null
+  onResetHistory?: () => void
 }) {
   const [active, setActive] = useState(categorieInitiale ?? 'Tous')
   const [recherche, setRecherche] = useState('')
@@ -48,15 +55,6 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
   const searchRef = useRef<HTMLInputElement>(null)
   const listId = useId()
   const [showTempsMenu, setShowTempsMenu] = useState(false)
-  const [vusIdsLocaux, setVusIdsLocaux] = useState<Set<number>>(new Set())
-  const vusIds = useMemo(
-    () => new Set([...(motsDejaVus ?? []), ...vusIdsLocaux]),
-    [motsDejaVus, vusIdsLocaux]
-  )
-
-  useEffect(() => {
-    onVusCountChange?.(vusIds.size)
-  }, [vusIds, onVusCountChange])
 
   const isTempsActive = active === 'temps' || TEMPS_SOUS_CATEGORIES.includes(active)
   const query = recherche.toLowerCase()
@@ -136,14 +134,11 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
     handleCategorieChange('Tous')
   }
 
-  const handleVue = (id: number) => {
-    setVusIdsLocaux(prev => new Set(prev).add(id))
-    onMotVu?.(id)
-  }
-
-  const vusCount = motsFiltres.filter(m => vusIds.has(m.id)).length
+  const vusCount = motsFiltres.filter(m => motsDejaVus.has(m.id)).length
   const total = motsFiltres.length
-  const progression = total > 0 ? Math.round((vusCount / total) * 100) : 0
+  const progressReady = counterState === 'ready'
+  const progression = progressReady && total > 0 ? (vusCount / total) * 100 : 0
+  const progressLabel = isGuest ? 'Mots consultés dans ces résultats' : 'Mots vus dans ces résultats'
 
   // Catégories disponibles dans les mots actuels
   const categoriesDisponibles = new Set(mots.map(m => m.categorie))
@@ -280,25 +275,30 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
         })}
       </div>
 
-      <section className="learn-progress" aria-label="Progression des mots affichés">
+      <section className="learn-progress" aria-label={progressLabel} aria-busy={counterState === 'loading'}>
         <div className="learn-progress-header">
           <span className="learn-progress-label">
-            {progression === 100 ? '✓ Série complète' : 'Progression'}
+            {counterState === 'loading' ? 'Chargement de l’historique…' : progressLabel}
           </span>
-          <span className={`learn-progress-count${progression === 100 ? ' is-complete' : ''}`}>
-            {vusCount} / {total} vus
+          <span className={`learn-progress-count${progression === 100 ? ' is-complete' : ''}`} role="status">
+            {total === 0 ? 'Aucun résultat' : <>{progressReady ? vusCount : '—'} / {total}</>}
           </span>
         </div>
         <div
           className="learn-progress-track"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={vusCount}
-          aria-label={`${vusCount} mots vus sur ${total}`}
+          role={total > 0 && counterState !== 'error' ? 'progressbar' : undefined}
+          aria-valuemin={total > 0 && counterState !== 'error' ? 0 : undefined}
+          aria-valuemax={total > 0 && counterState !== 'error' ? total : undefined}
+          aria-valuenow={total > 0 && progressReady ? vusCount : undefined}
+          aria-label={total > 0 && counterState !== 'error' ? progressLabel : undefined}
         >
           <div className={`learn-progress-value${progression === 100 ? ' is-complete' : ''}`} style={{ width: `${progression}%` }} />
         </div>
+        {progressNotice && <p className="learn-progress-notice" role="status">{progressNotice}</p>}
+        {onResetHistory && <button className="learn-reset-filters" type="button" onClick={() => {
+          searchRef.current?.focus()
+          onResetHistory()
+        }}>Réinitialiser l’historique local</button>}
       </section>
 
       {motsFiltres.length === 0 ? (
@@ -325,7 +325,14 @@ export default function Filtre({ mots, categorieInitiale, onVusCountChange, onMo
       ) : (
         <div className="mot-grid">
           {motsFiltres.map((mot) => (
-            <MotCard key={`${active}-${mot.id}`} mot={mot} onVue={() => handleVue(mot.id)} dejaVu={vusIds.has(mot.id)} />
+            <MotCard
+              key={`${historyScope}-${active}-${mot.id}`}
+              mot={mot}
+              onVue={onMotVu ? () => onMotVu(mot.id) : undefined}
+              dejaVu={motsDejaVus.has(mot.id)}
+              disabled={!onMotVu}
+              seenLabel={isGuest ? 'Déjà consulté' : 'Déjà vu'}
+            />
           ))}
         </div>
       )}

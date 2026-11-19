@@ -243,7 +243,7 @@ export default function Quiz({ mots, onQuitter, onSessionActiveChange }: {
         </div>
         <div className="quiz-session-save-status">
           {!userId && score > 0 && (
-            <p className="is-anonymous">Connectez-vous pour enregistrer votre progression.</p>
+            <p className="is-anonymous">Les bonnes réponses sont enregistrées comme mots maîtrisés pendant les sessions connectées.</p>
           )}
           {userId && sauvegardesReussies > 0 && (
             <p className="is-saved">
@@ -253,8 +253,8 @@ export default function Quiz({ mots, onQuitter, onSessionActiveChange }: {
           {userId && sauvegardesEchouees > 0 && (
             <p className="is-error">
               {sauvegardesEchouees === 1
-                ? 'Une progression n’a pas pu être enregistrée.'
-                : `${sauvegardesEchouees} progressions n’ont pas pu être enregistrées.`}
+                ? 'La maîtrise d’un mot n’a pas pu être enregistrée.'
+                : `La maîtrise de ${sauvegardesEchouees} mots n’a pas pu être enregistrée.`}
             </p>
           )}
         </div>
@@ -330,10 +330,10 @@ export default function Quiz({ mots, onQuitter, onSessionActiveChange }: {
         )}
         {selected && selected === question.bonneReponse && statutSauvegarde !== 'idle' && (
           <div className={`quiz-save-feedback is-${statutSauvegarde}`}>
-            {statutSauvegarde === 'saving' && 'Enregistrement de la progression…'}
-            {statutSauvegarde === 'saved' && 'Progression enregistrée.'}
-            {statutSauvegarde === 'error' && 'La progression n’a pas pu être enregistrée.'}
-            {statutSauvegarde === 'anonymous' && 'Connectez-vous pour enregistrer votre progression.'}
+            {statutSauvegarde === 'saving' && 'Enregistrement du mot maîtrisé…'}
+            {statutSauvegarde === 'saved' && 'Mot enregistré comme maîtrisé.'}
+            {statutSauvegarde === 'error' && 'La maîtrise de ce mot n’a pas pu être enregistrée.'}
+            {statutSauvegarde === 'anonymous' && 'En mode invité, cette réponse compte dans le score du quiz.'}
           </div>
         )}
       </div>

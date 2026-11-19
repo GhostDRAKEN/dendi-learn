@@ -1,23 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '@/lib/supabase/client'
-import type { User } from '@supabase/supabase-js'
 import Link from 'next/link'
 
 export default function BanniereInscription({ vusCount }: { vusCount: number }) {
-  const [user, setUser] = useState<User | null>(null)
   const [dismissed, setDismissed] = useState(false)
-  const [loaded, setLoaded] = useState(false)
   const bannerRef = useRef<HTMLElement>(null)
-  const visible = loaded && !user && !dismissed && vusCount >= 10
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
-      setLoaded(true)
-    })
-  }, [])
+  const visible = !dismissed && vusCount >= 10
 
   useEffect(() => {
     const banner = bannerRef.current
@@ -33,17 +22,17 @@ export default function BanniereInscription({ vusCount }: { vusCount: number }) 
     }
   }, [visible])
 
-  // Afficher seulement si : pas connecté, 10+ mots vus, pas fermé
+  // Le parent rend la bannière uniquement pour les invités.
   if (!visible) return null
 
   return (
-    <aside ref={bannerRef} className="signup-banner" aria-label="Sauvegarder votre progression">
+    <aside ref={bannerRef} className="signup-banner" aria-label="Créer un compte Dendi-Learn">
       <div>
         <p className="signup-banner-title">
-          🎯 Tu progresses bien !
+          🎯 Vous avez consulté {vusCount} mots
         </p>
         <p className="signup-banner-copy">
-          Crée un compte gratuit pour sauvegarder tes {vusCount} mots appris.
+          Avec un compte, retrouvez les mots vus et maîtrisés pendant vos sessions connectées.
         </p>
       </div>
       <div className="signup-banner-actions">

@@ -189,7 +189,8 @@ try {
       await banner.waitFor({ state: 'detached' })
       assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--signup-banner-height')), '')
       await page.reload(); await settle(page)
-      for (let i = 0; i < 10; i++) await page.locator('.mot-card-front').first().click()
+      // M06: the same ten consultations are restored after reloading.
+      await banner.waitFor()
       await page.locator('.signup-banner-action').click(); await page.waitForURL('**/inscription')
       item.signupLink = true
 

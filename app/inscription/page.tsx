@@ -54,7 +54,7 @@ export default function InscriptionPage() {
           Créer votre compte
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>
-          Sauvegardez votre progression et retrouvez-la sur vos appareils.
+          Enregistrez les mots vus et maîtrisés pendant vos sessions connectées. Le suivi des leçons reste dans ce navigateur.
         </p>
 
         {success ? (

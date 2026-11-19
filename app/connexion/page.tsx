@@ -27,7 +27,7 @@ export default function ConnexionPage() {
           <p style={{ fontSize: '13px', color: 'var(--accent-text)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>← Dendi Learn</p>
         </Link>
         <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>Se connecter</h1>
-        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouvez votre progression et continuez d&apos;apprendre.</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '32px' }}>Retrouvez les mots vus et maîtrisés enregistrés sur votre compte.</p>
 
         <div style={{ marginBottom: '16px' }}>
           <label htmlFor="email" style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>Email</label>

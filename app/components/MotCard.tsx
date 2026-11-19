@@ -11,7 +11,13 @@ type Mot = {
   categorie: string
 }
 
-export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () => void, dejaVu?: boolean }) {
+export default function MotCard({ mot, onVue, dejaVu, disabled, seenLabel = 'Déjà vu' }: {
+  mot: Mot
+  onVue?: () => void
+  dejaVu?: boolean
+  disabled?: boolean
+  seenLabel?: string
+}) {
   const [retournee, setRetournee] = useState(false)
   const [modePhon, setModePhon] = useState(false)
   if (!isLearningWord(mot)) return null
@@ -21,6 +27,7 @@ export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () =
       {!retournee ? (
         <button
           type="button"
+          disabled={disabled}
           className="mot-card-face mot-card-front"
           onClick={() => {
             setRetournee(true)
@@ -30,7 +37,7 @@ export default function MotCard({ mot, onVue, dejaVu }: { mot: Mot, onVue?: () =
         >
           <span className="mot-card-french">{mot.fr}</span>
           <span className="mot-card-hint">
-            {dejaVu ? '✓ Déjà vu' : 'Toucher pour révéler'}
+            {dejaVu ? `✓ ${seenLabel}` : 'Toucher pour révéler'}
           </span>
         </button>
       ) : (

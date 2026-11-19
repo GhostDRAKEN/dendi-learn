@@ -489,18 +489,17 @@ function AvailableGuidedLesson({
               <span>au test</span>
             </div>
             <dl className="guided-result-stats">
-              <div><dt>Mots appris</dt><dd>{lesson.mots.length}</dd></div>
+              <div><dt>Mots parcourus</dt><dd>{lesson.mots.length}</dd></div>
               <div><dt>Mots revus</dt><dd>{reviewedIds.length}</dd></div>
             </dl>
 
             <div className="guided-save-status" role="status">
-              {!userId && <p>Créez un compte pour conserver votre progression.</p>}
-              {userId && pendingWrites > 0 && <p>Synchronisation de la progression…</p>}
+              {userId && pendingWrites > 0 && <p>Enregistrement des mots sur votre compte…</p>}
               {userId && pendingWrites === 0 && saveIssue && (
-                <p className="is-error">Une partie de la progression n’a pas pu être enregistrée.</p>
+                <p className="is-error">Certains mots n’ont pas pu être enregistrés sur votre compte.</p>
               )}
               {userId && pendingWrites === 0 && !saveIssue && savedWrites > 0 && (
-                <p className="is-saved">Progression enregistrée.</p>
+                <p className="is-saved">Mots enregistrés sur votre compte.</p>
               )}
             </div>
 

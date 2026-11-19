@@ -61,8 +61,8 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
   const maitriseIds = new Set(progression.filter(p => p.maitrise).map(p => p.mot_id))
 
   const totalMots = mots.length
-  const totalVus = vusIds.size
-  const totalMaitrises = maitriseIds.size
+  const totalVus = mots.filter(mot => vusIds.has(mot.id)).length
+  const totalMaitrises = mots.filter(mot => maitriseIds.has(mot.id)).length
   const progressionGlobale = totalMots > 0 ? Math.round((totalVus / totalMots) * 100) : 0
 
   const parNiveau = ['debutant', 'intermediaire', 'avance'].map(niveau => {
@@ -87,7 +87,7 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
           <p className="profile-eyebrow">Espace personnel</p>
           <h2 id="profile-title" className="profile-title">Ma progression</h2>
           <p className="profile-description">
-            Retrouvez les mots que vous avez explorés et maîtrisés dans Dendi Learn.
+            Voici les mots vus et maîtrisés enregistrés sur votre compte.
           </p>
           <p className="profile-email">{user.email}</p>
         </div>
@@ -125,7 +125,7 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
               <dd>{totalMots}</dd>
             </div>
             <div className="profile-stat-card profile-stat-highlight">
-              <dt>Progression globale</dt>
+              <dt>Part du lexique vue</dt>
               <dd>{totalMots > 0 ? `${progressionGlobale}%` : '—'}</dd>
             </div>
           </dl>
@@ -134,7 +134,7 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
             <div className="profile-section-heading">
               <div>
                 <p className="profile-section-eyebrow">Vue d’ensemble</p>
-                <h3 id="global-progress-title">Progression globale</h3>
+                <h3 id="global-progress-title">Mots vus dans le lexique</h3>
               </div>
               {totalMots > 0 && <strong>{progressionGlobale}%</strong>}
             </div>
@@ -164,8 +164,8 @@ export default function ProfilClient({ mots, user, motsError = false }: { mots: 
             <section className="profile-section" aria-labelledby="level-progress-title">
               <div className="profile-section-heading">
                 <div>
-                  <p className="profile-section-eyebrow">Votre parcours</p>
-                  <h3 id="level-progress-title">Progression par niveau</h3>
+                  <p className="profile-section-eyebrow">Vocabulaire</p>
+                  <h3 id="level-progress-title">Mots vus par niveau</h3>
                 </div>
               </div>
               <div className="profile-levels">

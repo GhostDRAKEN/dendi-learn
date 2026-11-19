@@ -244,7 +244,7 @@ export default function ParcoursOverview({
         <p className="path-level-progress-note" role="note">
           {progressReady && !isLessonProgressPersistent(userId)
             ? 'Le stockage local est indisponible : votre progression dans les leçons reste disponible uniquement dans cet onglet.'
-            : 'Votre progression dans les leçons est enregistrée sur cet appareil.'}
+            : 'Le suivi de vos leçons est conservé dans ce navigateur.'}
         </p>
         <span className="path-level-content">{sectionWords.length} mots · {levelProgress.total} {lessonLabel(levelProgress.total)}</span>
         {userId && !progressionAvailable && (
