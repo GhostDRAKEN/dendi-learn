@@ -1,3 +1,4 @@
+import { createLessonExercises } from '@/lib/lesson-exercises'
 import { notFound } from 'next/navigation'
 import GuidedLesson from '../../components/GuidedLesson'
 import { createClient } from '@/lib/supabase/server'
@@ -43,6 +44,7 @@ export default async function GuidedLessonPage({
     <GuidedLesson
       lesson={lesson}
       unitNumber={unitIndex >= 0 ? unitIndex + 1 : undefined}
+      unitLessonIds={lessons.filter(item => item.unitId === lesson.unitId && createLessonExercises(item).test.length > 0).map(item => item.id)}
       nextLesson={nextLesson}
       userId={authData.user?.id ?? null}
     />

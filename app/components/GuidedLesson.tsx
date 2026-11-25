@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { getLearningLesson, hasLinguisticValue, type CurriculumLesson, type CurriculumMot } from '@/lib/curriculum'
 import { createLessonExercises, isCorrectAnswer, stableHash, type Exercise } from '@/lib/lesson-exercises'
@@ -9,18 +9,18 @@ import SoundToggle from './SoundToggle'
 import PronunciationButton from './PronunciationButton'
 import GuidedIntro from './GuidedIntro'
 import { useSoundFeedback } from './SoundProvider'
-import { recordLessonEvent } from '@/lib/lesson-progress'
+import { getLessonProgressSnapshot, getRecordedLessonState, parseLessonRecords, recordLessonEvent, subscribeToLessonProgress } from '@/lib/lesson-progress'
 
 type LessonPhase = 'intro' | 'learn' | 'practice' | 'test' | 'review' | 'result'
 const RESUME_KEY = 'dendi-guided-resume'
 const LEVEL_KEY = 'dendi-guided-level'
 
-const PHASE_LABELS: Array<{ id: Exclude<LessonPhase, 'intro' | 'result'>; label: string }> = [
-  { id: 'learn', label: 'Apprendre' },
-  { id: 'practice', label: 'Entraînement' },
-  { id: 'test', label: 'Test' },
-  { id: 'review', label: 'Révision' },
-]
+const phaseLabels = {
+  learn: 'Apprendre',
+  practice: 'Entraînement',
+  test: 'Test',
+  review: 'Révision',
+} as const
 
 const CORRECT_FEEDBACK = ['Exact !', 'Bien joué !', 'Oui !', 'Continuez comme ça.']
 const PRACTICE_INCORRECT_FEEDBACK = [
@@ -44,58 +44,32 @@ function storeResume(lessonId: string, niveau: string) {
   }
 }
 
-function PhaseProgress({
-  phase,
-  current,
-  total,
-  itemLabel,
-}: {
-  phase: Exclude<LessonPhase, 'intro' | 'result'>
+function PhaseProgress({ phase, current, total, completed }: {
+  phase: keyof typeof phaseLabels
   current: number
   total: number
-  itemLabel: string
+  completed: number
 }) {
-  const label = PHASE_LABELS.find((item) => item.id === phase)?.label ?? phase
-  const phaseIndex = PHASE_LABELS.findIndex((item) => item.id === phase)
+  const question = phase === 'practice' || phase === 'test'
+  const item = question ? 'Question' : 'Mot'
+  const singular = question ? 'réponse donnée' : phase === 'learn' ? 'traduction révélée' : 'mot revu'
+  const plural = question ? 'réponses données' : phase === 'learn' ? 'traductions révélées' : 'mots revus'
   return (
-    <>
-      <ol className="guided-phase-list" aria-label="Étapes de la leçon">
-        {PHASE_LABELS.map((item, index) => (
-          <li
-            key={item.id}
-            className={index < phaseIndex ? 'is-past' : item.id === phase ? 'is-current' : undefined}
-            aria-current={item.id === phase ? 'step' : undefined}
-            aria-label={`${item.label}${index < phaseIndex ? ' terminée' : item.id === phase ? ' en cours' : ' à venir'}`}
-          >
-            <span>{item.label}</span>
-          </li>
-        ))}
-      </ol>
-      <div className="guided-phase-mobile" aria-hidden="true">
-        <strong>{label}</strong>
-        <span>Étape {phaseIndex + 1} sur {PHASE_LABELS.length}</span>
+    <div className="guided-position">
+      <strong id="guided-phase-name">{phaseLabels[phase]}</strong>
+      <div>
+        <span id="guided-item-position">{item} {current} sur {total}</span>
+        <small>{completed} {completed > 1 ? plural : singular}</small>
       </div>
-      <div className="guided-phase-segments" aria-hidden="true">
-        {PHASE_LABELS.map((item, index) => (
-          <span key={item.id} className={index <= phaseIndex ? 'is-active' : undefined} />
-        ))}
-      </div>
-      <div className="guided-progress-copy">
-        <span>{itemLabel}</span>
-        <strong>{current} / {total}</strong>
-      </div>
-      <div
-        className="guided-progress-track"
-        role="progressbar"
-        aria-label={`${label} : ${current} sur ${total}`}
-        aria-valuemin={1}
-        aria-valuemax={total}
-        aria-valuenow={current}
-      >
-        <div style={{ width: `${(current / total) * 100}%` }} />
-      </div>
-    </>
+    </div>
   )
+}
+
+function UnitCompletion({ ids, title, userId }: { ids: string[]; title: string; userId: string | null }) {
+  const snapshot = useSyncExternalStore(subscribeToLessonProgress, () => getLessonProgressSnapshot(userId), () => '')
+  const records = parseLessonRecords(snapshot)
+  if (!ids.length || !ids.every(id => getRecordedLessonState(records[id]) === 'completed')) return null
+  return <p className="guided-unit-complete">Unité terminée · {title}</p>
 }
 
 function AvailableGuidedLesson({
@@ -104,12 +78,14 @@ function AvailableGuidedLesson({
   nextLesson,
   userId,
   unitNumber,
+  unitLessonIds,
 }: {
   lesson: CurriculumLesson
   exercises: ReturnType<typeof createLessonExercises>
   nextLesson: CurriculumLesson | null
   userId: string | null
   unitNumber?: number
+  unitLessonIds: string[]
 }) {
   const [phase, setPhase] = useState<LessonPhase>('intro')
   const [learnIndex, setLearnIndex] = useState(0)
@@ -316,14 +292,6 @@ function AvailableGuidedLesson({
       ? `Continuer avec ${nextLesson.title}`
       : `Continuer vers ${nextLesson.unitTitle}`
     : 'Retour au parcours'
-  const scoreRatio = exercises.test.length > 0 ? testScore / exercises.test.length : 0
-  const resultMessage = scoreRatio >= 0.8
-    ? 'Très belle maîtrise.'
-    : scoreRatio >= 0.5
-      ? 'Bonne progression.'
-      : 'Continuez — les mots difficiles reviendront.'
-  const reachesUnitBoundary = !nextLesson || nextLesson.unitId !== lesson.unitId
-
   return (
     <main className={phase === 'intro' ? 'guided-page guided-page-intro' : 'guided-page'}>
       <header className="guided-header">
@@ -342,10 +310,10 @@ function AvailableGuidedLesson({
 
         {phase === 'learn' && (
           <section className="guided-panel guided-phase-panel is-learn" aria-labelledby="guided-learn-title">
-            <PhaseProgress phase="learn" current={learnIndex + 1} total={lesson.mots.length} itemLabel="Mot" />
+            <PhaseProgress phase="learn" current={learnIndex + 1} total={lesson.mots.length} completed={revealedMotIds.length} />
             <article className="guided-word-card">
               <p className="guided-word-label">Dendi</p>
-              <h1 id="guided-learn-title" data-lesson-heading tabIndex={-1}>{lesson.mots[learnIndex].dendi}</h1>
+              <h1 id="guided-learn-title" aria-describedby="guided-phase-name guided-item-position" data-lesson-heading tabIndex={-1}>{lesson.mots[learnIndex].dendi}</h1>
               {hasLinguisticValue(lesson.mots[learnIndex].phonetique) && <p className="guided-word-phonetic">{lesson.mots[learnIndex].phonetique}</p>}
               <PronunciationButton wordId={lesson.mots[learnIndex].id} word={lesson.mots[learnIndex].dendi} />
               {translationRevealed ? (
@@ -383,7 +351,7 @@ function AvailableGuidedLesson({
 
         {phase === 'practice' && currentPractice && (
           <section className="guided-panel guided-phase-panel is-practice" aria-labelledby="guided-practice-title">
-            <PhaseProgress phase="practice" current={practiceIndex + 1} total={exercises.practice.length} itemLabel="Question guidée" />
+            <PhaseProgress phase="practice" current={practiceIndex + 1} total={exercises.practice.length} completed={practiceIndex + Number(selectedAnswer !== null)} />
             {practiceIndex === 0 && (
               <div className="guided-phase-intro">
                 <strong>S’entraîner</strong>
@@ -392,7 +360,7 @@ function AvailableGuidedLesson({
             )}
             <article className="guided-question-card">
               <p id="guided-practice-instruction">{currentPractice.instruction}</p>
-              <h1 id="guided-practice-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-practice-instruction">{currentPractice.prompt}</h1>
+              <h1 id="guided-practice-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-phase-name guided-item-position guided-practice-instruction">{currentPractice.prompt}</h1>
               {currentPractice.detail && <span>{currentPractice.detail}</span>}
             </article>
             <QuestionAnswers
@@ -418,16 +386,16 @@ function AvailableGuidedLesson({
 
         {phase === 'test' && currentTest && (
           <section className="guided-panel guided-phase-panel is-test" aria-labelledby="guided-test-title">
-            <PhaseProgress phase="test" current={testIndex + 1} total={exercises.test.length} itemLabel="Question du test" />
+            <PhaseProgress phase="test" current={testIndex + 1} total={exercises.test.length} completed={testIndex + Number(selectedAnswer !== null)} />
             {testIndex === 0 && (
               <div className="guided-phase-intro is-test">
                 <strong>Le test commence.</strong>
-                <p>Voyons ce que vous avez retenu, sans aide.</p>
+                <p>Répondez sans aide. Vous reverrez ensuite les mots du test en cas d’erreur.</p>
               </div>
             )}
             <article className="guided-question-card">
               <p id="guided-test-instruction">{currentTest.instruction}</p>
-              <h1 id="guided-test-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-test-instruction">{currentTest.prompt}</h1>
+              <h1 id="guided-test-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-phase-name guided-item-position guided-test-instruction">{currentTest.prompt}</h1>
               {currentTest.detail && <span>{currentTest.detail}</span>}
             </article>
             <QuestionAnswers exercise={currentTest} selectedAnswer={selectedAnswer} onAnswer={answerTest} />
@@ -454,7 +422,7 @@ function AvailableGuidedLesson({
 
         {phase === 'review' && reviewWords[reviewIndex] && (
           <section className="guided-panel guided-phase-panel is-review" aria-labelledby="guided-review-title">
-            <PhaseProgress phase="review" current={reviewIndex + 1} total={reviewWords.length} itemLabel="Mot à revoir" />
+            <PhaseProgress phase="review" current={reviewIndex + 1} total={reviewWords.length} completed={reviewedIds.length} />
             <header className="guided-review-heading">
               <p className="guided-eyebrow">À revoir</p>
               <h1 id="guided-review-title">Test terminé.</h1>
@@ -462,7 +430,7 @@ function AvailableGuidedLesson({
             </header>
             <article className="guided-word-card guided-review-card">
               <p className="guided-word-label">Dendi</p>
-              <h2 data-lesson-heading tabIndex={-1}>{reviewWords[reviewIndex].dendi}</h2>
+              <h2 aria-describedby="guided-phase-name guided-item-position" data-lesson-heading tabIndex={-1}>{reviewWords[reviewIndex].dendi}</h2>
               {hasLinguisticValue(reviewWords[reviewIndex].phonetique) && <p className="guided-word-phonetic">{reviewWords[reviewIndex].phonetique}</p>}
               <PronunciationButton wordId={reviewWords[reviewIndex].id} word={reviewWords[reviewIndex].dendi} />
               <div className="guided-word-divider" aria-hidden="true" />
@@ -478,20 +446,15 @@ function AvailableGuidedLesson({
         {phase === 'result' && (
           <section className="guided-panel guided-result" aria-labelledby="guided-result-title">
             <p className="guided-result-mark" aria-hidden="true">✓</p>
-            <p className="guided-eyebrow">Leçon terminée</p>
-            <h1 id="guided-result-title" data-lesson-heading tabIndex={-1}>{resultMessage}</h1>
-            {testErrorIds.length === 0 && (
-              <p className="guided-result-context">Test terminé — aucune révision nécessaire.</p>
-            )}
-            {reachesUnitBoundary && (
-              <p className="guided-unit-complete">
-                <span aria-hidden="true">◇</span> Unité {lesson.unitTitle} parcourue
-              </p>
-            )}
-            <div className="guided-score" aria-label={`${testScore} bonnes réponses sur ${exercises.test.length} au test`}>
-              <strong>{testScore} / {exercises.test.length}</strong>
+            <h1 id="guided-result-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-test-score">Leçon terminée</h1>
+            <p id="guided-test-score" className="guided-score">
+              <strong>{testScore === 0 ? 'Aucune bonne réponse' : `${testScore} bonne${testScore > 1 ? 's' : ''} réponse${testScore > 1 ? 's' : ''}`} sur {exercises.test.length}</strong>
               <span>au test</span>
-            </div>
+            </p>
+            <p className="guided-result-context">
+              {testErrorIds.length === 0 ? 'Toutes les réponses sont correctes. Aucune révision nécessaire.' : 'Révision effectuée.'}
+            </p>
+            <UnitCompletion ids={unitLessonIds} title={lesson.unitTitle} userId={userId} />
             <dl className="guided-result-stats">
               <div><dt>Mots parcourus</dt><dd>{lesson.mots.length}</dd></div>
               <div><dt>Mots revus</dt><dd>{reviewedIds.length}</dd></div>
@@ -535,6 +498,7 @@ export default function GuidedLesson(props: {
   nextLesson: CurriculumLesson | null
   userId: string | null
   unitNumber?: number
+  unitLessonIds: string[]
 }) {
   const lesson = useMemo(() => getLearningLesson(props.lesson), [props.lesson])
   const exercises = useMemo(() => createLessonExercises(lesson), [lesson])

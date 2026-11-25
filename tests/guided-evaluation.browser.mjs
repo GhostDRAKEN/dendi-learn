@@ -30,8 +30,8 @@ async function tabTo(page, locator) {
   assert.fail('Unreachable by keyboard: ' + locator)
 }
 
-async function run(width, height, theme, lessonId = 'intermediaire-prepositions-02') {
-  const context = await browser.newContext({ viewport: { width, height }, hasTouch: width < 700, isMobile: width < 700,
+async function run(width, height, theme, lessonId = 'intermediaire-prepositions-02', journey) {
+  const context = journey?.context ?? await browser.newContext({ viewport: { width, height }, hasTouch: width < 700, isMobile: width < 700,
     colorScheme: theme, reducedMotion: width <= 360 ? 'reduce' : 'no-preference' })
   const metrics = []
   try {
@@ -51,21 +51,41 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
     const primary = page.locator('.guided-primary-button')
     const notice = page.locator('[data-lesson-notice]')
     const heading = page.locator('[data-lesson-heading]')
+    const count = page.locator('.guided-position small')
+    async function position(stage, item, index, total) {
+      assert.equal(await page.locator('#guided-phase-name').innerText(), stage)
+      assert.equal(await page.locator('#guided-item-position').innerText(), `${item} ${index + 1} sur ${total}`)
+    }
     async function activate(locator, key = 'Enter') {
       await tabTo(page, locator)
       await page.keyboard.press(key)
     }
     await activate(primary)
+    const header = await page.locator('.guided-header').evaluate(el => {
+      const name = el.querySelector('.guided-header-copy span')
+      const title = el.querySelector('.guided-header-copy strong')
+      const exit = el.querySelector('.guided-exit').getBoundingClientRect()
+      const sound = el.querySelector('.site-sound-toggle').getBoundingClientRect()
+      return [name, title].every(text => {
+        const rect = text.getBoundingClientRect()
+        return text.scrollWidth <= text.clientWidth + 1 && rect.left >= exit.right && rect.right <= sound.left
+      })
+    })
+    assert.ok(header, 'Unit and lesson labels must be readable between the two controls')
     for (const [index, word] of lesson.mots.entries()) {
       await focusIs(heading)
       assert.equal(await heading.innerText(), word.dendi.trim())
+      await position('Apprendre', 'Mot', index, lesson.mots.length)
+      assert.equal(parseInt(await count.innerText()), index)
       await activate(page.locator('.guided-reveal-button'), 'Space')
       await focusIs(notice)
+      assert.equal(parseInt(await count.innerText()), index + 1)
       assert.equal(await notice.innerText(), word.fr.trim())
       if (index === 1) {
         await activate(page.locator('.guided-back-button'))
         await focusIs(heading)
         assert.equal(await heading.innerText(), lesson.mots[0].dendi.trim())
+        assert.equal(parseInt(await count.innerText()), 2)
         await activate(primary)
         await focusIs(heading)
         assert.equal(await notice.innerText(), word.fr.trim())
@@ -78,12 +98,20 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
         await focusIs(heading)
         assert.equal(await heading.innerText(), q.prompt.trim())
         // Always answer the Binni question correctly. Only a different word is missed on the dark run.
-        const wrong = i === missedIndex && (mode === 'practice' || theme === 'dark' || !prepositions)
+        await position(mode === 'practice' ? 'Entraînement' : 'Test', 'Question', i, questions.length)
+        assert.equal(parseInt(await count.innerText()), i)
+        if (mode === 'test' && i === questions.length - 1 && width >= 390 && !journey) {
+          await page.screenshot({ animations: 'disabled', path: path.join(out, `derniere-question-${width}-${height}-${theme}.png`) })
+        }
+        const wrong = mode === 'test' && journey?.correctCount !== undefined
+          ? i >= journey.correctCount
+          : i === missedIndex && (mode === 'practice' || theme === 'dark' || !prepositions)
         if (mode === 'test' && wrong) errorsInTest++
         if (prepositions && !i) assert.equal(q.correctAnswer, 'Binni')
         const answer = wrong ? q.options.find(option => option !== q.correctAnswer) : q.correctAnswer
         await activate(page.getByRole('button', { name: answer.trim(), exact: true }), i % 2 ? 'Enter' : 'Space')
         await focusIs(notice)
+        assert.equal(parseInt(await count.innerText()), i + 1)
         assert.ok((await notice.innerText()).includes(q.correctAnswer))
         assert.ok((await notice.innerText()).includes(answer))
         assert.equal(await page.locator('.guided-answer:enabled').count(), 0)
@@ -117,25 +145,34 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
         await page.keyboard.press('Enter')
       }
     }
-    if (errorsInTest) {
+    for (let i = 0; i < errorsInTest; i++) {
       await focusIs(heading)
-      assert.equal(await heading.innerText(), exercises.test[missedIndex].mot.dendi.trim())
+      await position('Révision', 'Mot', i, errorsInTest)
+      assert.equal(parseInt(await count.innerText()), i)
+      assert.equal(await heading.innerText(), exercises.test[(journey?.correctCount ?? missedIndex) + i].mot.dendi.trim())
       await activate(primary)
     }
     await focusIs(page.locator('#guided-result-title'))
+    assert.equal(await heading.innerText(), 'Leçon terminée')
+    const score = exercises.test.length - errorsInTest
     assert.equal(await page.locator('.guided-score strong').innerText(),
-      `${exercises.test.length - errorsInTest} / ${exercises.test.length}`)
+      (score === 0 ? 'Aucune bonne réponse' : score === 1 ? '1 bonne réponse' : `${score} bonnes réponses`) + ` sur ${exercises.test.length}`)
+    assert.match(await page.locator('.guided-result-context').innerText(), errorsInTest ? /Révision effectuée/ : /Aucune révision nécessaire/)
+    assert.equal(await page.locator('.guided-unit-complete').count(), journey?.complete ? 1 : 0)
+    if (width === 390 || width === 1280) {
+      await page.screenshot({ animations: 'disabled', path: path.join(out, `bilan-${lessonId}-${width}-${height}-${theme}.png`) })
+    }
     assert.equal(await page.locator('.guided-result-stats dd').last().innerText(), String(errorsInTest))
     await activate(page.getByRole('link', { name: 'Retour au parcours', exact: true }))
     await page.waitForURL(url => url.pathname === '/parcours')
     await focusIs(page.locator('#path-title'))
     await page.reload()
-    await page.locator('.path-level-progress [role=progressbar][aria-valuenow="1"]').waitFor()
+    await page.locator(`.path-level-progress [role=progressbar][aria-valuenow="${journey?.finished ?? 1}"]`).waitFor()
     assert.deepEqual(errors, [])
     console.log(`OK ${width}×${height} ${theme}, ${metrics.length} réponses`)
     return { lessonId, width, height, theme, metrics }
   } finally {
-    await context.close()
+    if (!journey) await context.close()
   }
 }
 
@@ -146,6 +183,16 @@ try {
   }
   for (const [width, height] of [[320, 568], [360, 800]]) {
     results.push(...await Promise.all(['light', 'dark'].map(theme => run(width, height, theme, 'debutant-salutations-02'))))
+  }
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light', reducedMotion: 'reduce' })
+  try {
+    for (const [i, number] of ['03', '01', '02'].entries()) {
+      results.push(await run(390, 844, 'light', `debutant-salutations-${number}`, {
+        context, correctCount: i < 2 ? i : undefined, finished: i + 1, complete: i === 2,
+      }))
+    }
+  } finally {
+    await context.close()
   }
   await fs.writeFile(path.join(out, 'feedback-rectangles.json'), JSON.stringify(results, null, 2))
 } finally {

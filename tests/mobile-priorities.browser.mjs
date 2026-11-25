@@ -224,7 +224,7 @@ try {
         await shot(page, prefix + '-review')
         await page.locator('.guided-primary-button').click()
         await page.locator('#guided-result-title').waitFor()
-        item.score = await page.locator('.guided-score strong').innerText(); assert.equal(item.score, '4 / 5')
+        item.score = await page.locator('.guided-score strong').innerText(); assert.equal(item.score, '4 bonnes réponses sur 5')
         await shot(page, prefix + '-result')
         await page.getByRole('link', { name: 'Retour au parcours', exact: true }).click(); await page.waitForURL(/\/parcours\?niveau=/)
         await page.waitForFunction(() => document.querySelector('.path-level-progress [role=progressbar]')?.getAttribute('aria-valuenow') === '1')
