@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { getLearningLesson, hasLinguisticValue, type CurriculumLesson, type CurriculumMot } from '@/lib/curriculum'
-import { createLessonExercises, stableHash, type Exercise } from '@/lib/lesson-exercises'
+import { createLessonExercises, isCorrectAnswer, stableHash, type Exercise } from '@/lib/lesson-exercises'
 import SoundToggle from './SoundToggle'
 import PronunciationButton from './PronunciationButton'
 import GuidedIntro from './GuidedIntro'
@@ -100,16 +100,17 @@ function PhaseProgress({
 
 function AvailableGuidedLesson({
   lesson,
+  exercises,
   nextLesson,
   userId,
   unitNumber,
 }: {
   lesson: CurriculumLesson
+  exercises: ReturnType<typeof createLessonExercises>
   nextLesson: CurriculumLesson | null
   userId: string | null
   unitNumber?: number
 }) {
-  const exercises = useMemo(() => createLessonExercises(lesson), [lesson])
   const [phase, setPhase] = useState<LessonPhase>('intro')
   const [learnIndex, setLearnIndex] = useState(0)
   const [practiceIndex, setPracticeIndex] = useState(0)
@@ -138,9 +139,25 @@ function AvailableGuidedLesson({
     storeResume(lesson.id, lesson.niveau)
   }, [lesson.id, lesson.niveau])
 
-  useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [phase, learnIndex, practiceIndex, testIndex, reviewIndex])
+  const shellRef = useRef<HTMLDivElement>(null)
+  const screen = [phase, learnIndex, practiceIndex, testIndex, reviewIndex].join('/')
+  const previousScreen = useRef(screen)
+  const translationRevealed = revealedMotIds.includes(lesson.mots[learnIndex].id)
+
+  useLayoutEffect(() => {
+    const changedScreen = previousScreen.current !== screen
+    previousScreen.current = screen
+    if (!changedScreen && !selectedAnswer && !translationRevealed) return
+
+    const selector = changedScreen
+      ? (phase === 'intro' ? '.guided-primary-button' : '[data-lesson-heading]')
+      : '[data-lesson-notice]'
+    const target = shellRef.current?.querySelector<HTMLElement>(selector)
+    if (!target) return
+    if (changedScreen) window.scrollTo({ top: 0, behavior: 'instant' })
+    target.focus({ preventScroll: true })
+    target.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+  }, [screen, phase, selectedAnswer, translationRevealed])
 
   const persistProgress = async (motId: number, mastered: boolean) => {
     if (!userId) return
@@ -204,7 +221,7 @@ function AvailableGuidedLesson({
     if (selectedAnswer || answerLockRef.current || !currentPractice) return
     answerLockRef.current = true
     setSelectedAnswer(answer)
-    void playSound(answer === currentPractice.correctAnswer ? 'correct' : 'incorrect')
+    void playSound(isCorrectAnswer(currentPractice, answer) ? 'correct' : 'incorrect')
   }
 
   const advancePractice = () => {
@@ -225,9 +242,10 @@ function AvailableGuidedLesson({
     if (selectedAnswer || answerLockRef.current || !currentTest) return
     answerLockRef.current = true
     setSelectedAnswer(answer)
-    void playSound(answer === currentTest.correctAnswer ? 'correct' : 'incorrect')
+    const correct = isCorrectAnswer(currentTest, answer)
+    void playSound(correct ? 'correct' : 'incorrect')
 
-    if (answer === currentTest.correctAnswer) {
+    if (correct) {
       setTestScore((score) => score + 1)
       void persistProgress(currentTest.mot.id, true)
     } else {
@@ -298,7 +316,6 @@ function AvailableGuidedLesson({
       ? `Continuer avec ${nextLesson.title}`
       : `Continuer vers ${nextLesson.unitTitle}`
     : 'Retour au parcours'
-  const translationRevealed = revealedMotIds.includes(lesson.mots[learnIndex].id)
   const scoreRatio = exercises.test.length > 0 ? testScore / exercises.test.length : 0
   const resultMessage = scoreRatio >= 0.8
     ? 'Très belle maîtrise.'
@@ -320,7 +337,7 @@ function AvailableGuidedLesson({
         <SoundToggle compact />
       </header>
 
-      <div className="guided-shell">
+      <div className="guided-shell" ref={shellRef}>
         {phase === 'intro' && <GuidedIntro lesson={lesson} unitNumber={unitNumber} onStart={startLesson} />}
 
         {phase === 'learn' && (
@@ -328,13 +345,13 @@ function AvailableGuidedLesson({
             <PhaseProgress phase="learn" current={learnIndex + 1} total={lesson.mots.length} itemLabel="Mot" />
             <article className="guided-word-card">
               <p className="guided-word-label">Dendi</p>
-              <h1 id="guided-learn-title">{lesson.mots[learnIndex].dendi}</h1>
+              <h1 id="guided-learn-title" data-lesson-heading tabIndex={-1}>{lesson.mots[learnIndex].dendi}</h1>
               {hasLinguisticValue(lesson.mots[learnIndex].phonetique) && <p className="guided-word-phonetic">{lesson.mots[learnIndex].phonetique}</p>}
               <PronunciationButton wordId={lesson.mots[learnIndex].id} word={lesson.mots[learnIndex].dendi} />
               {translationRevealed ? (
-                <div className="guided-translation" aria-live="polite">
+                <div className="guided-translation">
                   <div className="guided-word-divider" aria-hidden="true" />
-                  <p className="guided-word-french">{lesson.mots[learnIndex].fr}</p>
+                  <p className="guided-word-french" data-lesson-notice tabIndex={-1}>{lesson.mots[learnIndex].fr}</p>
                 </div>
               ) : (
                 <button type="button" onClick={revealTranslation} className="guided-reveal-button">
@@ -374,8 +391,8 @@ function AvailableGuidedLesson({
               </div>
             )}
             <article className="guided-question-card">
-              <p>{currentPractice.instruction}</p>
-              <h1 id="guided-practice-title">{currentPractice.prompt}</h1>
+              <p id="guided-practice-instruction">{currentPractice.instruction}</p>
+              <h1 id="guided-practice-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-practice-instruction">{currentPractice.prompt}</h1>
               {currentPractice.detail && <span>{currentPractice.detail}</span>}
             </article>
             <QuestionAnswers
@@ -409,8 +426,8 @@ function AvailableGuidedLesson({
               </div>
             )}
             <article className="guided-question-card">
-              <p>{currentTest.instruction}</p>
-              <h1 id="guided-test-title">{currentTest.prompt}</h1>
+              <p id="guided-test-instruction">{currentTest.instruction}</p>
+              <h1 id="guided-test-title" data-lesson-heading tabIndex={-1} aria-describedby="guided-test-instruction">{currentTest.prompt}</h1>
               {currentTest.detail && <span>{currentTest.detail}</span>}
             </article>
             <QuestionAnswers exercise={currentTest} selectedAnswer={selectedAnswer} onAnswer={answerTest} />
@@ -445,7 +462,7 @@ function AvailableGuidedLesson({
             </header>
             <article className="guided-word-card guided-review-card">
               <p className="guided-word-label">Dendi</p>
-              <h2>{reviewWords[reviewIndex].dendi}</h2>
+              <h2 data-lesson-heading tabIndex={-1}>{reviewWords[reviewIndex].dendi}</h2>
               {hasLinguisticValue(reviewWords[reviewIndex].phonetique) && <p className="guided-word-phonetic">{reviewWords[reviewIndex].phonetique}</p>}
               <PronunciationButton wordId={reviewWords[reviewIndex].id} word={reviewWords[reviewIndex].dendi} />
               <div className="guided-word-divider" aria-hidden="true" />
@@ -459,10 +476,10 @@ function AvailableGuidedLesson({
         )}
 
         {phase === 'result' && (
-          <section className="guided-panel guided-result" aria-labelledby="guided-result-title" aria-live="polite">
+          <section className="guided-panel guided-result" aria-labelledby="guided-result-title">
             <p className="guided-result-mark" aria-hidden="true">✓</p>
             <p className="guided-eyebrow">Leçon terminée</p>
-            <h1 id="guided-result-title">{resultMessage}</h1>
+            <h1 id="guided-result-title" data-lesson-heading tabIndex={-1}>{resultMessage}</h1>
             {testErrorIds.length === 0 && (
               <p className="guided-result-context">Test terminé — aucune révision nécessaire.</p>
             )}
@@ -492,13 +509,13 @@ function AvailableGuidedLesson({
 
             <div className="guided-result-actions">
               <Link
-                href={nextLesson ? `/parcours/${nextLesson.id}` : `/parcours?niveau=${lesson.niveau}`}
+                href={nextLesson ? `/parcours/${nextLesson.id}` : `/parcours?niveau=${lesson.niveau}#path-title`}
                 className="guided-primary-link"
               >
                 {nextLabel} <span aria-hidden="true">→</span>
               </Link>
               {nextLesson && (
-                <Link href={`/parcours?niveau=${lesson.niveau}`} className="guided-secondary-link">
+                <Link href={`/parcours?niveau=${lesson.niveau}#path-title`} className="guided-secondary-link">
                   Retour au parcours
                 </Link>
               )}
@@ -519,8 +536,9 @@ export default function GuidedLesson(props: {
   userId: string | null
   unitNumber?: number
 }) {
-  const lesson = getLearningLesson(props.lesson)
-  if (lesson.mots.length === 0) {
+  const lesson = useMemo(() => getLearningLesson(props.lesson), [props.lesson])
+  const exercises = useMemo(() => createLessonExercises(lesson), [lesson])
+  if (exercises.test.length === 0) {
     return (
       <main className="guided-page">
         <section className="guided-load-error" role="status">
@@ -531,7 +549,7 @@ export default function GuidedLesson(props: {
       </main>
     )
   }
-  return <AvailableGuidedLesson {...props} lesson={lesson} />
+  return <AvailableGuidedLesson {...props} lesson={lesson} exercises={exercises} />
 }
 
 function QuestionAnswers({
@@ -545,7 +563,7 @@ function QuestionAnswers({
   onAnswer: (answer: string) => void
   gentle?: boolean
 }) {
-  const answerIsCorrect = selectedAnswer === exercise.correctAnswer
+  const answerIsCorrect = selectedAnswer !== null && isCorrectAnswer(exercise, selectedAnswer)
   const feedbackIndex = stableHash(`${exercise.mot.id}-${exercise.type}-${gentle ? 'practice' : 'test'}`)
   const correctFeedback = CORRECT_FEEDBACK[feedbackIndex % CORRECT_FEEDBACK.length]
   const incorrectFeedbacks = gentle ? PRACTICE_INCORRECT_FEEDBACK : TEST_INCORRECT_FEEDBACK
@@ -555,7 +573,7 @@ function QuestionAnswers({
     <>
       <div className="guided-answer-list" aria-label="Propositions de réponse">
         {exercise.options.map((option) => {
-          const isCorrect = Boolean(selectedAnswer) && option === exercise.correctAnswer
+          const isCorrect = Boolean(selectedAnswer) && isCorrectAnswer(exercise, option)
           const isIncorrect = Boolean(selectedAnswer) && option === selectedAnswer && !isCorrect
 
           return (
@@ -563,7 +581,7 @@ function QuestionAnswers({
               key={option}
               type="button"
               onClick={() => onAnswer(option)}
-              aria-disabled={Boolean(selectedAnswer)}
+              disabled={selectedAnswer !== null}
               className={`guided-answer${isCorrect ? ' is-correct' : ''}${isIncorrect ? ' is-incorrect' : ''}`}
             >
               <span>{option}</span>
@@ -573,13 +591,14 @@ function QuestionAnswers({
           )
         })}
       </div>
-      <div className="guided-feedback" aria-live="polite">
+      <div className="guided-feedback">
         {selectedAnswer && (
           answerIsCorrect
-            ? <p className="is-correct"><span aria-hidden="true">✓</span> {correctFeedback}</p>
+            ? <p className="is-correct" data-lesson-notice tabIndex={-1}><span aria-hidden="true">✓</span> {correctFeedback} <strong>{selectedAnswer}</strong></p>
             : (
-              <p className="is-incorrect">
-                <span aria-hidden="true">✕</span> {incorrectFeedback} <strong>{exercise.correctAnswer}</strong>.
+              <p className="is-incorrect" data-lesson-notice tabIndex={-1}>
+                <span>Votre réponse · {selectedAnswer}</span>
+                <span>{incorrectFeedback} <strong>{exercise.correctAnswer}</strong></span>
               </p>
             )
         )}

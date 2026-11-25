@@ -165,7 +165,7 @@ export default function ParcoursOverview({
   return (
     <section className="path-content" aria-labelledby="path-title">
       <header className="path-intro">
-        <h2 id="path-title" className="path-title">Mon parcours</h2>
+        <h2 id="path-title" className="path-title" tabIndex={-1}>Mon parcours</h2>
 
         <div className="path-level-picker">
           <div className="path-level-current">

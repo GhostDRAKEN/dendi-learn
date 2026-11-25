@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { registerHooks } from 'node:module'
+import { lessons } from './guided-inventory.mjs'
 import {
   buildCurriculum, flattenLessons, getLearningLesson, getLearningWords,
   getLessonStatus, getRecommendedLesson, hasLinguisticValue,
@@ -13,7 +14,7 @@ registerHooks({ resolve(specifier, context, nextResolve) {
   }
   return nextResolve(specifier, context)
 } })
-const { createLessonExercises } = await import('../lib/lesson-exercises.ts')
+const { createLessonExercises, isCorrectAnswer } = await import('../lib/lesson-exercises.ts')
 const fixture = (id, extra = {}) => ({ id, fr: `FR ${id}`, dendi: `Dendi ɛ ${id}`, phonetique: `Ph ${id}`, categorie: 'Salutations', niveau: 'debutant', ...extra })
 const lesson = (mots) => ({ id: 'debutant-salutations-02', title: 'Salutations 2', niveau: 'debutant', unitId: 'debutant-salutations', unitTitle: 'Salutations', index: 2, totalInUnit: 3, mots })
 
@@ -71,4 +72,62 @@ test('empty lessons produce no exercises, no false mastery and no recommendation
   assert.deepEqual(createLessonExercises(empty), { practice: [], test: [] })
   assert.equal(getLessonStatus(empty, []), 'a-decouvrir')
   assert.equal(getRecommendedLesson(curriculum, 'debutant', []), null)
+})
+
+test('every drawn prompt has one documented answer in its lesson and one correct option', () => {
+  const key = value => value.normalize('NFC').trim().replace(/\s+/gu, ' ')
+  for (const source of lessons) {
+    for (const questions of Object.values(createLessonExercises(source))) {
+      assert.ok(questions.length > 0, source.id)
+      for (const q of questions) {
+        const prompt = { 'dendi-fr': 'dendi', 'fr-dendi': 'fr', 'phonetic-fr': 'phonetique' }[q.type]
+        const answer = q.type === 'fr-dendi' ? 'dendi' : 'fr'
+        const matches = source.mots.filter(word => key(word[prompt]) === key(q.prompt))
+        assert.deepEqual([...new Set(matches.map(word => key(word[answer])))], [key(q.correctAnswer)], source.id)
+        assert.deepEqual(q.options.filter(option => isCorrectAnswer(q, option)), [q.correctAnswer])
+        assert.equal(new Set(q.options.map(key)).size, q.options.length)
+      }
+    }
+  }
+})
+
+test('Binni and both shared phonetic prompts use unambiguous questions for the original word', () => {
+  const prepositions = lessons.find(item => item.id === 'intermediaire-prepositions-02')
+  for (const questions of Object.values(createLessonExercises(prepositions))) {
+    const q = questions.find(item => item.mot.id === 148)
+    assert.equal(q.type, 'fr-dendi')
+    assert.equal(q.prompt, 'Au milieu')
+    assert.ok(isCorrectAnswer(q, 'Binni'))
+    assert.equal(q.options.filter(value => value === 'Binni').length, 1)
+  }
+  for (const [id, wordId, expectedType] of [
+    ['debutant-salutations-01', 3, 'dendi-fr'], ['debutant-salutations-03', 16, 'fr-dendi'],
+  ]) {
+    const q = createLessonExercises(lessons.find(item => item.id === id)).test.find(item => item.mot.id === wordId)
+    assert.equal(q.type, expectedType)
+  }
+})
+
+test('exclude unsolvable prompts from both draws and keep their discovered words intact', () => {
+  const ambiguous = ['FR1', 'FR2'].flatMap((fr, i) => ['D1', 'D2'].map((dendi, j) =>
+    fixture(i * 2 + j, { fr, dendi, phonetique: 'P' })))
+  assert.deepEqual(createLessonExercises(lesson(ambiguous)), { practice: [], test: [] })
+  const source = lesson([...ambiguous, fixture(9)])
+  for (const questions of Object.values(createLessonExercises(source))) {
+    assert.deepEqual(questions.map(q => q.mot.id), [9])
+  }
+  assert.equal(source.mots.length, 5)
+})
+
+test('typographic duplicates cannot compete, while distinct accents remain distinct', () => {
+  const source = lesson([
+    fixture(1, { dendi: 'Mot', fr: '  Été' }),
+    fixture(2, { dendi: 'Mot', fr: 'E\u0301té ' }),
+    fixture(3, { dendi: 'Autre', fr: 'Éte' }),
+  ])
+  const q = createLessonExercises(source).test[0]
+  assert.equal(q.type, 'dendi-fr')
+  assert.equal(q.options.length, 2)
+  assert.ok(isCorrectAnswer(q, 'E\u0301té '))
+  assert.equal(isCorrectAnswer(q, 'Éte'), false)
 })

@@ -21,10 +21,34 @@ export function stableHash(value: string) {
   return hash
 }
 
+// Only typographic equivalence. Accents, case and the original labels are preserved.
+function answerKey(value: string) {
+  return value.normalize('NFC').trim().replace(/\s+/gu, ' ')
+}
+
+export function isCorrectAnswer(exercise: Exercise, answer: string) {
+  return answerKey(answer) === answerKey(exercise.correctAnswer)
+}
+
+const directions = ['dendi-fr', 'fr-dendi', 'phonetic-fr'] as const
+const fields = {
+  'dendi-fr': ['dendi', 'fr'],
+  'fr-dendi': ['fr', 'dendi'],
+  'phonetic-fr': ['phonetique', 'fr'],
+} as const
+
+function hasSingleAnswer(words: CurriculumMot[], word: CurriculumMot, type: ExerciseType) {
+  const [prompt, answer] = fields[type]
+  if (!hasLinguisticValue(word[prompt])) return false
+  return words.every(other => !hasLinguisticValue(other[prompt]) ||
+    answerKey(other[prompt]) !== answerKey(word[prompt]) ||
+    answerKey(other[answer]) === answerKey(word[answer]))
+}
+
 function deterministicOptions(pool: string[], correctAnswer: string, seed: string, maximum: number) {
-  const uniquePool = Array.from(new Set(pool.filter(Boolean)))
-  const distractors = uniquePool
-    .filter((value) => value !== correctAnswer)
+  const uniquePool = new Map(pool.map(value => [answerKey(value), value]))
+  uniquePool.delete(answerKey(correctAnswer))
+  const distractors = Array.from(uniquePool.values())
     .sort((a, b) => stableHash(`${seed}-${a}`) - stableHash(`${seed}-${b}`))
     .slice(0, Math.max(0, maximum - 1))
 
@@ -45,15 +69,9 @@ function selectEvenly<T>(items: T[], count: number) {
 function createExercise(
   lesson: CurriculumLesson,
   mot: CurriculumMot,
-  questionIndex: number,
+  type: ExerciseType,
   mode: ExerciseMode,
 ): Exercise {
-  const requestedType: ExerciseType = questionIndex % 3 === 0
-    ? 'dendi-fr'
-    : questionIndex % 3 === 1
-      ? 'fr-dendi'
-      : 'phonetic-fr'
-  const type = requestedType === 'phonetic-fr' && !hasLinguisticValue(mot.phonetique) ? 'dendi-fr' : requestedType
   const seed = `${lesson.id}-${mode}-${mot.id}-${type}`
   const maximumOptions = mode === 'practice' ? 3 : 4
 
@@ -95,12 +113,18 @@ export function createLessonExercises(sourceLesson: CurriculumLesson) {
   const lesson = getLearningLesson(sourceLesson)
   const practiceCount = Math.min(4, Math.max(2, Math.ceil(lesson.mots.length / 2)))
   const testCount = Math.min(6, lesson.mots.length)
-  const practiceMots = selectEvenly(lesson.mots, practiceCount)
-  const testMots = selectEvenly(lesson.mots, testCount)
+  const candidates = lesson.mots.map(mot => ({
+    mot,
+    types: directions.filter(type => hasSingleAnswer(lesson.mots, mot, type)),
+  })).filter(candidate => candidate.types.length > 0)
 
-  return {
-    practice: practiceMots.map((mot, index) => createExercise(lesson, mot, index, 'practice')),
-    test: testMots.map((mot, index) => createExercise(lesson, mot, index, 'test')),
+  function draw(count: number, mode: ExerciseMode) {
+    return selectEvenly(candidates, count).map(({ mot, types }, index) => {
+      const preferred = directions[index % directions.length]
+      return createExercise(lesson, mot, types.includes(preferred) ? preferred : types[0], mode)
+    })
   }
+
+  return { practice: draw(practiceCount, 'practice'), test: draw(testCount, 'test') }
 }
 

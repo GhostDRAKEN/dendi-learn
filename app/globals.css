@@ -4276,12 +4276,12 @@ a.path-lesson:hover,
   transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
-.guided-answer:hover {
+.guided-answer:enabled:hover {
   transform: translateY(-1px);
   border-color: var(--site-accent);
 }
 
-.guided-answer[aria-disabled="true"] {
+.guided-answer:disabled {
   cursor: default;
 }
 
@@ -4312,6 +4312,16 @@ a.path-lesson:hover,
   font-size: 14px;
   line-height: 1.5;
   animation: guided-feedback-in 200ms ease-out both;
+}
+
+.guided-feedback .is-incorrect > span {
+  display: block;
+}
+
+.guided-page [data-lesson-notice],
+.guided-page [data-lesson-heading] {
+  scroll-margin-block: 12px;
+  overflow-wrap: anywhere;
 }
 
 .guided-feedback .is-correct,
@@ -4494,6 +4504,8 @@ a.path-lesson:hover,
 .path-level-link:focus-visible,
 .path-unit-summary:focus-visible,
 .path-lesson:focus-visible,
+.guided-page [data-lesson-notice]:focus-visible,
+.guided-page [data-lesson-heading]:focus-visible,
 .guided-page a:focus-visible,
 .guided-page button:focus-visible {
   outline: 3px solid var(--text);
@@ -4783,6 +4795,9 @@ a.path-lesson:hover,
 
   .guided-panel > .guided-primary-button {
     width: 100%;
+  }
+
+  .guided-phase-panel.is-review > .guided-primary-button {
     position: sticky;
     z-index: 5;
     bottom: max(12px, env(safe-area-inset-bottom));
