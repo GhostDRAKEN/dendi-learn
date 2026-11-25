@@ -77,10 +77,18 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
       assert.equal(await heading.innerText(), word.dendi.trim())
       await position('Apprendre', 'Mot', index, lesson.mots.length)
       assert.equal(parseInt(await count.innerText()), index)
+      await page.getByText('Essayez de retrouver le sens avant de révéler la traduction.', { exact: true }).waitFor()
+      if (index === 0 && width === 390 && theme === 'light' && !journey) {
+        await page.screenshot({ animations: 'disabled', path: path.join(out, 'rappel-decouverte-390-844-light.png') })
+      }
       await activate(page.locator('.guided-reveal-button'), 'Space')
       await focusIs(notice)
       assert.equal(parseInt(await count.innerText()), index + 1)
       assert.equal(await notice.innerText(), word.fr.trim())
+      assert.equal(await page.locator('.guided-recall-prompt').count(), 0)
+      if (index === 0 && width === 390 && theme === 'light' && !journey) {
+        await page.screenshot({ animations: 'disabled', path: path.join(out, 'traduction-revelee-390-844-light.png') })
+      }
       if (index === 1) {
         await activate(page.locator('.guided-back-button'))
         await focusIs(heading)
@@ -114,6 +122,12 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
         assert.equal(parseInt(await count.innerText()), i + 1)
         assert.ok((await notice.innerText()).includes(q.correctAnswer))
         assert.ok((await notice.innerText()).includes(answer))
+        if (answer === q.correctAnswer) {
+          assert.ok((await notice.innerText()).includes('Réponse correcte :'))
+        } else {
+          assert.ok((await notice.innerText()).includes(`Votre réponse : ${answer}`))
+          assert.ok((await notice.innerText()).includes(`Réponse attendue : ${q.correctAnswer}`))
+        }
         assert.equal(await page.locator('.guided-answer:enabled').count(), 0)
         const bounds = await page.evaluate(() => {
           const box = selector => {
@@ -150,6 +164,24 @@ async function run(width, height, theme, lessonId = 'intermediaire-prepositions-
       await position('Révision', 'Mot', i, errorsInTest)
       assert.equal(parseInt(await count.innerText()), i)
       assert.equal(await heading.innerText(), exercises.test[(journey?.correctCount ?? missedIndex) + i].mot.dendi.trim())
+      assert.equal(await page.locator('.guided-review-card .guided-word-french').count(), 0)
+      await page.getByText('Essayez de retrouver le sens avant de révéler la traduction.', { exact: true }).waitFor()
+      if (i === 0 && width === 390 && theme === 'dark' && !journey) {
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+        await page.screenshot({ animations: 'disabled', fullPage: true, path: path.join(out, 'apres-revision-avant-revelation-390-844-dark.png') })
+      }
+      await activate(page.locator('.guided-review-card .guided-reveal-button'))
+      await focusIs(notice)
+      assert.equal(await notice.innerText(), exercises.test[(journey?.correctCount ?? missedIndex) + i].mot.fr.trim())
+      assert.equal(parseInt(await count.innerText()), i)
+      if (i === 0 && width === 390 && theme === 'dark' && !journey) {
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+        await page.screenshot({ animations: 'disabled', fullPage: true, path: path.join(out, 'apres-revision-revelee-390-844-dark.png') })
+        await page.locator('.guided-review-heading > p:last-child').evaluate(element => {
+          element.textContent = 'Revoyons rapidement les mots difficiles.'
+        })
+        await page.screenshot({ animations: 'disabled', fullPage: true, path: path.join(out, 'avant-revision-reconstituee-390-844-dark.png') })
+      }
       await activate(primary)
     }
     await focusIs(page.locator('#guided-result-title'))

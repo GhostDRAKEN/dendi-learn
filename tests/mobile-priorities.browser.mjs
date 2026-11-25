@@ -199,7 +199,16 @@ try {
       for (const word of lesson.mots) {
         const actual = await page.locator('#guided-learn-title').textContent(); actualWords.push(actual)
         assert.equal(actual, word.dendi)
+        await page.getByText('Essayez de retrouver le sens avant de révéler la traduction.', { exact: true }).waitFor()
+        if (actualWords.length === 1 && width === 390 && theme === 'light') {
+          const prompt = page.locator('.guided-recall-prompt')
+          await prompt.evaluate(element => { element.style.visibility = 'hidden' })
+          await shot(page, 'before-390-light-discovery')
+          await prompt.evaluate(element => { element.style.visibility = '' })
+          await shot(page, 'after-390-light-discovery')
+        }
         await page.locator('.guided-reveal-button').click()
+        assert.equal(await page.locator('.guided-recall-prompt').count(), 0)
         await checkText(page, '.guided-primary-button', item.contrasts)
         await page.locator('.guided-primary-button').click()
       }
@@ -220,8 +229,18 @@ try {
           await page.locator('.guided-primary-button').click()
         }
         assert.equal(await page.locator('.guided-review-card h2').textContent(), exercises.test[0].mot.dendi)
+        assert.equal(await page.locator('.guided-review-card .guided-word-french').count(), 0)
         assert.equal(await page.locator('main').innerText().then(t => /\bN\/A\b/.test(t)), false)
         await shot(page, prefix + '-review')
+        await page.locator('.guided-review-card .guided-reveal-button').click()
+        assert.equal(await page.locator('.guided-review-card .guided-word-french').textContent(), exercises.test[0].mot.fr)
+        await shot(page, prefix + '-review-revealed')
+        if (width === 390 && theme === 'light') {
+          await page.locator('.guided-review-heading > p:last-child').evaluate(element => {
+            element.textContent = 'Revoyons rapidement les mots difficiles.'
+          })
+          await shot(page, 'before-390-light-review')
+        }
         await page.locator('.guided-primary-button').click()
         await page.locator('#guided-result-title').waitFor()
         item.score = await page.locator('.guided-score strong').innerText(); assert.equal(item.score, '4 bonnes réponses sur 5')

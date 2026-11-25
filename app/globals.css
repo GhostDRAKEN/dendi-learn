@@ -4027,6 +4027,14 @@ a.path-lesson:hover,
   font-style: italic;
 }
 
+.guided-recall-prompt {
+  max-width: 34ch;
+  margin: 18px 0 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
 .guided-word-divider {
   width: 46px;
   height: 1px;
